@@ -251,15 +251,15 @@
                                     <input type="text" class="form-input" id="contact-name" name="name" required>
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label" for="contact-email">Email *</label>
-                                    <input type="email" class="form-input" id="contact-email" name="email" required>
+                                    <label class="form-label" for="contact-email">Email </label>
+                                    <input type="email" class="form-input" id="contact-email" name="email" >
                                 </div>
                             </div>
                             
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label class="form-label" for="contact-phone">Téléphone</label>
-                                    <input type="tel" class="form-input" id="contact-phone" name="phone">
+                                    <label class="form-label" for="contact-phone">Téléphone*</label>
+                                    <input type="tel" class="form-input" id="contact-phone" name="phone" required placeholder="70997099">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label" for="contact-subject">Sujet *</label>
@@ -344,7 +344,7 @@
             
             <div class="footer-bottom">
                 <p class="copyright">
-                    © 2024 Angele Shop. Tous droits réservés.
+                    © 2025 Angele Shop. Tous droits réservés.
                 </p>
             </div>
         </div>
@@ -412,14 +412,24 @@
                     submitButton.disabled = true;
                     submitButton.innerHTML = '<div class="loading"></div> Envoi en cours...';
                     
-                    // Simulate API call
-                    setTimeout(() => {
-                        showToast('Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.', 'success');
+                    // send  the message via the backend 
+                    fetch("/api/send/mess",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(data)})
+                    .then(res=>{
+                        
+                        if(res.ok){
+                            showToast('Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.', 'success');
                         contactForm.reset();
                         
                         submitButton.disabled = false;
                         submitButton.textContent = originalText;
-                    }, 2000);
+                        }else{
+                             showToast('erreur interne , veuillez reesayer');
+                             submitButton.disabled = false;
+                            submitButton.textContent = originalText;
+                            
+                        }
+                        
+                    })
                 });
             }
         });

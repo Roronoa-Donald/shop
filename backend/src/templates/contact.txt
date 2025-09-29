@@ -1,0 +1,15 @@
+ANGELE SHOP - FORMULAIRE DE CONTACT
+
+Nouveau message reçu depuis le formulaire de contact :
+
+Nom : {{name}}
+Email : {{email}}
+Téléphone : {{phone}}
+Sujet : {{subject}}
+
+Message :
+{{message}}
+
+---
+Angele Shop - Boutique de luxe
+Cet email a été généré automatiquement par le formulaire de contact.

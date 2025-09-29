@@ -2,6 +2,7 @@ const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt');
 const fs = require('fs').promises;
 const path = require('path');
+const { default: fastify } = require('fastify');
 
 async function apiRoutes(fastify) {
   // Health check
@@ -410,7 +411,12 @@ fastify.get('/products', {
 
     return { user, orders };
   });
-
+fastify.post("/api/send/mess",async (req, res)=>{
+  const { name, email, phone, subject, message } = req.body;
+   
+  await fastify.sendEmail("contact","angeleshop228@gmail.com","contact client",{name,email,phone,subject,message})
+  res.send("done done")
+})
   // Get order details
   fastify.get('/orders/:orderId', async (request, reply) => {
     const { orderId } = request.params;
@@ -451,5 +457,7 @@ fastify.get('/products', {
     return { ...order, items };
   });
 }
+
+
 
 module.exports = apiRoutes;

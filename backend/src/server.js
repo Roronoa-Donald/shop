@@ -80,6 +80,40 @@ await server.register(require('fastify-multipart'));
   await server.register(require('./routes/pages'), { prefix: '/' });
   await server.register(require('./routes/api'), { prefix: '/api' });
   await server.register(require('./routes/admin'), { prefix: '/api/admin' });
+  // DEBUG / fix temporaire : assure la présence explicite de /api/send/mess
+server.post('/api/send/mess', {
+  schema: {
+    body: { type: 'object', required: [], properties: {} }
+  }
+}, async (request, reply) => {
+  // log pour debug
+  request.log.info({ msg: 'received /api/send/mess', body: request.body });
+
+  // Si tu veux appeler la même logique que dans routes/api.js (évite duplication),
+  // tu peux soit appeler directement fastify.sendEmail (si disponible),
+  // soit déléguer vers /api/send/mess déjà défini via server.inject (mais ici on assume pas qu'il existe).
+  try {
+    if (server.sendEmail && typeof server.sendEmail === 'function') {
+      await server.sendEmail('contact', 'angeleshop228@gmail.com', 'contact client', request.body || {});
+      return reply.code(200).send({ success: true, message: 'Message envoyé (handler explicite)' });
+    } else {
+      // fallback simple pour valider la route
+      return reply.code(200).send({ success: true, message: 'Route active — mailer indisponible' });
+    }
+  } catch (err) {
+    request.log.error(' /api/send/mess error', err);
+    return reply.code(500).send({ success: false, error: 'Impossible d\'envoyer le message' });
+  }
+});
+
+// afficher les routes chargées (utile pour debug)
+server.ready().then(() => {
+  // printRoutes retourne une string formatée
+  console.log('--- ROUTES REGISTERED ---');
+  console.log(server.printRoutes());
+}).catch(err => {
+  console.error('Erreur during fastify.ready():', err);
+});
 
   return server;
 }

@@ -81,9 +81,10 @@ function isValidEmail(email) {
     return emailRegex.test(email);
 }
 
-// Validate phone number (simple French format)
+// Validate phone number (simple togo number format)
 function isValidPhone(phone) {
-    const phoneRegex = /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/;
+    const phoneRegex = /^(?:(?:\+|00)228)?\s*[2798](?:[\s.-]*\d){7}$/
+;
     return phoneRegex.test(phone);
 }
 
