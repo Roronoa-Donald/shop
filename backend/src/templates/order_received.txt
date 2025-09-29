@@ -1,0 +1,21 @@
+ANGELE SHOP - CONFIRMATION DE COMMANDE
+
+Cher/Chère {{customerName}},
+
+Nous avons bien reçu votre commande et nous vous en remercions.
+
+DÉTAILS DE LA COMMANDE
+Commande N° {{orderId}}
+Montant : {{amount}}
+Statut : En attente de paiement
+
+Les instructions de paiement vous seront communiquées prochainement. 
+Votre commande sera traitée dès réception du paiement.
+
+Vous pouvez suivre l'évolution de votre commande dans la section "Mon Compte" de notre site.
+
+Merci de votre confiance et à bientôt sur Angele Shop !
+
+---
+Angele Shop - Boutique de luxe
+Pour toute question, contactez-nous via notre site web.

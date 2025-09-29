@@ -1,0 +1,77 @@
+{
+  "products": [
+    {
+      "id": "ed09ce84-dc1b-4369-bef4-9c2a38d7b4af",
+      "title": "complet pour femme",
+      "slug": "complet-pour-femme-1758827338396",
+      "description": "complet pour femme tres versatile , approprié pour toutes les occasions ",
+      "category_id": 1,
+      "subcategory": "femme",
+      "price_fcfa": 15000,
+      "currency": "FCFA",
+      "sku": "complet-pour-femme1",
+      "images": [
+        "/uploads/bijoux/complet-pour-femme-1758827338396/2.jpeg"
+      ],
+      "tags": [
+        "bijoux",
+        "coliers",
+        "bagues",
+        "montres"
+      ],
+      "available_count": 20,
+      "created_at": "2025-09-25T19:08:59.269Z",
+      "updated_at": "2025-09-25T19:08:59.269Z"
+    },
+    {
+      "id": "2a7025e7-b7ef-4c23-942b-f9d95435b391",
+      "title": "complet pour femme",
+      "slug": "complet-pour-femme-1758827520342",
+      "description": "complet pour femme tres versatile utilisable pour toutes sortes d'occasions et évenements",
+      "category_id": 1,
+      "subcategory": "femme",
+      "price_fcfa": 15000,
+      "currency": "FCFA",
+      "sku": "complet-pour-femme2",
+      "images": [
+        "/uploads/bijoux/complet-pour-femme-1758827520342/2.jpeg"
+      ],
+      "tags": [
+        "bijoux",
+        "chaines",
+        "bagues",
+        "coliers",
+        "ontres",
+        "bracelets"
+      ],
+      "available_count": 20,
+      "created_at": "2025-09-25T19:12:01.187Z",
+      "updated_at": "2025-09-25T19:12:01.187Z"
+    },
+    {
+      "id": "e06c3811-86e1-403e-8e08-b56eac23a8f7",
+      "title": "complet pour femme",
+      "slug": "complet-pour-femme-1758827590824",
+      "description": "complet pour femme tres versatile et utilisable pour toutes sortes d'evenements",
+      "category_id": 1,
+      "subcategory": "femme",
+      "price_fcfa": 15000,
+      "currency": "FCFA",
+      "sku": "complet-pour-femme3",
+      "images": [
+        "/uploads/bijoux/complet-pour-femme-1758827590824/2.jpeg"
+      ],
+      "tags": [
+        "bijoux",
+        "chaines",
+        "bagues",
+        "coliers",
+        "ontres",
+        "bracelets"
+      ],
+      "available_count": 20,
+      "created_at": "2025-09-25T19:13:11.682Z",
+      "updated_at": "2025-09-25T19:13:11.682Z"
+    }
+  ]
+}

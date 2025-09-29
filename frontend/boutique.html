@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="fr" data-page="boutique">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boutique - Angele Shop</title>
+    <meta name="description" content="Découvrez notre collection complète de bijoux, vêtements, accessoires et chaussures de luxe.">
+    
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+    
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/responsive.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body data-page="boutique">
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav container">
+            <div class="nav-brand">
+                <a href="/" class="nav-logo">
+                    <span class="logo-text">Angele Shop</span>
+                </a>
+            </div>
+            
+            <div class="nav-menu" id="nav-menu">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="/" class="nav-link">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/boutique" class="nav-link active">Boutique</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle">Collections</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/boutique?category=bijoux" class="dropdown-link">Bijoux</a></li>
+                            <li><a href="/boutique?category=vetements" class="dropdown-link">Vêtements</a></li>
+                            <li><a href="/boutique?category=accessoires" class="dropdown-link">Accessoires</a></li>
+                            <li><a href="/boutique?category=chaussures" class="dropdown-link">Chaussures</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/contact" class="nav-link">Contact</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-actions">
+                <button class="nav-btn search-btn" id="search-btn">
+                    <i class="icon-search"></i>
+                </button>
+                <a href="/compte" class="nav-btn account-btn">
+                    <i class="icon-user"></i>
+                </a>
+                <button class="nav-btn cart-btn" id="cart-btn">
+                    <i class="icon-bag"></i>
+                    <span class="cart-count" id="cart-count">0</span>
+                </button>
+                <button class="nav-toggle" id="nav-toggle">
+                    <span class="nav-toggle-line"></span>
+                    <span class="nav-toggle-line"></span>
+                    <span class="nav-toggle-line"></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Breadcrumb -->
+        <section class="breadcrumb-section">
+            <div class="container">
+                <nav class="breadcrumb" id="breadcrumb">
+                    <span class="breadcrumb-item">
+                        <a href="/" class="breadcrumb-link">Accueil</a>
+                    </span>
+                    <span class="breadcrumb-item">Boutique</span>
+                </nav>
+            </div>
+        </section>
+
+        <!-- Shop Header -->
+        <section class="shop-header">
+            <div class="container">
+                <h1 class="section-title">Nos Collections</h1>
+                <p class="section-subtitle">Découvrez notre sélection de pièces d'exception</p>
+            </div>
+        </section>
+
+        <!-- Filters -->
+        <section class="filters-section">
+            <div class="container">
+                <div class="filters" id="filters">
+                    <div class="filters-header">
+                        <h3 class="filters-title">Filtrer les produits</h3>
+                        <button class="filters-clear" id="clear-filters">Effacer</button>
+                    </div>
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label class="filter-label">Catégorie</label>
+                            <select class="form-select" id="category-filter">
+                                <option value="">Toutes les catégories</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Sous-catégorie</label>
+                            <select class="form-select" id="subcategory-filter">
+                                <option value="">Toutes</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Prix minimum</label>
+                            <input type="number" class="form-input price-input" id="min-price" placeholder="0" min="0">
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Prix maximum</label>
+                            <input type="number" class="form-input price-input" id="max-price" placeholder="1000000" min="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Header -->
+        <section class="results-header">
+            <div class="container">
+                <div class="results-info">
+                    <div class="results-count" id="results-count">
+                        <span class="loading" id="results-loading"></span>
+                    </div>
+                    <div class="results-sort">
+                        <select class="form-select" id="sort-select">
+                            <option value="newest">Plus récents</option>
+                            <option value="price-asc">Prix croissant</option>
+                            <option value="price-desc">Prix décroissant</option>
+                            <option value="name">Nom A-Z</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Grid -->
+        <section class="products-section">
+            <div class="container">
+                <div class="products-grid" id="products-grid">
+                    <!-- Products loaded via JavaScript -->
+                </div>
+                
+                <div class="no-results" id="no-results" style="display: none;">
+                    <div class="no-results-content">
+                        <h3>Aucun produit trouvé</h3>
+                        <p>Essayez de modifier vos critères de recherche</p>
+                        <button class="btn btn-primary" id="reset-filters">Réinitialiser les filtres</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pagination -->
+        <section class="pagination-section">
+            <div class="container">
+                <div class="pagination" id="pagination">
+                    <!-- Pagination loaded via JavaScript -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-title">Angele Shop</h3>
+                    <p class="footer-description">
+                        Boutique de luxe proposant une sélection exclusive de bijoux, vêtements, accessoires et chaussures de prestige.
+                    </p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Navigation</h4>
+                    <ul class="footer-links">
+                        <li><a href="/" class="footer-link">Accueil</a></li>
+                        <li><a href="/boutique" class="footer-link">Boutique</a></li>
+                        <li><a href="/contact" class="footer-link">Contact</a></li>
+                        <li><a href="/compte" class="footer-link">Mon Compte</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Collections</h4>
+                    <ul class="footer-links">
+                        <li><a href="/boutique?category=bijoux" class="footer-link">Bijoux</a></li>
+                        <li><a href="/boutique?category=vetements" class="footer-link">Vêtements</a></li>
+                        <li><a href="/boutique?category=accessoires" class="footer-link">Accessoires</a></li>
+                        <li><a href="/boutique?category=chaussures" class="footer-link">Chaussures</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Informations</h4>
+                    <ul class="footer-links">
+                        <li><a href="/cgvs" class="footer-link">Conditions Générales</a></li>
+                        <li><a href="#" class="footer-link">Livraisons</a></li>
+                        <li><a href="#" class="footer-link">Retours</a></li>
+                        <li><a href="#" class="footer-link">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p class="copyright">© 2024 Angele Shop. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Modal -->
+    <div class="modal" id="cart-modal">
+        <div class="modal-overlay" id="cart-modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Mon Panier</h3>
+                <button class="modal-close" id="cart-modal-close">
+                    <i class="icon-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="cart-items"></div>
+                <div class="cart-summary" id="cart-summary" style="display: none;">
+                    <div class="cart-total">
+                        <span>Total: <strong id="cart-total">0 FCFA</strong></span>
+                    </div>
+                    <div class="cart-actions">
+                        <a href="/panier" class="btn btn-outline">Voir le panier</a>
+                        <a href="/checkout" class="btn btn-primary">Commander</a>
+                    </div>
+                </div>
+                <div class="cart-empty" id="cart-empty">
+                    <p>Votre panier est vide</p>
+                    <a href="/boutique" class="btn btn-primary">Continuer les achats</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Modal -->
+    <div class="modal" id="search-modal">
+        <div class="modal-overlay" id="search-modal-overlay"></div>
+        <div class="modal-content modal-search">
+            <div class="modal-header">
+                <h3 class="modal-title">Rechercher</h3>
+                <button class="modal-close" id="search-modal-close">
+                    <i class="icon-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="search-form" id="search-form">
+                    <input type="text" class="form-input search-input" placeholder="Rechercher un produit..." id="search-input" autocomplete="off">
+                </form>
+                <div class="search-results" id="search-results"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/cart.js"></script>
+    <script src="/assets/js/main.js"></script>
+    <script src="/assets/js/components.js"></script>
+    
+    <script>
+        // Boutique Page Logic
+        class BoutiquePage {
+            constructor() {
+                this.currentFilters = {
+                    category: '',
+                    subcategory: '',
+                    minPrice: '',
+                    maxPrice: '',
+                    q: '',
+                    page: 1,
+                    pageSize: 12
+                };
+                this.categories = [];
+                this.isLoading = false;
+                
+                this.init();
+            }
+
+            async init() {
+                await this.loadCategories();
+                this.setupFilters();
+                this.parseUrlParams();
+                this.loadProducts();
+                this.updateBreadcrumb();
+            }
+
+            async loadCategories() {
+                try {
+                    const response = await categoryAPI.getAll();
+                    this.categories = response.categories || [];
+                    this.populateCategoryFilter();
+                } catch (error) {
+                    console.error('Failed to load categories:', error);
+                }
+            }
+
+            populateCategoryFilter() {
+                const categoryFilter = document.getElementById('category-filter');
+                if (!categoryFilter) return;
+
+                this.categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category.slug;
+                    option.textContent = category.name;
+                    categoryFilter.appendChild(option);
+                });
+            }
+
+            setupFilters() {
+                // Category filter
+                const categoryFilter = document.getElementById('category-filter');
+                if (categoryFilter) {
+                    categoryFilter.addEventListener('change', (e) => {
+                        this.currentFilters.category = e.target.value;
+                        this.currentFilters.page = 1;
+                        this.updateUrlAndLoad();
+                    });
+                }
+
+                // Other filters
+                const filters = ['subcategory-filter', 'min-price', 'max-price'];
+                filters.forEach(filterId => {
+                    const filterElement = document.getElementById(filterId);
+                    if (filterElement) {
+                        filterElement.addEventListener('input', utils.debounce(() => {
+                            const key = filterId.replace('-filter', '').replace('-', '');
+                            const mappedKey = {
+                                'subcategory': 'subcategory',
+                                'minprice': 'minPrice',
+                                'maxprice': 'maxPrice'
+                            }[key] || key;
+                            
+                            this.currentFilters[mappedKey] = filterElement.value;
+                            this.currentFilters.page = 1;
+                            this.updateUrlAndLoad();
+                        }, 500));
+                    }
+                });
+
+                // Clear filters
+                const clearFilters = document.getElementById('clear-filters');
+                if (clearFilters) {
+                    clearFilters.addEventListener('click', () => {
+                        this.clearFilters();
+                    });
+                }
+
+                // Sort
+                const sortSelect = document.getElementById('sort-select');
+                if (sortSelect) {
+                    sortSelect.addEventListener('change', (e) => {
+                        this.currentFilters.sort = e.target.value;
+                        this.currentFilters.page = 1;
+                        this.updateUrlAndLoad();
+                    });
+                }
+
+                // Reset filters button in no results
+                const resetFilters = document.getElementById('reset-filters');
+                if (resetFilters) {
+                    resetFilters.addEventListener('click', () => {
+                        this.clearFilters();
+                    });
+                }
+            }
+
+            parseUrlParams() {
+                const params = utils.getUrlParams();
+                
+                Object.keys(this.currentFilters).forEach(key => {
+                    if (params[key]) {
+                        this.currentFilters[key] = params[key];
+                    }
+                });
+
+                // Update UI with parsed params
+                this.updateFilterUI();
+            }
+
+            updateFilterUI() {
+                const categoryFilter = document.getElementById('category-filter');
+                if (categoryFilter) categoryFilter.value = this.currentFilters.category;
+
+                const subcategoryFilter = document.getElementById('subcategory-filter');
+                if (subcategoryFilter) subcategoryFilter.value = this.currentFilters.subcategory;
+
+                const minPrice = document.getElementById('min-price');
+                if (minPrice) minPrice.value = this.currentFilters.minPrice;
+
+                const maxPrice = document.getElementById('max-price');
+                if (maxPrice) maxPrice.value = this.currentFilters.maxPrice;
+
+                const sortSelect = document.getElementById('sort-select');
+                if (sortSelect) sortSelect.value = this.currentFilters.sort || 'newest';
+            }
+
+            async loadProducts() {
+                if (this.isLoading) return;
+                this.isLoading = true;
+
+                try {
+                    this.showLoading();
+                    
+                    const params = { ...this.currentFilters };
+                    // Clean empty params
+                    Object.keys(params).forEach(key => {
+                        if (!params[key]) delete params[key];
+                    });
+
+                    const response = await productAPI.getAll(params);
+                    this.displayProducts(response.products || []);
+                    this.displayPagination(response.pagination);
+                    this.updateResultsCount(response.pagination?.total || 0);
+                    
+                } catch (error) {
+                    console.error('Failed to load products:', error);
+                    showToast('Erreur lors du chargement des produits', 'error');
+                    this.showNoResults();
+                } finally {
+                    this.hideLoading();
+                    this.isLoading = false;
+                }
+            }
+
+            displayProducts(products) {
+                const grid = document.getElementById('products-grid');
+                const noResults = document.getElementById('no-results');
+                
+                if (!grid) return;
+
+                if (products.length === 0) {
+                    grid.style.display = 'none';
+                    if (noResults) noResults.style.display = 'block';
+                    return;
+                }
+
+                grid.style.display = 'grid';
+                if (noResults) noResults.style.display = 'none';
+
+                grid.innerHTML = products.map(product => createProductCard(product)).join('');
+            }
+
+            displayPagination(pagination) {
+                const paginationContainer = document.getElementById('pagination');
+                if (!paginationContainer || !pagination) return;
+
+                const { page, pages, total } = pagination;
+                
+                if (pages <= 1) {
+                    paginationContainer.innerHTML = '';
+                    return;
+                }
+
+                let paginationHTML = '';
+
+                // Previous button
+                if (page > 1) {
+                    paginationHTML += `<button class="pagination-btn" data-page="${page - 1}">Précédent</button>`;
+                }
+
+                // Page numbers
+                for (let i = Math.max(1, page - 2); i <= Math.min(pages, page + 2); i++) {
+                    const activeClass = i === page ? 'active' : '';
+                    paginationHTML += `<button class="pagination-btn ${activeClass}" data-page="${i}">${i}</button>`;
+                }
+
+                // Next button
+                if (page < pages) {
+                    paginationHTML += `<button class="pagination-btn" data-page="${page + 1}">Suivant</button>`;
+                }
+
+                paginationContainer.innerHTML = paginationHTML;
+
+                // Add click listeners
+                paginationContainer.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('pagination-btn') && !e.target.classList.contains('active')) {
+                        const newPage = parseInt(e.target.dataset.page);
+                        this.currentFilters.page = newPage;
+                        this.updateUrlAndLoad();
+                        utils.scrollToElement(document.getElementById('products-grid'), 100);
+                    }
+                });
+            }
+
+            updateResultsCount(total) {
+                const resultsCount = document.getElementById('results-count');
+                if (resultsCount) {
+                    resultsCount.innerHTML = `<span>${total} produit${total > 1 ? 's' : ''} trouvé${total > 1 ? 's' : ''}</span>`;
+                }
+            }
+
+            updateBreadcrumb() {
+                const breadcrumb = document.getElementById('breadcrumb');
+                if (!breadcrumb) return;
+
+                let breadcrumbHTML = `
+                    <span class="breadcrumb-item">
+                        <a href="/" class="breadcrumb-link">Accueil</a>
+                    </span>
+                    <span class="breadcrumb-item">
+                        <a href="/boutique" class="breadcrumb-link">Boutique</a>
+                    </span>
+                `;
+
+                if (this.currentFilters.category) {
+                    const category = this.categories.find(c => c.slug === this.currentFilters.category);
+                    if (category) {
+                        breadcrumbHTML += `<span class="breadcrumb-item">${category.name}</span>`;
+                    }
+                }
+
+                breadcrumb.innerHTML = breadcrumbHTML;
+            }
+
+            clearFilters() {
+                this.currentFilters = {
+                    category: '',
+                    subcategory: '',
+                    minPrice: '',
+                    maxPrice: '',
+                    q: '',
+                    page: 1,
+                    pageSize: 12
+                };
+
+                this.updateFilterUI();
+                this.updateUrlAndLoad();
+            }
+
+            updateUrlAndLoad() {
+                // Update URL without page reload
+                const url = new URL(window.location);
+                url.search = '';
+                
+                Object.entries(this.currentFilters).forEach(([key, value]) => {
+                    if (value && key !== 'pageSize') {
+                        url.searchParams.set(key, value);
+                    }
+                });
+
+                window.history.replaceState({}, '', url);
+                this.updateBreadcrumb();
+                this.loadProducts();
+            }
+
+            showLoading() {
+                const resultsLoading = document.getElementById('results-loading');
+                if (resultsLoading) {
+                    resultsLoading.style.display = 'inline-block';
+                }
+            }
+
+            hideLoading() {
+                const resultsLoading = document.getElementById('results-loading');
+                if (resultsLoading) {
+                    resultsLoading.style.display = 'none';
+                }
+            }
+
+            showNoResults() {
+                const grid = document.getElementById('products-grid');
+                const noResults = document.getElementById('no-results');
+                
+                if (grid) grid.style.display = 'none';
+                if (noResults) noResults.style.display = 'block';
+            }
+        }
+
+        // Initialize boutique page
+        document.addEventListener('DOMContentLoaded', () => {
+            new BoutiquePage();
+        });
+    </script>
+</body>
+</html>

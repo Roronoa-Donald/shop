@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Angele Shop</title>
+    <meta name="description" content="Contactez-nous pour toute question concernant nos produits de luxe ou votre commande.">
+    
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+    
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/responsive.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        .contact-page {
+            padding-top: 120px;
+            padding-bottom: var(--spacing-xxxl);
+        }
+
+        .contact-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-xxxl);
+            align-items: start;
+        }
+
+        .contact-info {
+            background: var(--background-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: 0 4px 20px var(--shadow-light);
+        }
+
+        .contact-form-section {
+            background: var(--background-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: 0 4px 20px var(--shadow-light);
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .contact-details h3 {
+            margin: 0 0 var(--spacing-sm) 0;
+            color: var(--text-primary);
+        }
+
+        .contact-details p {
+            margin: 0;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md);
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .contact-hero {
+            text-align: center;
+            margin-bottom: var(--spacing-xxxl);
+        }
+
+        .contact-hero h1 {
+            font-size: 3rem;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .contact-hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .contact-container {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-xl);
+            }
+
+            .contact-hero h1 {
+                font-size: 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-info,
+            .contact-form-section {
+                padding: var(--spacing-lg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav container">
+            <div class="nav-brand">
+                <a href="/" class="nav-logo">
+                    <span class="logo-text">Angele Shop</span>
+                </a>
+            </div>
+            
+            <div class="nav-menu" id="nav-menu">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="/" class="nav-link">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/boutique" class="nav-link">Boutique</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle">Collections</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/boutique?category=bijoux" class="dropdown-link">Bijoux</a></li>
+                            <li><a href="/boutique?category=vetements" class="dropdown-link">Vêtements</a></li>
+                            <li><a href="/boutique?category=accessoires" class="dropdown-link">Accessoires</a></li>
+                            <li><a href="/boutique?category=chaussures" class="dropdown-link">Chaussures</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/contact" class="nav-link active">Contact</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-actions">
+                <button class="nav-btn search-btn" id="search-btn">
+                    <i class="icon-search"></i>
+                </button>
+                <a href="/compte" class="nav-btn account-btn">
+                    <i class="icon-user"></i>
+                </a>
+                <button class="nav-btn cart-btn" id="cart-btn">
+                    <i class="icon-bag"></i>
+                    <span class="cart-count" id="cart-count">0</span>
+                </button>
+                <button class="nav-toggle" id="nav-toggle">
+                    <span class="nav-toggle-line"></span>
+                    <span class="nav-toggle-line"></span>
+                    <span class="nav-toggle-line"></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Breadcrumb -->
+        <section class="breadcrumb-section">
+            <div class="container">
+                <nav class="breadcrumb">
+                    <span class="breadcrumb-item">
+                        <a href="/" class="breadcrumb-link">Accueil</a>
+                    </span>
+                    <span class="breadcrumb-item">Contact</span>
+                </nav>
+            </div>
+        </section>
+
+        <!-- Contact Page -->
+        <section class="contact-page">
+            <div class="container">
+                <div class="contact-hero">
+                    <h1>Contactez-nous</h1>
+                    <p>Notre équipe est à votre disposition pour répondre à toutes vos questions concernant nos produits de luxe et vos commandes.</p>
+                </div>
+                
+                <div class="contact-container">
+                    <div class="contact-info">
+                        <h2 style="margin-bottom: var(--spacing-xl);">Nos coordonnées</h2>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">📍</div>
+                            <div class="contact-details">
+                                <h3>Adresse</h3>
+                                <p>Agoe-kossigan<br>En face de l'école public</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">📞</div>
+                            <div class="contact-details">
+                                <h3>Téléphone</h3>
+                                <p>+228 92 85 71 92<br>+228 99 79 56 92<br>Lundi - Samedi : 8h - 19h</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">✉️</div>
+                            <div class="contact-details">
+                                <h3>Email</h3>
+                                <p>angeleshop228@gmail.com<br>Réponse sous 24h(maximum)</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">🕒</div>
+                            <div class="contact-details">
+                                <h3>Horaires d'ouverture</h3>
+                                <p>Lundi - Samedi : 8h - 19h<br>Dimanche : Fermé</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-form-section">
+                        <h2 style="margin-bottom: var(--spacing-xl);">Envoyez-nous un message</h2>
+                        
+                        <form class="contact-form" id="contact-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="contact-name">Nom complet *</label>
+                                    <input type="text" class="form-input" id="contact-name" name="name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="contact-email">Email *</label>
+                                    <input type="email" class="form-input" id="contact-email" name="email" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="contact-phone">Téléphone</label>
+                                    <input type="tel" class="form-input" id="contact-phone" name="phone">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="contact-subject">Sujet *</label>
+                                    <select class="form-select" id="contact-subject" name="subject" required>
+                                        <option value="">Sélectionner un sujet</option>
+                                        <option value="commande">Question sur une commande</option>
+                                        <option value="produit">Information produit</option>
+                                        <option value="livraison">Livraison</option>
+                                        <option value="retour">Retour/Échange</option>
+                                        <option value="autre">Autre</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <label class="form-label" for="contact-message">Message *</label>
+                                <textarea class="form-textarea" id="contact-message" name="message" rows="6" required placeholder="Décrivez votre demande en détail..."></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary" style="align-self: flex-start;">
+                                Envoyer le message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-title">Angele Shop</h3>
+                    <p class="footer-description">
+                        Boutique de luxe proposant une sélection exclusive de bijoux, vêtements, accessoires et chaussures de prestige.
+                    </p>
+                    <div class="footer-social">
+                        <a href="#" class="social-link">
+                            <i class="icon-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="icon-facebook"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="icon-twitter"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Navigation</h4>
+                    <ul class="footer-links">
+                        <li><a href="/" class="footer-link">Accueil</a></li>
+                        <li><a href="/boutique" class="footer-link">Boutique</a></li>
+                        <li><a href="/contact" class="footer-link">Contact</a></li>
+                        <li><a href="/compte" class="footer-link">Mon Compte</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Collections</h4>
+                    <ul class="footer-links">
+                        <li><a href="/boutique?category=bijoux" class="footer-link">Bijoux</a></li>
+                        <li><a href="/boutique?category=vetements" class="footer-link">Vêtements</a></li>
+                        <li><a href="/boutique?category=accessoires" class="footer-link">Accessoires</a></li>
+                        <li><a href="/boutique?category=chaussures" class="footer-link">Chaussures</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Informations</h4>
+                    <ul class="footer-links">
+                        <li><a href="/cgvs" class="footer-link">Conditions Générales</a></li>
+                        <li><a href="#" class="footer-link">Livraisons</a></li>
+                        <li><a href="#" class="footer-link">Retours</a></li>
+                        <li><a href="#" class="footer-link">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p class="copyright">
+                    © 2024 Angele Shop. Tous droits réservés.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Search Modal -->
+    <div class="modal" id="search-modal">
+        <div class="modal-overlay" id="search-modal-overlay"></div>
+        <div class="modal-content modal-search">
+            <div class="modal-header">
+                <h3 class="modal-title">Rechercher</h3>
+                <button class="modal-close" id="search-modal-close">
+                    <i class="icon-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="search-form" id="search-form">
+                    <input type="text" class="form-input search-input" placeholder="Rechercher un produit..." id="search-input" autocomplete="off">
+                </form>
+                <div class="search-results" id="search-results"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/cart.js"></script>
+    <script src="/assets/js/main.js"></script>
+    <script src="/assets/js/components.js"></script>
+    
+    <script>
+        // Contact Form Logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const contactForm = document.getElementById('contact-form');
+            
+            if (contactForm) {
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // Get form data
+                    const formData = new FormData(contactForm);
+                    const data = {
+                        name: formData.get('name'),
+                        email: formData.get('email'),
+                        phone: formData.get('phone'),
+                        subject: formData.get('subject'),
+                        message: formData.get('message')
+                    };
+                    
+                    // Validate form
+                    const errors = validateForm(contactForm);
+                    if (errors.length > 0) {
+                        showToast(errors[0], 'error');
+                        return;
+                    }
+                    
+                    // Simulate form submission
+                    const submitButton = contactForm.querySelector('button[type="submit"]');
+                    const originalText = submitButton.textContent;
+                    
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = '<div class="loading"></div> Envoi en cours...';
+                    
+                    // Simulate API call
+                    setTimeout(() => {
+                        showToast('Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.', 'success');
+                        contactForm.reset();
+                        
+                        submitButton.disabled = false;
+                        submitButton.textContent = originalText;
+                    }, 2000);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

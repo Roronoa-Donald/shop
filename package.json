@@ -1,0 +1,56 @@
+{
+  "name": "angele-shop",
+  "version": "1.0.0",
+  "description": "Luxury e-commerce platform with admin OTP authentication",
+  "main": "./backend/src/index.js",
+  "scripts": {
+    "dev": "nodemon --env-file=.env ./backend/src/index.js",
+    "start": "node ./backend/src/index.js",
+    "migrate": "knex migrate:latest",
+    "migrate:rollback": "knex migrate:rollback",
+    "seed": "knex seed:run",
+    "test": "tap test/**/*.test.js",
+    "lint": "eslint backend/src --fix",
+    "format": "prettier --write .",
+    "build": "echo 'No build step required for this project'",
+    "reset-db": "npm run migrate:rollback && npm run migrate && npm run seed"
+  },
+  "keywords": [
+    "ecommerce",
+    "luxury",
+    "fastify",
+    "postgresql"
+  ],
+  "author": "Angele Shop",
+  "license": "MIT",
+  "dependencies": {
+    "@fastify/cookie": "^9.0.0",
+    "@fastify/cors": "^8.3.0",
+    "@fastify/helmet": "^11.0.0",
+    "@fastify/multipart": "^7.6.0",
+    "@fastify/rate-limit": "^8.0.3",
+    "@fastify/session": "^10.3.0",
+    "@fastify/static": "^6.10.2",
+    "@fastify/view": "^8.0.0",
+    "bcrypt": "^5.1.0",
+    "dotenv": "^16.3.1",
+    "fastify": "^4.21.0",
+    "fastify-multipart": "^5.3.1",
+    "fastify-plugin": "^5.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "knex": "^2.5.1",
+    "nodemailer": "^6.9.4",
+    "pg": "^8.11.3",
+    "pino": "^8.15.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.48.0",
+    "nodemon": "^3.0.1",
+    "prettier": "^3.0.3",
+    "tap": "^16.3.8"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=changeme
+      - DB_NAME=angele_shop
+    depends_on:
+      - postgres
+    volumes:
+      - ./frontend/uploads:/app/frontend/uploads
+      - ./backend/logs:/app/backend/logs
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=angele_shop
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=changeme
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

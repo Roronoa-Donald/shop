@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="fr" data-page="panier">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Panier - Angele Shop</title>
+    <meta name="description" content="Consultez et modifiez les articles de votre panier avant de finaliser votre commande.">
+    
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+    
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/responsive.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        .cart-page {
+            padding-top: 120px;
+            padding-bottom: var(--spacing-xxxl);
+            min-height: 60vh;
+        }
+
+        .cart-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: var(--spacing-xxxl);
+            align-items: start;
+        }
+
+        .cart-items-section {
+            background: var(--background-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: 0 4px 20px var(--shadow-light);
+        }
+
+        .cart-summary-section {
+            background: var(--background-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: 0 4px 20px var(--shadow-light);
+            position: sticky;
+            top: 120px;
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 120px 1fr auto;
+            gap: var(--spacing-lg);
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-light);
+            align-items: center;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-item-image {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: var(--radius-md);
+        }
+
+        .cart-item-details {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .cart-item-title {
+            font-size: 1.25rem;
+            font-weight: var(--font-weight-medium);
+            margin: 0;
+        }
+
+        .cart-item-title a {
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .cart-item-title a:hover {
+            color: var(--primary-color);
+        }
+
+        .cart-item-price {
+            font-size: 1.125rem;
+            color: var(--primary-color);
+            font-weight: var(--font-weight-bold);
+        }
+
+        .cart-item-variant {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .cart-item-controls {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+            align-items: center;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+        }
+
+        .quantity-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .quantity-btn:hover {
+            background: var(--background-secondary);
+        }
+
+        .quantity-input {
+            width: 50px;
+            text-align: center;
+            border: none;
+            padding: var(--spacing-xs);
+            font-weight: var(--font-weight-medium);
+        }
+
+        .remove-item-btn {
+            color: var(--error-color);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: var(--spacing-xs);
+            border-radius: var(--radius-sm);
+            transition: all var(--transition-fast);
+            font-size: 1.25rem;
+        }
+
+        .remove-item-btn:hover {
+            background: rgba(220, 53, 69, 0.1);
+        }
+
+        .cart-summary {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .summary-title {
+            font-size: 1.5rem;
+            margin: 0 0 var(--spacing-lg) 0;
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-sm) 0;
+        }
+
+        .summary-row.total {
+            font-size: 1.25rem;
+            font-weight: var(--font-weight-bold);
+            padding-top: var(--spacing-md);
+            border-top: 2px solid var(--border-color);
+            color: var(--primary-color);
+        }
+
+        .cart-actions {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: var(--spacing-xxxl);
+            color: var(--text-secondary);
+        }
+
+        .empty-cart-icon {
+            font-size: 4rem;
+            margin-bottom: var(--spacing-lg);
+            opacity: 0.5;
+        }
+
+        .empty-cart h2 {
+            margin-bottom: var(--spacing-md);
+            color: var(--text-primary);
+        }
+
+        .clear-cart-btn {
+            color: var(--error-color);
+            background: none;
+            border: 1px solid var(--error-color);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            align-self: flex-start;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .clear-cart-btn:hover {
+            background: var(--error-color);
+            color: white;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .cart-container {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-xl);
+            }
+
+            .cart-summary-section {
+                position: static;
+                order: -1;
+            }
+
+            .cart-item {
+                grid-template-columns: 80px 1fr;
+                gap: var(--spacing-md);
+            }
+
+            .cart-item-controls {
+                grid-column: 1 / -1;
+                flex-direction: row;
+                justify-content: space-between;
+                margin-top: var(--spacing-md);
+            }
+
+            .cart-item-image {
+                width: 80px;
+                height: 80px;
+            }
+
+            .cart-items-section,
+            .cart-summary-section {
+                padding: var(--spacing-lg);
+            }
+        }
+    </style>
+</head>
+<body data-page="panier">
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav container">
+            <div class="nav-brand">
+                <a href="/" class="nav-logo">
+                    <span class="logo-text">Angele Shop</span>
+                </a>
+            </div>
+            
+            <div class="nav-menu" id="nav-menu">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="/" class="nav-link">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/boutique" class="nav-link">Boutique</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle">Collections</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/boutique?category=bijoux" class="dropdown-link">Bijoux</a></li>
+                            <li><a href="/boutique?category=vetements" class="dropdown-link">Vêtements</a></li>
+                            <li><a href="/boutique?category=accessoires" class="dropdown-link">Accessoires</a></li>
+                            <li><a href="/boutique?category=chaussures" class="dropdown-link">Chaussures</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/contact" class="nav-link">Contact</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-actions">
+                <button class="nav-btn search-btn" id="search-btn">
+                    <i class="icon-search"></i>
+                </button>
+                <a href="/compte" class="nav-btn account-btn">
+                    <i class="icon-user"></i>
+                </a>
+                <button class="nav-btn cart-btn" id="cart-btn">
+                    <i class="icon-bag"></i>
+                    <span class="cart-count" id="cart-count">0</span>
+                </button>
+                <button class="nav-toggle" id="nav-toggle">
+                    <span class="nav-toggle-line"></span>
+                    <span class="nav-toggle-line"></span>
+                    <span class="nav-toggle-line"></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Breadcrumb -->
+        <section class="breadcrumb-section">
+            <div class="container">
+                <nav class="breadcrumb">
+                    <span class="breadcrumb-item">
+                        <a href="/" class="breadcrumb-link">Accueil</a>
+                    </span>
+                    <span class="breadcrumb-item">Mon Panier</span>
+                </nav>
+            </div>
+        </section>
+
+        <!-- Cart Page -->
+        <section class="cart-page">
+            <div class="container">
+                <h1 class="section-title">Mon Panier</h1>
+                
+                <div id="cart-content">
+                    <!-- Loading State -->
+                    <div class="loading-state" id="loading-state" style="text-align: center; padding: var(--spacing-xxxl);">
+                        <div class="loading loading-large"></div>
+                        <p>Chargement du panier...</p>
+                    </div>
+
+                    <!-- Cart Content (loaded via JS) -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-title">Angele Shop</h3>
+                    <p class="footer-description">
+                        Boutique de luxe proposant une sélection exclusive de bijoux, vêtements, accessoires et chaussures de prestige.
+                    </p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Navigation</h4>
+                    <ul class="footer-links">
+                        <li><a href="/" class="footer-link">Accueil</a></li>
+                        <li><a href="/boutique" class="footer-link">Boutique</a></li>
+                        <li><a href="/contact" class="footer-link">Contact</a></li>
+                        <li><a href="/compte" class="footer-link">Mon Compte</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Collections</h4>
+                    <ul class="footer-links">
+                        <li><a href="/boutique?category=bijoux" class="footer-link">Bijoux</a></li>
+                        <li><a href="/boutique?category=vetements" class="footer-link">Vêtements</a></li>
+                        <li><a href="/boutique?category=accessoires" class="footer-link">Accessoires</a></li>
+                        <li><a href="/boutique?category=chaussures" class="footer-link">Chaussures</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Informations</h4>
+                    <ul class="footer-links">
+                        <li><a href="/cgvs" class="footer-link">Conditions Générales</a></li>
+                        <li><a href="#" class="footer-link">Livraisons</a></li>
+                        <li><a href="#" class="footer-link">Retours</a></li>
+                        <li><a href="#" class="footer-link">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p class="copyright">© 2024 Angele Shop. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Search Modal -->
+    <div class="modal" id="search-modal">
+        <div class="modal-overlay" id="search-modal-overlay"></div>
+        <div class="modal-content modal-search">
+            <div class="modal-header">
+                <h3 class="modal-title">Rechercher</h3>
+                <button class="modal-close" id="search-modal-close">
+                    <i class="icon-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="search-form" id="search-form">
+                    <input type="text" class="form-input search-input" placeholder="Rechercher un produit..." id="search-input" autocomplete="off">
+                </form>
+                <div class="search-results" id="search-results"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/cart.js"></script>
+    <script src="/assets/js/main.js"></script>
+    <script src="/assets/js/components.js"></script>
+    
+    <script>
+        // Cart Page Logic
+        class CartPage {
+            constructor() {
+                this.cartItems = [];
+                this.total = 0;
+                
+                this.init();
+            }
+
+            async init() {
+                await this.loadCart();
+                this.setupEventListeners();
+            }
+
+            async loadCart() {
+                try {
+                    const response = await cartAPI.get();
+                    this.cartItems = response.cart || [];
+                    this.total = response.total || 0;
+                    this.renderCart();
+                } catch (error) {
+                    console.error('Failed to load cart:', error);
+                    showToast('Erreur lors du chargement du panier', 'error');
+                    this.renderEmptyCart();
+                } finally {
+                    this.hideLoading();
+                }
+            }
+
+            renderCart() {
+                const cartContent = document.getElementById('cart-content');
+                
+                if (this.cartItems.length === 0) {
+                    this.renderEmptyCart();
+                    return;
+                }
+
+                cartContent.innerHTML = `
+                    <div class="cart-container">
+                        <div class="cart-items-section">
+                            <div class="cart-header">
+                                <button class="clear-cart-btn" id="clear-cart">Vider le panier</button>
+                            </div>
+                            <div class="cart-items" id="cart-items">
+                                ${this.cartItems.map(item => this.createCartItemHTML(item)).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="cart-summary-section">
+                            <div class="cart-summary">
+                                <h3 class="summary-title">Récapitulatif</h3>
+                                
+                                <div class="summary-row">
+                                    <span>Sous-total (${this.getTotalItems()} article${this.getTotalItems() > 1 ? 's' : ''})</span>
+                                    <span>${utils.formatPrice(this.total)}</span>
+                                </div>
+                                
+                                <div class="summary-row">
+                                    <span>Livraison</span>
+                                    <span>Calculée à l'étape suivante</span>
+                                </div>
+                                
+                                <div class="summary-row total">
+                                    <span>Total</span>
+                                    <span>${utils.formatPrice(this.total)}</span>
+                                </div>
+                                
+                                <div class="cart-actions">
+                                    <a href="/checkout" class="btn btn-primary">Finaliser la commande</a>
+                                    <a href="/boutique" class="btn btn-outline">Continuer les achats</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                this.attachCartItemListeners();
+            }
+
+            renderEmptyCart() {
+                const cartContent = document.getElementById('cart-content');
+                cartContent.innerHTML = `
+                    <div class="empty-cart">
+                        <div class="empty-cart-icon">🛍️</div>
+                        <h2>Votre panier est vide</h2>
+                        <p>Découvrez notre collection et ajoutez vos articles préférés à votre panier.</p>
+                        <a href="/boutique" class="btn btn-primary">Découvrir nos produits</a>
+                    </div>
+                `;
+            }
+
+            createCartItemHTML(item) {
+                const product = item.product;
+                const imageUrl = product.images && product.images.length > 0 
+                    ? (typeof product.images === 'string' ? JSON.parse(product.images)[0] : product.images[0])
+                    : 'https://images.pexels.com/photos/1191531/pexels-photo-1191531.jpeg';
+
+                const variantInfo = item.variantId ? this.getVariantInfo(item) : '';
+
+                return `
+                    <div class="cart-item" data-product-id="${item.productId}" data-variant-id="${item.variantId || ''}">
+                        <img src="${imageUrl}" alt="${product.title}" class="cart-item-image" loading="lazy">
+                        
+                        <div class="cart-item-details">
+                            <h3 class="cart-item-title">
+                                <a href="/produit/${product.slug}">${product.title}</a>
+                            </h3>
+                            <div class="cart-item-price">${utils.formatPrice(product.price_fcfa)}</div>
+                            ${variantInfo ? `<div class="cart-item-variant">${variantInfo}</div>` : ''}
+                        </div>
+                        
+                        <div class="cart-item-controls">
+                            <div class="quantity-controls">
+                                <button class="quantity-btn quantity-minus" type="button">−</button>
+                                <input type="number" class="quantity-input" value="${item.quantity}" min="1" max="99">
+                                <button class="quantity-btn quantity-plus" type="button">+</button>
+                            </div>
+                            <button class="remove-item-btn" type="button" title="Supprimer">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            getVariantInfo(item) {
+                // This would need to be enhanced based on actual variant data structure
+                const parts = [];
+                if (item.size) parts.push(`Taille: ${item.size}`);
+                if (item.color) parts.push(`Couleur: ${item.color}`);
+                return parts.join(' • ');
+            }
+
+            getTotalItems() {
+                return this.cartItems.reduce((total, item) => total + item.quantity, 0);
+            }
+
+            attachCartItemListeners() {
+                const cartItems = document.getElementById('cart-items');
+                if (!cartItems) return;
+
+                // Quantity controls
+                cartItems.addEventListener('click', async (e) => {
+                    const cartItem = e.target.closest('.cart-item');
+                    if (!cartItem) return;
+
+                    const productId = cartItem.dataset.productId;
+                    const variantId = cartItem.dataset.variantId || null;
+                    const quantityInput = cartItem.querySelector('.quantity-input');
+                    
+                    if (e.target.classList.contains('quantity-minus')) {
+                        const newQuantity = Math.max(1, parseInt(quantityInput.value) - 1);
+                        quantityInput.value = newQuantity;
+                        await this.updateQuantity(productId, variantId, newQuantity);
+                    } else if (e.target.classList.contains('quantity-plus')) {
+                        const newQuantity = Math.min(99, parseInt(quantityInput.value) + 1);
+                        quantityInput.value = newQuantity;
+                        await this.updateQuantity(productId, variantId, newQuantity);
+                    } else if (e.target.classList.contains('remove-item-btn')) {
+                        await this.removeItem(productId, variantId);
+                    }
+                });
+
+                // Quantity input changes
+                cartItems.addEventListener('change', async (e) => {
+                    if (e.target.classList.contains('quantity-input')) {
+                        const cartItem = e.target.closest('.cart-item');
+                        const productId = cartItem.dataset.productId;
+                        const variantId = cartItem.dataset.variantId || null;
+                        const quantity = Math.max(1, Math.min(99, parseInt(e.target.value) || 1));
+                        
+                        e.target.value = quantity;
+                        await this.updateQuantity(productId, variantId, quantity);
+                    }
+                });
+
+                // Clear cart button
+                const clearCartBtn = document.getElementById('clear-cart');
+                if (clearCartBtn) {
+                    clearCartBtn.addEventListener('click', async () => {
+                        if (confirm('Êtes-vous sûr de vouloir vider votre panier ?')) {
+                            await this.clearCart();
+                        }
+                    });
+                }
+            }
+
+            async updateQuantity(productId, variantId, quantity) {
+                try {
+                    await cart.update(productId, variantId, quantity);
+                    await this.loadCart(); // Reload to get updated totals
+                } catch (error) {
+                    console.error('Failed to update quantity:', error);
+                    showToast('Erreur lors de la mise à jour', 'error');
+                }
+            }
+
+            async removeItem(productId, variantId) {
+                try {
+                    await cart.remove(productId, variantId);
+                    await this.loadCart(); // Reload cart
+                } catch (error) {
+                    console.error('Failed to remove item:', error);
+                    showToast('Erreur lors de la suppression', 'error');
+                }
+            }
+
+            async clearCart() {
+                try {
+                    await cart.clear();
+                    await this.loadCart(); // Reload cart
+                } catch (error) {
+                    console.error('Failed to clear cart:', error);
+                    showToast('Erreur lors du vidage du panier', 'error');
+                }
+            }
+
+            setupEventListeners() {
+                // Listen for cart updates from other parts of the app
+                cart.addEventListener(() => {
+                    this.loadCart();
+                });
+            }
+
+            hideLoading() {
+                const loadingState = document.getElementById('loading-state');
+                if (loadingState) {
+                    loadingState.style.display = 'none';
+                }
+            }
+        }
+
+        // Initialize cart page
+        document.addEventListener('DOMContentLoaded', () => {
+            new CartPage();
+        });
+    </script>
+</body>
+</html>

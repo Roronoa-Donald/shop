@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="fr" data-page="compte">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Compte - Angele Shop</title>
+    <meta name="description" content="Gérez votre compte, consultez vos commandes et vos informations personnelles.">
+    
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+    
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/responsive.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        .account-page {
+            padding-top: 120px;
+            padding-bottom: var(--spacing-xxxl);
+            background: var(--background-secondary);
+        }
+
+        .account-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: var(--spacing-xxxl);
+            align-items: start;
+        }
+
+        .account-sidebar {
+            background: var(--background-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: 0 4px 20px var(--shadow-light);
+            position: sticky;
+            top: 120px;
+        }
+
+        .account-content {
+            background: var(--background-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: 0 4px 20px var(--shadow-light);
+            min-height: 500px;
+        }
+
+        .account-nav {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .account-nav-item {
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .account-nav-link {
+            display: block;
+            padding: var(--spacing-md);
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            transition: all var(--transition-fast);
+        }
+
+        .account-nav-link:hover,
+        .account-nav-link.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .account-section {
+            display: none;
+        }
+
+        .account-section.active {
+            display: block;
+        }
+
+        .section-header {
+            margin-bottom: var(--spacing-xl);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin: 0;
+        }
+
+        .login-form,
+        .profile-form {
+            max-width: 400px;
+        }
+
+        .orders-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .order-card {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            transition: all var(--transition-fast);
+        }
+
+        .order-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 20px var(--shadow-light);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .order-number {
+            font-weight: var(--font-weight-bold);
+            color: var(--primary-color);
+        }
+
+        .order-status {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            font-weight: var(--font-weight-medium);
+            text-transform: uppercase;
+        }
+
+        .order-status.pending {
+            background: var(--warning-color);
+            color: var(--text-primary);
+        }
+
+        .order-status.paid {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .order-status.processing {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .order-status.shipped {
+            background: var(--primary-dark);
+            color: white;
+        }
+
+        .order-status.delivered {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .order-status.cancelled {
+            background: var(--error-color);
+            color: white;
+        }
+
+        .order-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--spacing-md);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .order-detail {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+        }
+
+        .order-detail-label {
+            font-weight: var(--font-weight-medium);
+            color: var(--text-primary);
+        }
+
+        .guest-orders {
+            background: var(--background-secondary);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .guest-orders-title {
+            font-size: 1.25rem;
+            margin-bottom: var(--spacing-md);
+            color: var(--text-primary);
+        }
+
+        .guest-orders-note {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .logout-btn {
+            color: var(--error-color);
+            background: none;
+            border: 1px solid var(--error-color);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            margin-top: var(--spacing-lg);
+            width: 100%;
+        }
+
+        .logout-btn:hover {
+            background: var(--error-color);
+            color: white;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .account-container {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-xl);
+            }
+
+            .account-sidebar {
+                position: static;
+                order: -1;
+            }
+
+            .account-nav {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: var(--spacing-sm);
+            }
+
+            .account-nav-item {
+                margin-bottom: 0;
+            }
+
+            .account-nav-link {
+                text-align: center;
+                font-size: 0.9rem;
+            }
+
+            .order-details {
+                grid-template-columns: 1fr;
+            }
+
+            .account-sidebar,
+            .account-content {
+                padding: var(--spacing-lg);
+            }
+        }
+    </style>
+</head>
+<body data-page="compte">
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav container">
+            <div class="nav-brand">
+                <a href="/" class="nav-logo">
+                    <span class="logo-text">Angele Shop</span>
+                </a>
+            </div>
+            
+            <div class="nav-menu" id="nav-menu">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="/" class="nav-link">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/boutique" class="nav-link">Boutique</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle">Collections</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/boutique?category=bijoux" class="dropdown-link">Bijoux</a></li>
+                            <li><a href="/boutique?category=vetements" class="dropdown-link">Vêtements</a></li>
+                            <li><a href="/boutique?category=accessoires" class="dropdown-link">Accessoires</a></li>
+                            <li><a href="/boutique?category=chaussures" class="dropdown-link">Chaussures</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/contact" class="nav-link">Contact</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-actions">
+                <button class="nav-btn search-btn" id="search-btn">
+                    <i class="icon-search"></i>
+                </button>
+                <a href="/compte" class="nav-btn account-btn">
+                    <i class="icon-user"></i>
+                </a>
+                <button class="nav-btn cart-btn" id="cart-btn">
+                    <i class="icon-bag"></i>
+                    <span class="cart-count" id="cart-count">0</span>
+                </button>
+                <button class="nav-toggle" id="nav-toggle">
+                    <span class="nav-toggle-line"></span>
+                    <span class="nav-toggle-line"></span>
+                    <span class="nav-toggle-line"></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Breadcrumb -->
+        <section class="breadcrumb-section">
+            <div class="container">
+                <nav class="breadcrumb">
+                    <span class="breadcrumb-item">
+                        <a href="/" class="breadcrumb-link">Accueil</a>
+                    </span>
+                    <span class="breadcrumb-item">Mon Compte</span>
+                </nav>
+            </div>
+        </section>
+
+        <!-- Account Page -->
+        <section class="account-page">
+            <div class="container">
+                <h1 class="section-title">Mon Compte</h1>
+                
+                <div id="account-content">
+                    <!-- Loading State -->
+                    <div class="loading-state" id="loading-state" style="text-align: center; padding: var(--spacing-xxxl);">
+                        <div class="loading loading-large"></div>
+                        <p>Chargement...</p>
+                    </div>
+
+                    <!-- Account Content (loaded via JS) -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-title">Angele Shop</h3>
+                    <p class="footer-description">
+                        Boutique de luxe proposant une sélection exclusive de bijoux, vêtements, accessoires et chaussures de prestige.
+                    </p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Navigation</h4>
+                    <ul class="footer-links">
+                        <li><a href="/" class="footer-link">Accueil</a></li>
+                        <li><a href="/boutique" class="footer-link">Boutique</a></li>
+                        <li><a href="/contact" class="footer-link">Contact</a></li>
+                        <li><a href="/compte" class="footer-link">Mon Compte</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Collections</h4>
+                    <ul class="footer-links">
+                        <li><a href="/boutique?category=bijoux" class="footer-link">Bijoux</a></li>
+                        <li><a href="/boutique?category=vetements" class="footer-link">Vêtements</a></li>
+                        <li><a href="/boutique?category=accessoires" class="footer-link">Accessoires</a></li>
+                        <li><a href="/boutique?category=chaussures" class="footer-link">Chaussures</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Informations</h4>
+                    <ul class="footer-links">
+                        <li><a href="/cgvs" class="footer-link">Conditions Générales</a></li>
+                        <li><a href="#" class="footer-link">Livraisons</a></li>
+                        <li><a href="#" class="footer-link">Retours</a></li>
+                        <li><a href="#" class="footer-link">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p class="copyright">© 2024 Angele Shop. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Search Modal -->
+    <div class="modal" id="search-modal">
+        <div class="modal-overlay" id="search-modal-overlay"></div>
+        <div class="modal-content modal-search">
+            <div class="modal-header">
+                <h3 class="modal-title">Rechercher</h3>
+                <button class="modal-close" id="search-modal-close">
+                    <i class="icon-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="search-form" id="search-form">
+                    <input type="text" class="form-input search-input" placeholder="Rechercher un produit..." id="search-input" autocomplete="off">
+                </form>
+                <div class="search-results" id="search-results"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/cart.js"></script>
+    <script src="/assets/js/main.js"></script>
+    <script src="/assets/js/components.js"></script>
+    
+    <script>
+        // Account Page Logic
+        class AccountPage {
+            constructor() {
+                this.user = null;
+                this.orders = [];
+                this.guestOrders = [];
+                this.currentSection = 'orders';
+                
+                this.init();
+            }
+
+            async init() {
+                await this.checkAuthStatus();
+                this.loadGuestOrders();
+            }
+
+            async checkAuthStatus() {
+                try {
+                    const response = await authAPI.getAccount();
+                    this.user = response.user;
+                    this.orders = response.orders || [];
+                    this.renderAuthenticatedAccount();
+                } catch (error) {
+                    // User not authenticated
+                    this.renderGuestAccount();
+                } finally {
+                    this.hideLoading();
+                }
+            }
+
+            loadGuestOrders() {
+                // Load guest orders from cookie
+                const guestCookie = utils.cookies.get('ANGELE_GUEST');
+                this.guestOrders = guestCookie || [];
+            }
+
+            renderAuthenticatedAccount() {
+                const accountContent = document.getElementById('account-content');
+                accountContent.innerHTML = `
+                    <div class="account-container">
+                        <div class="account-sidebar">
+                            <div class="user-info" style="margin-bottom: var(--spacing-lg); padding-bottom: var(--spacing-lg); border-bottom: 1px solid var(--border-color);">
+                                <h3 style="margin: 0 0 var(--spacing-sm) 0;">Bonjour,</h3>
+                                <p style="margin: 0; color: var(--primary-color); font-weight: var(--font-weight-medium);">${this.user.name}</p>
+                            </div>
+                            
+                            <nav>
+                                <ul class="account-nav">
+                                    <li class="account-nav-item">
+                                        <a href="#" class="account-nav-link active" data-section="orders">Mes commandes</a>
+                                    </li>
+                                    <li class="account-nav-item">
+                                        <a href="#" class="account-nav-link" data-section="profile">Mon profil</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                            
+                            <button class="logout-btn" id="logout-btn">Se déconnecter</button>
+                        </div>
+
+                        <div class="account-content">
+                            <!-- Orders Section -->
+                            <div class="account-section active" id="orders-section">
+                                <div class="section-header">
+                                    <h2 class="section-title">Mes commandes</h2>
+                                </div>
+                                
+                                ${this.guestOrders.length > 0 ? this.renderGuestOrdersSection() : ''}
+                                
+                                <div class="orders-list" id="orders-list">
+                                    ${this.orders.length > 0 ? this.orders.map(order => this.createOrderHTML(order)).join('') : '<p>Aucune commande trouvée.</p>'}
+                                </div>
+                            </div>
+
+                            <!-- Profile Section -->
+                            <div class="account-section" id="profile-section">
+                                <div class="section-header">
+                                    <h2 class="section-title">Mon profil</h2>
+                                </div>
+                                
+                                <form class="profile-form" id="profile-form">
+                                    <div class="form-group">
+                                        <label class="form-label" for="profile-name">Nom complet</label>
+                                        <input type="text" class="form-input" id="profile-name" value="${this.user.name}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="profile-email">Email</label>
+                                        <input type="email" class="form-input" id="profile-email" value="${this.user.email}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="profile-phone">Téléphone</label>
+                                        <input type="tel" class="form-input" id="profile-phone" value="${this.user.phone || ''}">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                this.attachAuthenticatedListeners();
+            }
+
+            renderGuestAccount() {
+                const accountContent = document.getElementById('account-content');
+                accountContent.innerHTML = `
+                    <div class="account-container">
+                        <div class="account-sidebar">
+                            <nav>
+                                <ul class="account-nav">
+                                    <li class="account-nav-item">
+                                        <a href="#" class="account-nav-link active" data-section="login">Connexion</a>
+                                    </li>
+                                    <li class="account-nav-item">
+                                        <a href="#" class="account-nav-link" data-section="guest-orders">Mes commandes</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+
+                        <div class="account-content">
+                            <!-- Login Section -->
+                            <div class="account-section active" id="login-section">
+                                <div class="section-header">
+                                    <h2 class="section-title">Connexion</h2>
+                                </div>
+                                
+                                <form class="login-form" id="login-form">
+                                    <div class="form-group">
+                                        <label class="form-label" for="login-email">Email</label>
+                                        <input type="email" class="form-input" id="login-email" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="login-password">Mot de passe</label>
+                                        <input type="password" class="form-input" id="login-password" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Se connecter</button>
+                                </form>
+                                
+                                <p style="margin-top: var(--spacing-lg); text-align: center; color: var(--text-secondary);">
+                                    Pas encore de compte ? Créez-en un lors de votre prochaine commande.
+                                </p>
+                            </div>
+
+                            <!-- Guest Orders Section -->
+                            <div class="account-section" id="guest-orders-section">
+                                <div class="section-header">
+                                    <h2 class="section-title">Mes commandes invité</h2>
+                                </div>
+                                
+                                ${this.guestOrders.length > 0 ? `
+                                    <div class="guest-orders-note" style="background: var(--background-secondary); padding: var(--spacing-md); border-radius: var(--radius-md); margin-bottom: var(--spacing-lg);">
+                                        <p><strong>Note :</strong> Ces commandes sont accessibles pendant 12 heures après leur création. Créez un compte pour conserver l'historique de vos commandes.</p>
+                                    </div>
+                                    <div class="orders-list">
+                                        ${this.guestOrders.map(order => this.createGuestOrderHTML(order)).join('')}
+                                    </div>
+                                ` : '<p>Aucune commande invité trouvée.</p>'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                this.attachGuestListeners();
+            }
+
+            renderGuestOrdersSection() {
+                return `
+                    <div class="guest-orders">
+                        <h3 class="guest-orders-title">Commandes invité récentes</h3>
+                        <p class="guest-orders-note">Ces commandes ont été passées avant la création de votre compte :</p>
+                        <div class="orders-list">
+                            ${this.guestOrders.map(order => this.createGuestOrderHTML(order)).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            createOrderHTML(order) {
+                return `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="order-number">Commande #${order.id.substring(0, 8)}</div>
+                            <div class="order-status ${order.status}">${this.getStatusLabel(order.status)}</div>
+                        </div>
+                        <div class="order-details">
+                            <div class="order-detail">
+                                <span class="order-detail-label">Date</span>
+                                <span>${utils.formatDate(order.created_at)}</span>
+                            </div>
+                            <div class="order-detail">
+                                <span class="order-detail-label">Total</span>
+                                <span>${utils.formatPrice(order.total_fcfa)}</span>
+                            </div>
+                            <div class="order-detail">
+                                <span class="order-detail-label">Statut</span>
+                                <span>${this.getStatusLabel(order.status)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            createGuestOrderHTML(order) {
+                return `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="order-number">Commande #${order.orderId.substring(0, 8)}</div>
+                            <div class="order-status pending">En attente</div>
+                        </div>
+                        <div class="order-details">
+                            <div class="order-detail">
+                                <span class="order-detail-label">Date</span>
+                                <span>${utils.formatDate(order.createdAt)}</span>
+                            </div>
+                            <div class="order-detail">
+                                <span class="order-detail-label">Total</span>
+                                <span>${utils.formatPrice(order.total)}</span>
+                            </div>
+                            <div class="order-detail">
+                                <span class="order-detail-label">Client</span>
+                                <span>${order.customerName}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            getStatusLabel(status) {
+                const labels = {
+                    'pending': 'En attente',
+                    'paid': 'Payée',
+                    'processing': 'En traitement',
+                    'shipped': 'Expédiée',
+                    'delivered': 'Livrée',
+                    'cancelled': 'Annulée',
+                    'returned': 'Retournée'
+                };
+                return labels[status] || status;
+            }
+
+            attachAuthenticatedListeners() {
+                // Navigation
+                const navLinks = document.querySelectorAll('.account-nav-link');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const section = e.target.dataset.section;
+                        this.switchSection(section);
+                    });
+                });
+
+                // Logout
+                const logoutBtn = document.getElementById('logout-btn');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', async () => {
+                        try {
+                            await authAPI.logout();
+                            showToast('Déconnexion réussie', 'success');
+                            window.location.reload();
+                        } catch (error) {
+                            console.error('Logout failed:', error);
+                            showToast('Erreur lors de la déconnexion', 'error');
+                        }
+                    });
+                }
+
+                // Profile form
+                const profileForm = document.getElementById('profile-form');
+                if (profileForm) {
+                    profileForm.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        showToast('Fonctionnalité à venir', 'info');
+                    });
+                }
+            }
+
+            attachGuestListeners() {
+                // Navigation
+                const navLinks = document.querySelectorAll('.account-nav-link');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const section = e.target.dataset.section;
+                        this.switchSection(section);
+                    });
+                });
+
+                // Login form
+                const loginForm = document.getElementById('login-form');
+                if (loginForm) {
+                    loginForm.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        await this.handleLogin();
+                    });
+                }
+            }
+
+            async handleLogin() {
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+
+                try {
+                    const response = await authAPI.login(email, password);
+                    showToast('Connexion réussie', 'success');
+                    window.location.reload();
+                } catch (error) {
+                    console.error('Login failed:', error);
+                    showToast(error.message || 'Erreur de connexion', 'error');
+                }
+            }
+
+            switchSection(sectionName) {
+                // Update navigation
+                const navLinks = document.querySelectorAll('.account-nav-link');
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.dataset.section === sectionName);
+                });
+
+                // Update sections
+                const sections = document.querySelectorAll('.account-section');
+                sections.forEach(section => {
+                    section.classList.toggle('active', section.id === `${sectionName}-section`);
+                });
+
+                this.currentSection = sectionName;
+            }
+
+            hideLoading() {
+                const loadingState = document.getElementById('loading-state');
+                if (loadingState) {
+                    loadingState.style.display = 'none';
+                }
+            }
+        }
+
+        // Initialize account page
+        document.addEventListener('DOMContentLoaded', () => {
+            new AccountPage();
+        });
+    </script>
+</body>
+</html>

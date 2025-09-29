@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Angele Shop - Boutique de Luxe</title>
+    <meta name="description" content="Découvrez notre collection exclusive de bijoux, vêtements, accessoires et chaussures de luxe. Angele Shop, l'élégance à l'état pur.">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/responsive.css">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav container">
+            <div class="nav-brand">
+                <a href="/" class="nav-logo">
+                    <span class="logo-text">Angele Shop</span>
+                </a>
+            </div>
+            
+            <div class="nav-menu" id="nav-menu">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="/" class="nav-link active">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/boutique" class="nav-link">Boutique</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle">Collections</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/boutique?category=bijoux" class="dropdown-link">Bijoux</a></li>
+                            <li><a href="/boutique?category=vetements" class="dropdown-link">Vêtements</a></li>
+                            <li><a href="/boutique?category=accessoires" class="dropdown-link">Accessoires</a></li>
+                            <li><a href="/boutique?category=chaussures" class="dropdown-link">Chaussures</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/contact" class="nav-link">Contact</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-actions">
+                <button class="nav-btn search-btn" id="search-btn">
+                    <i class="icon-search"></i>
+                </button>
+                <a href="/compte" class="nav-btn account-btn">
+                    <i class="icon-user"></i>
+                </a>
+                <button class="nav-btn cart-btn" id="cart-btn">
+                    <i class="icon-bag"></i>
+                    <span class="cart-count" id="cart-count">0</span>
+                </button>
+                <button class="nav-toggle" id="nav-toggle">
+                    <span class="nav-toggle-line"></span>
+                    <span class="nav-toggle-line"></span>
+                    <span class="nav-toggle-line"></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-background">
+                <img src="./assets/images/back.jpg" alt="Collection Luxe" class="hero-image" loading="eager">
+                <div class="hero-overlay"></div>
+            </div>
+            <div class="hero-content">
+                <div class="container">
+                    <h1 class="hero-title">
+                        Collection Exclusive
+                        <span class="hero-subtitle">L'élégance à l'état pur</span>
+                    </h1>
+                    <p class="hero-description">
+                        Découvrez notre sélection de pièces uniques alliant tradition et modernité pour sublimer votre style.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="/boutique" class="btn btn-primary">Découvrir</a>
+                        <a href="#collections" class="btn btn-outline">Nos Collections</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Collections Section -->
+        <section class="collections" id="collections">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Nos Collections</h2>
+                    <p class="section-subtitle">Quatre univers d'exception pour exprimer votre personnalité</p>
+                </div>
+                
+                <div class="collections-grid">
+                    <article class="collection-card" data-category="bijoux">
+                        <div class="collection-image">
+                            <img src="./assets/images/bij2.jpg" alt="Bijoux" loading="lazy">
+                            <div class="collection-overlay">
+                                <div class="collection-content">
+                                    <h3 class="collection-title">Bijoux</h3>
+                                    <p class="collection-description">Pièces précieuses et intemporelles</p>
+                                    <a href="/boutique?category=bijoux" class="btn btn-light">Explorer</a>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                    
+                    <article class="collection-card" data-category="vetements">
+                        <div class="collection-image">
+                            <img src="./assets/images/vet.jpg" alt="Vêtements" loading="lazy">
+                            <div class="collection-overlay">
+                                <div class="collection-content">
+                                    <h3 class="collection-title">Vêtements</h3>
+                                    <p class="collection-description">Haute couture et prêt-à-porter</p>
+                                    <a href="/boutique?category=vetements" class="btn btn-light">Explorer</a>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                    
+                    <article class="collection-card" data-category="accessoires">
+                        <div class="collection-image">
+                            <img src="./assets/images/acc.jpg" alt="Accessoires" loading="lazy">
+                            <div class="collection-overlay">
+                                <div class="collection-content">
+                                    <h3 class="collection-title">Accessoires</h3>
+                                    <p class="collection-description">Les détails qui font la différence</p>
+                                    <a href="/boutique?category=accessoires" class="btn btn-light">Explorer</a>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                    
+                    <article class="collection-card" data-category="chaussures">
+                        <div class="collection-image">
+                            <img src="./assets/images/chauj.pg" alt="Chaussures" loading="lazy">
+                            <div class="collection-overlay">
+                                <div class="collection-content">
+                                    <h3 class="collection-title">Chaussures</h3>
+                                    <p class="collection-description">L'art de la marche raffinée</p>
+                                    <a href="/boutique?category=chaussures" class="btn btn-light">Explorer</a>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Products -->
+        <section class="featured-products">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Sélection Exclusive</h2>
+                    <p class="section-subtitle">Nos coups de cœur du moment</p>
+                </div>
+                
+                <div class="products-grid" id="featured-products-grid">
+                    <!-- Products loaded via JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter -->
+        <section class="newsletter">
+            <div class="container">
+                <div class="newsletter-content">
+                    <h2 class="newsletter-title">Restez Informé</h2>
+                    <p class="newsletter-description">
+                        Soyez les premiers à découvrir nos nouvelles collections et bénéficiez d'offres exclusives.
+                    </p>
+                    <form class="newsletter-form" id="newsletter-form">
+                        <div class="form-group">
+                            <input type="email" class="form-input" placeholder="Votre adresse email" required>
+                            <button type="submit" class="btn btn-primary">S'inscrire</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-title">Angele Shop</h3>
+                    <p class="footer-description">
+                        Boutique de luxe proposant une sélection exclusive de bijoux, vêtements, accessoires et chaussures de prestige.
+                    </p>
+                    <div class="footer-social">
+                        <a href="#" class="social-link">
+                            <i class="icon-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="icon-facebook"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="icon-twitter"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Navigation</h4>
+                    <ul class="footer-links">
+                        <li><a href="/" class="footer-link">Accueil</a></li>
+                        <li><a href="/boutique" class="footer-link">Boutique</a></li>
+                        <li><a href="/contact" class="footer-link">Contact</a></li>
+                        <li><a href="/compte" class="footer-link">Mon Compte</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Collections</h4>
+                    <ul class="footer-links">
+                        <li><a href="/boutique?category=bijoux" class="footer-link">Bijoux</a></li>
+                        <li><a href="/boutique?category=vetements" class="footer-link">Vêtements</a></li>
+                        <li><a href="/boutique?category=accessoires" class="footer-link">Accessoires</a></li>
+                        <li><a href="/boutique?category=chaussures" class="footer-link">Chaussures</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Informations</h4>
+                    <ul class="footer-links">
+                        <li><a href="/cgvs" class="footer-link">Conditions Générales</a></li>
+                        <li><a href="#" class="footer-link">Livraisons</a></li>
+                        <li><a href="#" class="footer-link">Retours</a></li>
+                        <li><a href="#" class="footer-link">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p class="copyright">
+                    © 2024 Angele Shop. Tous droits réservés.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Modal -->
+    <div class="modal" id="cart-modal">
+        <div class="modal-overlay" id="cart-modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Mon Panier</h3>
+                <button class="modal-close" id="cart-modal-close">
+                    <i class="icon-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="cart-items"></div>
+                <div class="cart-summary" id="cart-summary" style="display: none;">
+                    <div class="cart-total">
+                        <span>Total: <strong id="cart-total">0 FCFA</strong></span>
+                    </div>
+                    <div class="cart-actions">
+                        <a href="/panier" class="btn btn-outline">Voir le panier</a>
+                        <a href="/checkout" class="btn btn-primary">Commander</a>
+                    </div>
+                </div>
+                <div class="cart-empty" id="cart-empty">
+                    <p>Votre panier est vide</p>
+                    <a href="/boutique" class="btn btn-primary">Continuer les achats</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Modal -->
+    <div class="modal" id="search-modal">
+        <div class="modal-overlay" id="search-modal-overlay"></div>
+        <div class="modal-content modal-search">
+            <div class="modal-header">
+                <h3 class="modal-title">Rechercher</h3>
+                <button class="modal-close" id="search-modal-close">
+                    <i class="icon-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="search-form" id="search-form">
+                    <input type="text" class="form-input search-input" placeholder="Rechercher un produit..." id="search-input" autocomplete="off">
+                </form>
+                <div class="search-results" id="search-results"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/cart.js"></script>
+    <script src="/assets/js/main.js"></script>
+    <script src="/assets/js/components.js"></script>
+    
+    <script>
+        // Initialize homepage
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load featured products
+            loadFeaturedProducts();
+            
+            // Initialize newsletter form
+            const newsletterForm = document.getElementById('newsletter-form');
+            if (newsletterForm) {
+                newsletterForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const email = this.querySelector('input[type="email"]').value;
+                    showToast('Merci pour votre inscription !', 'success');
+                    this.reset();
+                });
+            }
+        });
+
+        async function loadFeaturedProducts() {
+            try {
+                const response = await api.get('/api/products?pageSize=4');
+                const products = response.products || [];
+                const grid = document.getElementById('featured-products-grid');
+                
+                if (grid) {
+                    grid.innerHTML = products.map(product => createProductCard(product)).join('');
+                }
+            } catch (error) {
+                console.error('Error loading featured products:', error);
+            }
+        }
+    </script>
+</body>
+</html>

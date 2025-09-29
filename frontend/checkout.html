@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="fr" data-page="checkout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finaliser ma commande - Angele Shop</title>
+    <meta name="description" content="Finalisez votre commande en toute sécurité sur Angele Shop.">
+    
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+    
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/responsive.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        .checkout-page {
+            padding-top: 120px;
+            padding-bottom: var(--spacing-xxxl);
+            background: var(--background-secondary);
+        }
+
+        .checkout-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: var(--spacing-xxxl);
+            align-items: start;
+        }
+
+        .checkout-form-section {
+            background: var(--background-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: 0 4px 20px var(--shadow-light);
+        }
+
+        .checkout-summary-section {
+            background: var(--background-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: 0 4px 20px var(--shadow-light);
+            position: sticky;
+            top: 120px;
+        }
+
+        .form-section {
+            margin-bottom: var(--spacing-xl);
+            padding-bottom: var(--spacing-xl);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: var(--spacing-lg);
+            color: var(--text-primary);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md);
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-top: 2px;
+        }
+
+        .checkbox-group label {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            cursor: pointer;
+        }
+
+        .order-summary {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .summary-title {
+            font-size: 1.5rem;
+            margin: 0 0 var(--spacing-lg) 0;
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .summary-item {
+            display: flex;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md) 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-item-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: var(--radius-sm);
+        }
+
+        .summary-item-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+        }
+
+        .summary-item-title {
+            font-size: 0.9rem;
+            font-weight: var(--font-weight-medium);
+            line-height: 1.3;
+        }
+
+        .summary-item-variant {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .summary-item-price {
+            font-size: 0.9rem;
+            color: var(--primary-color);
+            font-weight: var(--font-weight-bold);
+        }
+
+        .summary-item-quantity {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .summary-totals {
+            border-top: 1px solid var(--border-color);
+            padding-top: var(--spacing-lg);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-sm) 0;
+        }
+
+        .summary-row.total {
+            font-size: 1.25rem;
+            font-weight: var(--font-weight-bold);
+            color: var(--primary-color);
+            border-top: 2px solid var(--border-color);
+            padding-top: var(--spacing-md);
+            margin-top: var(--spacing-md);
+        }
+
+        .payment-placeholder {
+            background: var(--background-secondary);
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            text-align: center;
+            color: var(--text-secondary);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .empty-cart-message {
+            text-align: center;
+            padding: var(--spacing-xxxl);
+            color: var(--text-secondary);
+        }
+
+        .empty-cart-message h2 {
+            margin-bottom: var(--spacing-md);
+            color: var(--text-primary);
+        }
+
+        .success-message {
+            background: var(--background-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: 0 4px 20px var(--shadow-light);
+            text-align: center;
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            color: var(--success-color);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .order-number {
+            font-size: 1.25rem;
+            font-weight: var(--font-weight-bold);
+            color: var(--primary-color);
+            margin: var(--spacing-lg) 0;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .checkout-container {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-xl);
+            }
+
+            .checkout-summary-section {
+                position: static;
+                order: -1;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .checkout-form-section,
+            .checkout-summary-section {
+                padding: var(--spacing-lg);
+            }
+        }
+    </style>
+</head>
+<body data-page="checkout">
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav container">
+            <div class="nav-brand">
+                <a href="/" class="nav-logo">
+                    <span class="logo-text">Angele Shop</span>
+                </a>
+            </div>
+            
+            <div class="nav-menu" id="nav-menu">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="/" class="nav-link">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/boutique" class="nav-link">Boutique</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle">Collections</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/boutique?category=bijoux" class="dropdown-link">Bijoux</a></li>
+                            <li><a href="/boutique?category=vetements" class="dropdown-link">Vêtements</a></li>
+                            <li><a href="/boutique?category=accessoires" class="dropdown-link">Accessoires</a></li>
+                            <li><a href="/boutique?category=chaussures" class="dropdown-link">Chaussures</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/contact" class="nav-link">Contact</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-actions">
+                <button class="nav-btn search-btn" id="search-btn">
+                    <i class="icon-search"></i>
+                </button>
+                <a href="/compte" class="nav-btn account-btn">
+                    <i class="icon-user"></i>
+                </a>
+                <button class="nav-btn cart-btn" id="cart-btn">
+                    <i class="icon-bag"></i>
+                    <span class="cart-count" id="cart-count">0</span>
+                </button>
+                <button class="nav-toggle" id="nav-toggle">
+                    <span class="nav-toggle-line"></span>
+                    <span class="nav-toggle-line"></span>
+                    <span class="nav-toggle-line"></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Breadcrumb -->
+        <section class="breadcrumb-section">
+            <div class="container">
+                <nav class="breadcrumb">
+                    <span class="breadcrumb-item">
+                        <a href="/" class="breadcrumb-link">Accueil</a>
+                    </span>
+                    <span class="breadcrumb-item">
+                        <a href="/panier" class="breadcrumb-link">Panier</a>
+                    </span>
+                    <span class="breadcrumb-item">Commande</span>
+                </nav>
+            </div>
+        </section>
+
+        <!-- Checkout Page -->
+        <section class="checkout-page">
+            <div class="container">
+                <h1 class="section-title">Finaliser ma commande</h1>
+                
+                <div id="checkout-content">
+                    <!-- Loading State -->
+                    <div class="loading-state" id="loading-state" style="text-align: center; padding: var(--spacing-xxxl);">
+                        <div class="loading loading-large"></div>
+                        <p>Chargement...</p>
+                    </div>
+
+                    <!-- Checkout Content (loaded via JS) -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-title">Angele Shop</h3>
+                    <p class="footer-description">
+                        Boutique de luxe proposant une sélection exclusive de bijoux, vêtements, accessoires et chaussures de prestige.
+                    </p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Navigation</h4>
+                    <ul class="footer-links">
+                        <li><a href="/" class="footer-link">Accueil</a></li>
+                        <li><a href="/boutique" class="footer-link">Boutique</a></li>
+                        <li><a href="/contact" class="footer-link">Contact</a></li>
+                        <li><a href="/compte" class="footer-link">Mon Compte</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Collections</h4>
+                    <ul class="footer-links">
+                        <li><a href="/boutique?category=bijoux" class="footer-link">Bijoux</a></li>
+                        <li><a href="/boutique?category=vetements" class="footer-link">Vêtements</a></li>
+                        <li><a href="/boutique?category=accessoires" class="footer-link">Accessoires</a></li>
+                        <li><a href="/boutique?category=chaussures" class="footer-link">Chaussures</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Informations</h4>
+                    <ul class="footer-links">
+                        <li><a href="/cgvs" class="footer-link">Conditions Générales</a></li>
+                        <li><a href="#" class="footer-link">Livraisons</a></li>
+                        <li><a href="#" class="footer-link">Retours</a></li>
+                        <li><a href="#" class="footer-link">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p class="copyright">© 2024 Angele Shop. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Search Modal -->
+    <div class="modal" id="search-modal">
+        <div class="modal-overlay" id="search-modal-overlay"></div>
+        <div class="modal-content modal-search">
+            <div class="modal-header">
+                <h3 class="modal-title">Rechercher</h3>
+                <button class="modal-close" id="search-modal-close">
+                    <i class="icon-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="search-form" id="search-form">
+                    <input type="text" class="form-input search-input" placeholder="Rechercher un produit..." id="search-input" autocomplete="off">
+                </form>
+                <div class="search-results" id="search-results"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/cart.js"></script>
+    <script src="/assets/js/main.js"></script>
+    <script src="/assets/js/components.js"></script>
+    
+    <script>
+        // Checkout Page Logic
+        class CheckoutPage {
+            constructor() {
+                this.cartItems = [];
+                this.total = 0;
+                this.isProcessing = false;
+                
+                this.init();
+            }
+
+            async init() {
+                await this.loadCart();
+            }
+
+            async loadCart() {
+                try {
+                    const response = await cartAPI.get();
+                    this.cartItems = response.cart || [];
+                    this.total = response.total || 0;
+                    
+                    if (this.cartItems.length === 0) {
+                        this.renderEmptyCart();
+                    } else {
+                        this.renderCheckout();
+                    }
+                } catch (error) {
+                    console.error('Failed to load cart:', error);
+                    showToast('Erreur lors du chargement du panier', 'error');
+                    this.renderEmptyCart();
+                } finally {
+                    this.hideLoading();
+                }
+            }
+
+            renderEmptyCart() {
+                const checkoutContent = document.getElementById('checkout-content');
+                checkoutContent.innerHTML = `
+                    <div class="empty-cart-message">
+                        <h2>Votre panier est vide</h2>
+                        <p>Ajoutez des articles à votre panier avant de finaliser votre commande.</p>
+                        <a href="/boutique" class="btn btn-primary">Découvrir nos produits</a>
+                    </div>
+                `;
+            }
+
+            renderCheckout() {
+                const checkoutContent = document.getElementById('checkout-content');
+                checkoutContent.innerHTML = `
+                    <div class="checkout-container">
+                        <div class="checkout-form-section">
+                            <form id="checkout-form">
+                                <!-- Customer Information -->
+                                <div class="form-section">
+                                    <h2 class="section-title">Informations de livraison</h2>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label class="form-label" for="customer-name">Nom complet *</label>
+                                            <input type="text" class="form-input" id="customer-name" name="name" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" for="customer-phone">Téléphone *</label>
+                                            <input type="tel" class="form-input" id="customer-phone" name="phone" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label class="form-label" for="customer-address">Adresse de livraison *</label>
+                                        <textarea class="form-textarea" id="customer-address" name="address" rows="3" required placeholder="Adresse complète avec ville et code postal"></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Account Creation -->
+                                <div class="form-section">
+                                    <h2 class="section-title">Créer un compte (optionnel)</h2>
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="create-account" name="createAccount">
+                                        <label for="create-account">
+                                            Je souhaite créer un compte pour suivre mes commandes et bénéficier d'avantages exclusifs
+                                        </label>
+                                    </div>
+                                    
+                                    <div id="account-fields" style="display: none; margin-top: var(--spacing-lg);">
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label class="form-label" for="customer-email">Email *</label>
+                                                <input type="email" class="form-input" id="customer-email" name="email">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label" for="customer-password">Mot de passe *</label>
+                                                <input type="password" class="form-input" id="customer-password" name="password" minlength="6">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Information -->
+                                <div class="form-section">
+                                    <h2 class="section-title">Paiement</h2>
+                                    <div class="payment-placeholder">
+                                        <p><strong>🔄 Intégration de paiement en cours</strong></p>
+                                        <p>Le système de paiement sera configuré prochainement. Votre commande sera créée et vous recevrez les instructions de paiement par email.</p>
+                                    </div>
+                                </div>
+
+                                <!-- Terms and Conditions -->
+                                <div class="form-section">
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="accept-terms" name="acceptTerms" required>
+                                        <label for="accept-terms">
+                                            J'accepte les <a href="/cgvs" target="_blank">conditions générales de vente</a> *
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <button type="submit" class="btn btn-primary" id="submit-order" style="width: 100%; font-size: 1.125rem; padding: var(--spacing-lg);">
+                                    Finaliser ma commande
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="checkout-summary-section">
+                            <div class="order-summary">
+                                <h3 class="summary-title">Récapitulatif de commande</h3>
+                                
+                                <div class="summary-items">
+                                    ${this.cartItems.map(item => this.createSummaryItemHTML(item)).join('')}
+                                </div>
+                                
+                                <div class="summary-totals">
+                                    <div class="summary-row">
+                                        <span>Sous-total (${this.getTotalItems()} article${this.getTotalItems() > 1 ? 's' : ''})</span>
+                                        <span>${utils.formatPrice(this.total)}</span>
+                                    </div>
+                                    <div class="summary-row">
+                                        <span>Livraison</span>
+                                        <span>À calculer</span>
+                                    </div>
+                                    <div class="summary-row total">
+                                        <span>Total</span>
+                                        <span>${utils.formatPrice(this.total)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                this.attachEventListeners();
+            }
+
+            createSummaryItemHTML(item) {
+                const product = item.product;
+                const imageUrl = product.images && product.images.length > 0 
+                    ? (typeof product.images === 'string' ? JSON.parse(product.images)[0] : product.images[0])
+                    : 'https://images.pexels.com/photos/1191531/pexels-photo-1191531.jpeg';
+
+                return `
+                    <div class="summary-item">
+                        <img src="${imageUrl}" alt="${product.title}" class="summary-item-image" loading="lazy">
+                        <div class="summary-item-details">
+                            <div class="summary-item-title">${product.title}</div>
+                            <div class="summary-item-quantity">Quantité: ${item.quantity}</div>
+                            <div class="summary-item-price">${utils.formatPrice(product.price_fcfa * item.quantity)}</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            getTotalItems() {
+                return this.cartItems.reduce((total, item) => total + item.quantity, 0);
+            }
+
+            attachEventListeners() {
+                // Account creation toggle
+                const createAccountCheckbox = document.getElementById('create-account');
+                const accountFields = document.getElementById('account-fields');
+                const emailField = document.getElementById('customer-email');
+                const passwordField = document.getElementById('customer-password');
+
+                if (createAccountCheckbox && accountFields) {
+                    createAccountCheckbox.addEventListener('change', (e) => {
+                        if (e.target.checked) {
+                            accountFields.style.display = 'block';
+                            emailField.required = true;
+                            passwordField.required = true;
+                        } else {
+                            accountFields.style.display = 'none';
+                            emailField.required = false;
+                            passwordField.required = false;
+                            emailField.value = '';
+                            passwordField.value = '';
+                        }
+                    });
+                }
+
+                // Form submission
+                const checkoutForm = document.getElementById('checkout-form');
+                if (checkoutForm) {
+                    checkoutForm.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        this.processOrder();
+                    });
+                }
+            }
+
+            async processOrder() {
+                if (this.isProcessing) return;
+
+                const form = document.getElementById('checkout-form');
+                const formData = new FormData(form);
+                
+                // Validate form
+                const errors = validateForm(form);
+                if (errors.length > 0) {
+                    showToast(errors[0], 'error');
+                    return;
+                }
+
+                this.isProcessing = true;
+                const submitButton = document.getElementById('submit-order');
+                const originalText = submitButton.textContent;
+                
+                try {
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = '<div class="loading"></div> Traitement en cours...';
+
+                    // Prepare order data
+                    const orderData = {
+                        customer: {
+                            name: formData.get('name'),
+                            phone: formData.get('phone'),
+                            address: formData.get('address')
+                        }
+                    };
+
+                    // Add account creation data if requested
+                    if (formData.get('createAccount')) {
+                        orderData.createAccount = true;
+                        orderData.email = formData.get('email');
+                        orderData.password = formData.get('password');
+                    }
+
+                    // Submit order
+                    const response = await checkoutAPI.create(orderData);
+                    
+                    // Show success message
+                    this.renderSuccess(response);
+                    
+                } catch (error) {
+                    console.error('Order processing failed:', error);
+                    showToast(error.message || 'Erreur lors du traitement de la commande', 'error');
+                    
+                    submitButton.disabled = false;
+                    submitButton.textContent = originalText;
+                } finally {
+                    this.isProcessing = false;
+                }
+            }
+
+            renderSuccess(orderData) {
+                const checkoutContent = document.getElementById('checkout-content');
+                checkoutContent.innerHTML = `
+                    <div class="success-message">
+                        <div class="success-icon">✅</div>
+                        <h2>Commande confirmée !</h2>
+                        <div class="order-number">Commande N° ${orderData.orderId}</div>
+                        <p>Merci pour votre commande. Vous recevrez bientôt un email de confirmation avec les détails de votre commande.</p>
+                        
+                        <div class="payment-placeholder" style="margin: var(--spacing-xl) 0;">
+                            <h3>Instructions de paiement</h3>
+                            <p>${orderData.payment_instructions || 'Les instructions de paiement vous seront communiquées par email.'}</p>
+                        </div>
+                        
+                        <div style="display: flex; gap: var(--spacing-md); justify-content: center; margin-top: var(--spacing-xl);">
+                            <a href="/compte" class="btn btn-primary">Suivre ma commande</a>
+                            <a href="/boutique" class="btn btn-outline">Continuer les achats</a>
+                        </div>
+                    </div>
+                `;
+
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            hideLoading() {
+                const loadingState = document.getElementById('loading-state');
+                if (loadingState) {
+                    loadingState.style.display = 'none';
+                }
+            }
+        }
+
+        // Initialize checkout page
+        document.addEventListener('DOMContentLoaded', () => {
+            new CheckoutPage();
+        });
+    </script>
+</body>
+</html>

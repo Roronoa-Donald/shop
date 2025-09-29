@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="fr" data-page="produit">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Produit - Angele Shop</title>
+    <meta name="description" id="page-description" content="Découvrez ce produit de luxe exclusif d'Angele Shop.">
+    
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+    
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/responsive.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        .product-page {
+            padding-top: 120px;
+            padding-bottom: var(--spacing-xxxl);
+        }
+
+        .product-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-xxxl);
+            align-items: start;
+        }
+
+        .product-gallery {
+            position: sticky;
+            top: 120px;
+        }
+
+        .main-image {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .thumbnail-images {
+            display: flex;
+            gap: var(--spacing-sm);
+            overflow-x: auto;
+        }
+
+        .thumbnail {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            opacity: 0.7;
+            transition: all var(--transition-fast);
+        }
+
+        .thumbnail.active,
+        .thumbnail:hover {
+            opacity: 1;
+            border: 2px solid var(--primary-color);
+        }
+
+        .product-info {
+            padding: var(--spacing-lg) 0;
+        }
+
+        .product-category {
+            color: var(--primary-color);
+            font-weight: var(--font-weight-medium);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .product-title {
+            font-size: 2.5rem;
+            margin-bottom: var(--spacing-lg);
+            line-height: 1.2;
+        }
+
+        .product-price {
+            font-size: 2rem;
+            color: var(--primary-color);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .product-description {
+            font-size: 1.125rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .product-variants {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .variant-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .variant-label {
+            font-weight: var(--font-weight-medium);
+            margin-bottom: var(--spacing-sm);
+            display: block;
+        }
+
+        .variant-options {
+            display: flex;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+        }
+
+        .variant-option {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            background: var(--background-primary);
+        }
+
+        .variant-option:hover {
+            border-color: var(--primary-color);
+        }
+
+        .variant-option.active {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .quantity-label {
+            font-weight: var(--font-weight-medium);
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+        }
+
+        .quantity-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .quantity-btn:hover {
+            background: var(--background-secondary);
+        }
+
+        .quantity-input {
+            width: 60px;
+            text-align: center;
+            border: none;
+            padding: var(--spacing-sm);
+        }
+
+        .product-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .add-to-cart-btn {
+            flex: 2;
+        }
+
+        .wishlist-btn {
+            flex: 0 0 auto;
+            width: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-details {
+            border-top: 1px solid var(--border-color);
+            padding-top: var(--spacing-xl);
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--spacing-sm) 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .detail-label {
+            font-weight: var(--font-weight-medium);
+            color: var(--text-primary);
+        }
+
+        .detail-value {
+            color: var(--text-secondary);
+        }
+
+        .stock-status {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            font-size: 0.9rem;
+            font-weight: var(--font-weight-medium);
+        }
+
+        .stock-status.in-stock {
+            color: var(--success-color);
+        }
+
+        .stock-status.out-of-stock {
+            color: var(--error-color);
+        }
+
+        .stock-status.low-stock {
+            color: var(--warning-color);
+        }
+
+        .stock-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .product-container {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-xl);
+            }
+
+            .product-gallery {
+                position: static;
+            }
+
+            .product-title {
+                font-size: 2rem;
+            }
+
+            .product-price {
+                font-size: 1.5rem;
+            }
+
+            .product-actions {
+                flex-direction: column;
+            }
+
+            .wishlist-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body data-page="produit">
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav container">
+            <div class="nav-brand">
+                <a href="/" class="nav-logo">
+                    <span class="logo-text">Angele Shop</span>
+                </a>
+            </div>
+            
+            <div class="nav-menu" id="nav-menu">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="/" class="nav-link">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/boutique" class="nav-link">Boutique</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle">Collections</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/boutique?category=bijoux" class="dropdown-link">Bijoux</a></li>
+                            <li><a href="/boutique?category=vetements" class="dropdown-link">Vêtements</a></li>
+                            <li><a href="/boutique?category=accessoires" class="dropdown-link">Accessoires</a></li>
+                            <li><a href="/boutique?category=chaussures" class="dropdown-link">Chaussures</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/contact" class="nav-link">Contact</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-actions">
+                <button class="nav-btn search-btn" id="search-btn">
+                    <i class="icon-search"></i>
+                </button>
+                <a href="/compte" class="nav-btn account-btn">
+                    <i class="icon-user"></i>
+                </a>
+                <button class="nav-btn cart-btn" id="cart-btn">
+                    <i class="icon-bag"></i>
+                    <span class="cart-count" id="cart-count">0</span>
+                </button>
+                <button class="nav-toggle" id="nav-toggle">
+                    <span class="nav-toggle-line"></span>
+                    <span class="nav-toggle-line"></span>
+                    <span class="nav-toggle-line"></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Breadcrumb -->
+        <section class="breadcrumb-section">
+            <div class="container">
+                <nav class="breadcrumb" id="breadcrumb">
+                    <span class="breadcrumb-item">
+                        <a href="/" class="breadcrumb-link">Accueil</a>
+                    </span>
+                    <span class="breadcrumb-item">
+                        <a href="/boutique" class="breadcrumb-link">Boutique</a>
+                    </span>
+                    <span class="breadcrumb-item" id="breadcrumb-category"></span>
+                    <span class="breadcrumb-item" id="breadcrumb-product">Produit</span>
+                </nav>
+            </div>
+        </section>
+
+        <!-- Product Details -->
+        <section class="product-page">
+            <div class="container">
+                <div class="product-container" id="product-container">
+                    <!-- Loading State -->
+                    <div class="loading-state" id="loading-state" style="grid-column: 1 / -1; text-align: center; padding: var(--spacing-xxxl);">
+                        <div class="loading loading-large"></div>
+                        <p>Chargement du produit...</p>
+                    </div>
+
+                    <!-- Error State -->
+                    <div class="error-state" id="error-state" style="display: none; grid-column: 1 / -1; text-align: center; padding: var(--spacing-xxxl);">
+                        <h2>Produit non trouvé</h2>
+                        <p>Le produit que vous recherchez n'existe pas ou n'est plus disponible.</p>
+                        <a href="/boutique" class="btn btn-primary">Retour à la boutique</a>
+                    </div>
+
+                    <!-- Product Content (loaded via JS) -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-title">Angele Shop</h3>
+                    <p class="footer-description">
+                        Boutique de luxe proposant une sélection exclusive de bijoux, vêtements, accessoires et chaussures de prestige.
+                    </p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Navigation</h4>
+                    <ul class="footer-links">
+                        <li><a href="/" class="footer-link">Accueil</a></li>
+                        <li><a href="/boutique" class="footer-link">Boutique</a></li>
+                        <li><a href="/contact" class="footer-link">Contact</a></li>
+                        <li><a href="/compte" class="footer-link">Mon Compte</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Collections</h4>
+                    <ul class="footer-links">
+                        <li><a href="/boutique?category=bijoux" class="footer-link">Bijoux</a></li>
+                        <li><a href="/boutique?category=vetements" class="footer-link">Vêtements</a></li>
+                        <li><a href="/boutique?category=accessoires" class="footer-link">Accessoires</a></li>
+                        <li><a href="/boutique?category=chaussures" class="footer-link">Chaussures</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Informations</h4>
+                    <ul class="footer-links">
+                        <li><a href="/cgvs" class="footer-link">Conditions Générales</a></li>
+                        <li><a href="#" class="footer-link">Livraisons</a></li>
+                        <li><a href="#" class="footer-link">Retours</a></li>
+                        <li><a href="#" class="footer-link">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p class="copyright">© 2024 Angele Shop. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Modal -->
+    <div class="modal" id="cart-modal">
+        <div class="modal-overlay" id="cart-modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Mon Panier</h3>
+                <button class="modal-close" id="cart-modal-close">
+                    <i class="icon-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="cart-items"></div>
+                <div class="cart-summary" id="cart-summary" style="display: none;">
+                    <div class="cart-total">
+                        <span>Total: <strong id="cart-total">0 FCFA</strong></span>
+                    </div>
+                    <div class="cart-actions">
+                        <a href="/panier" class="btn btn-outline">Voir le panier</a>
+                        <a href="/checkout" class="btn btn-primary">Commander</a>
+                    </div>
+                </div>
+                <div class="cart-empty" id="cart-empty">
+                    <p>Votre panier est vide</p>
+                    <a href="/boutique" class="btn btn-primary">Continuer les achats</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Modal -->
+    <div class="modal" id="search-modal">
+        <div class="modal-overlay" id="search-modal-overlay"></div>
+        <div class="modal-content modal-search">
+            <div class="modal-header">
+                <h3 class="modal-title">Rechercher</h3>
+                <button class="modal-close" id="search-modal-close">
+                    <i class="icon-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="search-form" id="search-form">
+                    <input type="text" class="form-input search-input" placeholder="Rechercher un produit..." id="search-input" autocomplete="off">
+                </form>
+                <div class="search-results" id="search-results"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/cart.js"></script>
+    <script src="/assets/js/main.js"></script>
+    <script src="/assets/js/components.js"></script>
+    
+    <script>
+        // Product Page Logic
+        class ProductPage {
+            constructor() {
+                this.product = null;
+                this.selectedVariant = null;
+                this.quantity = 1;
+                this.currentImageIndex = 0;
+                
+                this.init();
+            }
+
+            async init() {
+                const slug = this.getProductSlug();
+                if (slug) {
+                    await this.loadProduct(slug);
+                } else {
+                    this.showError();
+                }
+            }
+
+            getProductSlug() {
+                const path = window.location.pathname;
+                const matches = path.match(/\/produit\/([^\/]+)/);
+                return matches ? matches[1] : null;
+            }
+
+            async loadProduct(slug) {
+                try {
+                    const response = await productAPI.getBySlug(slug);
+                    this.product = response;
+                    this.renderProduct();
+                    this.updatePageMeta();
+                    this.updateBreadcrumb();
+                } catch (error) {
+                    console.error('Failed to load product:', error);
+                    this.showError();
+                }
+            }
+
+            renderProduct() {
+                if (!this.product) return;
+
+                const container = document.getElementById('product-container');
+                const loadingState = document.getElementById('loading-state');
+                
+                if (loadingState) loadingState.style.display = 'none';
+
+                const images = this.getProductImages();
+                const variants = this.product.variants || [];
+                const isOutOfStock = this.product.available_count === 0;
+
+                container.innerHTML = `
+                    <div class="product-gallery">
+                        <img src="${images[0]}" alt="${this.product.title}" class="main-image" id="main-image" loading="eager">
+                        ${images.length > 1 ? `
+                            <div class="thumbnail-images">
+                                ${images.map((img, index) => `
+                                    <img src="${img}" alt="${this.product.title}" class="thumbnail ${index === 0 ? 'active' : ''}" 
+                                         data-index="${index}" loading="lazy">
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="product-info">
+                        <div class="product-category">${this.product.category_name || 'Produit'}</div>
+                        <h1 class="product-title">${this.product.title}</h1>
+                        <div class="product-price">${utils.formatPrice(this.product.price_fcfa)}</div>
+                        
+                        ${this.getStockStatusHTML()}
+                        
+                        <div class="product-description">
+                            ${this.product.description || ''}
+                        </div>
+
+                        ${variants.length > 0 ? this.renderVariants(variants) : ''}
+
+                        <div class="quantity-selector">
+                            <span class="quantity-label">Quantité :</span>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" id="quantity-decrease" type="button">−</button>
+                                <input type="number" class="quantity-input" id="quantity-input" value="1" min="1" max="${Math.max(1, this.product.available_count)}">
+                                <button class="quantity-btn" id="quantity-increase" type="button">+</button>
+                            </div>
+                        </div>
+
+                        <div class="product-actions">
+                            <button class="btn btn-primary add-to-cart-btn" id="add-to-cart" ${isOutOfStock ? 'disabled' : ''}>
+                                ${isOutOfStock ? 'Indisponible' : 'Ajouter au panier'}
+                            </button>
+                            <button class="btn btn-outline wishlist-btn" id="wishlist-btn" title="Ajouter aux favoris">
+                                ♡
+                            </button>
+                        </div>
+
+                        <div class="product-details">
+                            ${this.renderProductDetails()}
+                        </div>
+                    </div>
+                `;
+
+                this.attachEventListeners();
+            }
+
+            getProductImages() {
+                if (!this.product.images) return ['https://images.pexels.com/photos/1191531/pexels-photo-1191531.jpeg'];
+                
+                const images = typeof this.product.images === 'string' 
+                    ? JSON.parse(this.product.images) 
+                    : this.product.images;
+                
+                return images.length > 0 ? images : ['https://images.pexels.com/photos/1191531/pexels-photo-1191531.jpeg'];
+            }
+
+            getStockStatusHTML() {
+                const count = this.product.available_count;
+                
+                if (count === 0) {
+                    return `
+                        <div class="stock-status out-of-stock">
+                            <span class="stock-indicator"></span>
+                            Rupture de stock
+                        </div>
+                    `;
+                } else if (count <= 5) {
+                    return `
+                        <div class="stock-status low-stock">
+                            <span class="stock-indicator"></span>
+                            Stock limité (${count} restant${count > 1 ? 's' : ''})
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="stock-status in-stock">
+                            <span class="stock-indicator"></span>
+                            En stock
+                        </div>
+                    `;
+                }
+            }
+
+            renderVariants(variants) {
+                // Group variants by type (size, color, etc.)
+                const sizes = [...new Set(variants.filter(v => v.size).map(v => v.size))];
+                const colors = [...new Set(variants.filter(v => v.color).map(v => v.color))];
+
+                let variantsHTML = '<div class="product-variants">';
+
+                if (sizes.length > 0) {
+                    variantsHTML += `
+                        <div class="variant-group">
+                            <label class="variant-label">Taille :</label>
+                            <div class="variant-options">
+                                ${sizes.map(size => `
+                                    <div class="variant-option" data-variant-type="size" data-variant-value="${size}">
+                                        ${size}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                if (colors.length > 0) {
+                    variantsHTML += `
+                        <div class="variant-group">
+                            <label class="variant-label">Couleur :</label>
+                            <div class="variant-options">
+                                ${colors.map(color => `
+                                    <div class="variant-option" data-variant-type="color" data-variant-value="${color}">
+                                        ${color}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                variantsHTML += '</div>';
+                return variantsHTML;
+            }
+
+            renderProductDetails() {
+                const details = [
+                    { label: 'Référence', value: this.product.sku || 'N/A' },
+                    { label: 'Catégorie', value: this.product.category_name || 'N/A' }
+                ];
+
+                if (this.product.subcategory) {
+                    details.push({ label: 'Sous-catégorie', value: this.product.subcategory });
+                }
+
+                return details.map(detail => `
+                    <div class="detail-item">
+                        <span class="detail-label">${detail.label} :</span>
+                        <span class="detail-value">${detail.value}</span>
+                    </div>
+                `).join('');
+            }
+
+            attachEventListeners() {
+                // Image gallery
+                const thumbnails = document.querySelectorAll('.thumbnail');
+                thumbnails.forEach(thumb => {
+                    thumb.addEventListener('click', (e) => {
+                        const index = parseInt(e.target.dataset.index);
+                        this.changeImage(index);
+                    });
+                });
+
+                // Variant selection
+                const variantOptions = document.querySelectorAll('.variant-option');
+                variantOptions.forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        const type = e.target.dataset.variantType;
+                        const value = e.target.dataset.variantValue;
+                        this.selectVariant(type, value, e.target);
+                    });
+                });
+
+                // Quantity controls
+                const quantityDecrease = document.getElementById('quantity-decrease');
+                const quantityIncrease = document.getElementById('quantity-increase');
+                const quantityInput = document.getElementById('quantity-input');
+
+                if (quantityDecrease) {
+                    quantityDecrease.addEventListener('click', () => {
+                        const current = parseInt(quantityInput.value);
+                        if (current > 1) {
+                            quantityInput.value = current - 1;
+                            this.quantity = current - 1;
+                        }
+                    });
+                }
+
+                if (quantityIncrease) {
+                    quantityIncrease.addEventListener('click', () => {
+                        const current = parseInt(quantityInput.value);
+                        const max = Math.max(1, this.product.available_count);
+                        if (current < max) {
+                            quantityInput.value = current + 1;
+                            this.quantity = current + 1;
+                        }
+                    });
+                }
+
+                if (quantityInput) {
+                    quantityInput.addEventListener('change', (e) => {
+                        const value = Math.max(1, Math.min(parseInt(e.target.value) || 1, this.product.available_count));
+                        e.target.value = value;
+                        this.quantity = value;
+                    });
+                }
+
+                // Add to cart
+                const addToCartBtn = document.getElementById('add-to-cart');
+                if (addToCartBtn && !addToCartBtn.disabled) {
+                    addToCartBtn.addEventListener('click', () => {
+                        this.addToCart();
+                    });
+                }
+
+                // Wishlist (placeholder)
+                const wishlistBtn = document.getElementById('wishlist-btn');
+                if (wishlistBtn) {
+                    wishlistBtn.addEventListener('click', () => {
+                        showToast('Fonctionnalité à venir', 'info');
+                    });
+                }
+            }
+
+            changeImage(index) {
+                const images = this.getProductImages();
+                const mainImage = document.getElementById('main-image');
+                const thumbnails = document.querySelectorAll('.thumbnail');
+
+                if (mainImage && images[index]) {
+                    mainImage.src = images[index];
+                    this.currentImageIndex = index;
+
+                    thumbnails.forEach((thumb, i) => {
+                        thumb.classList.toggle('active', i === index);
+                    });
+                }
+            }
+
+            selectVariant(type, value, element) {
+                // Remove active class from siblings
+                const siblings = element.parentNode.querySelectorAll('.variant-option');
+                siblings.forEach(sibling => sibling.classList.remove('active'));
+                
+                // Add active class to selected
+                element.classList.add('active');
+
+                // Find matching variant
+                const variants = this.product.variants || [];
+                const matchingVariant = variants.find(variant => 
+                    (type === 'size' && variant.size === value) ||
+                    (type === 'color' && variant.color === value)
+                );
+
+                if (matchingVariant) {
+                    this.selectedVariant = matchingVariant;
+                }
+            }
+
+            async addToCart() {
+                const variantId = this.selectedVariant ? this.selectedVariant.id : null;
+                const success = await cart.add(this.product.id, variantId, this.quantity);
+                
+                if (success) {
+                    showToast(`${this.product.title} ajouté au panier`, 'success');
+                    
+                    // Optionally open cart modal
+                    if (window.app && window.app.modals && window.app.modals['cart-modal']) {
+                        setTimeout(() => window.app.modals['cart-modal'].open(), 500);
+                    }
+                }
+            }
+
+            updatePageMeta() {
+                if (!this.product) return;
+
+                document.title = `${this.product.title} - Angele Shop`;
+                
+                const description = document.getElementById('page-description');
+                if (description) {
+                    description.content = utils.truncateText(this.product.description || `Découvrez ${this.product.title} dans notre collection exclusive.`, 160);
+                }
+            }
+
+            updateBreadcrumb() {
+                if (!this.product) return;
+
+                const breadcrumbCategory = document.getElementById('breadcrumb-category');
+                const breadcrumbProduct = document.getElementById('breadcrumb-product');
+
+                if (breadcrumbCategory && this.product.category_name) {
+                    breadcrumbCategory.innerHTML = `
+                        <a href="/boutique?category=${this.product.category_slug}" class="breadcrumb-link">
+                            ${this.product.category_name}
+                        </a>
+                    `;
+                }
+
+                if (breadcrumbProduct) {
+                    breadcrumbProduct.textContent = this.product.title;
+                }
+            }
+
+            showError() {
+                const loadingState = document.getElementById('loading-state');
+                const errorState = document.getElementById('error-state');
+                
+                if (loadingState) loadingState.style.display = 'none';
+                if (errorState) errorState.style.display = 'block';
+            }
+        }
+
+        // Initialize product page
+        document.addEventListener('DOMContentLoaded', () => {
+            new ProductPage();
+        });
+    </script>
+</body>
+</html>

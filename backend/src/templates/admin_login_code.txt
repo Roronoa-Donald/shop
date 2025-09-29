@@ -1,0 +1,19 @@
+ANGELE SHOP - CODE DE CONNEXION ADMIN
+
+Bonjour,
+
+Voici votre code de connexion pour accéder à l'interface d'administration :
+
+Code de vérification : {{code}}
+
+IMPORTANT :
+- Ce code expire dans 15 minutes
+- Il ne peut être utilisé qu'une seule fois  
+- Maximum 3 tentatives de saisie
+- Ne partagez jamais ce code
+
+Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.
+
+---
+Angele Shop - Boutique de luxe
+Cet email a été envoyé automatiquement, merci de ne pas y répondre.

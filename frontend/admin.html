@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="fr" data-page="admin">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - Angele Shop</title>
+    <meta name="description" content="Interface d'administration pour Angele Shop.">
+    
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+    
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/responsive.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        .admin-page {
+            padding-top: 120px;
+            padding-bottom: var(--spacing-xxxl);
+            background: var(--background-secondary);
+        }
+
+        .admin-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: var(--spacing-xl);
+            align-items: start;
+        }
+
+        .admin-sidebar {
+            background: var(--background-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: 0 4px 20px var(--shadow-light);
+            position: sticky;
+            top: 120px;
+        }
+
+        .admin-content {
+            background: var(--background-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: 0 4px 20px var(--shadow-light);
+            min-height: 600px;
+        }
+
+        .admin-nav {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .admin-nav-item {
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .admin-nav-link {
+            display: block;
+            padding: var(--spacing-sm) var(--spacing-md);
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            transition: all var(--transition-fast);
+            font-size: 0.9rem;
+        }
+
+        .admin-nav-link:hover,
+        .admin-nav-link.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .admin-section {
+            display: none;
+        }
+
+        .admin-section.active {
+            display: block;
+        }
+
+        .section-header {
+            margin-bottom: var(--spacing-xl);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin: 0;
+        }
+
+        .otp-form {
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .otp-input {
+            font-size: 2rem;
+            text-align: center;
+            letter-spacing: 0.5rem;
+            font-family: 'Courier New', monospace;
+            margin: var(--spacing-lg) 0;
+        }
+
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .stat-card {
+            background: var(--background-secondary);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: var(--font-weight-bold);
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: var(--spacing-lg);
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: var(--spacing-md);
+            text-align: left;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .data-table th {
+            background: var(--background-secondary);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-primary);
+        }
+
+        .data-table tr:hover {
+            background: var(--background-secondary);
+        }
+
+        .action-btn {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-right: var(--spacing-xs);
+            transition: all var(--transition-fast);
+        }
+
+        .action-btn.edit {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .action-btn.delete {
+            background: var(--error-color);
+            color: white;
+        }
+
+        .action-btn:hover {
+            opacity: 0.8;
+        }
+
+        .product-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+        }
+
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .form-section.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .file-upload {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .file-upload:hover {
+            border-color: var(--primary-color);
+            background: var(--background-secondary);
+        }
+
+        .file-upload input[type="file"] {
+            display: none;
+        }
+
+        .logout-btn {
+            color: var(--error-color);
+            background: none;
+            border: 1px solid var(--error-color);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            margin-top: var(--spacing-lg);
+            width: 100%;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn:hover {
+            background: var(--error-color);
+            color: white;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .admin-container {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-lg);
+            }
+
+            .admin-sidebar {
+                position: static;
+                order: -1;
+            }
+
+            .admin-nav {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+                gap: var(--spacing-xs);
+            }
+
+            .admin-nav-item {
+                margin-bottom: 0;
+            }
+
+            .admin-nav-link {
+                text-align: center;
+                font-size: 0.8rem;
+                padding: var(--spacing-sm);
+            }
+
+            .product-form {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .data-table {
+                font-size: 0.8rem;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: var(--spacing-sm);
+            }
+        }
+    </style>
+</head>
+<body data-page="admin">
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav container">
+            <div class="nav-brand">
+                <a href="/" class="nav-logo">
+                    <span class="logo-text">Angele Shop</span>
+                </a>
+            </div>
+            
+            <div class="nav-actions">
+                <a href="/" class="nav-btn">
+                    <span>← Retour au site</span>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Admin Page -->
+        <section class="admin-page">
+            <div class="container">
+                <h1 class="section-title">Administration</h1>
+                
+                <div id="admin-content">
+                    <!-- Loading State -->
+                    <div class="loading-state" id="loading-state" style="text-align: center; padding: var(--spacing-xxxl);">
+                        <div class="loading loading-large"></div>
+                        <p>Chargement...</p>
+                    </div>
+
+                    <!-- Admin Content (loaded via JS) -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/cart.js"></script>
+    <script src="/assets/js/main.js"></script>
+    <script src="/assets/js/components.js"></script>
+    
+    <script>
+        // Admin Page Logic
+        class AdminPage {
+            constructor() {
+                this.isAuthenticated = false;
+                this.currentSection = 'dashboard';
+                this.products = [];
+                this.orders = [];
+                this.logs = [];
+                
+                this.init();
+            }
+
+            async init() {
+                // Check if admin token exists in localStorage
+                const token = localStorage.getItem('admin_token');
+                if (token) {
+                    adminAPI.setToken(token);
+                    this.isAuthenticated = true;
+                    await this.loadDashboard();
+                } else {
+                    this.renderAuthForm();
+                }
+                
+                this.hideLoading();
+            }
+
+            renderAuthForm() {
+                const adminContent = document.getElementById('admin-content');
+                adminContent.innerHTML = `
+                    <div class="otp-form">
+                        <h2>Authentification Administrateur</h2>
+                        <p>Entrez votre email pour recevoir un code de vérification</p>
+                        
+                        <form id="email-form">
+                            <div class="form-group">
+                                <label class="form-label" for="admin-email">Email administrateur</label>
+                                <input type="email" class="form-input" id="admin-email" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Envoyer le code</button>
+                        </form>
+                        
+                        <form id="otp-form" style="display: none;">
+                            <div class="form-group">
+                                <label class="form-label" for="otp-code">Code de vérification</label>
+                                <input type="text" class="form-input otp-input" id="otp-code" maxlength="6" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Vérifier</button>
+                            <button type="button" class="btn btn-outline" id="back-to-email">Retour</button>
+                        </form>
+                    </div>
+                `;
+
+                this.attachAuthListeners();
+            }
+
+            attachAuthListeners() {
+                const emailForm = document.getElementById('email-form');
+                const otpForm = document.getElementById('otp-form');
+                const backBtn = document.getElementById('back-to-email');
+
+                emailForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    await this.requestOTP();
+                });
+
+                otpForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    await this.verifyOTP();
+                });
+
+                backBtn.addEventListener('click', () => {
+                    emailForm.style.display = 'block';
+                    otpForm.style.display = 'none';
+                });
+            }
+
+            async requestOTP() {
+                const email = document.getElementById('admin-email').value;
+                
+                try {
+                    await adminAPI.requestOTP(email);
+                    showToast('Code envoyé par email', 'success');
+                    
+                    document.getElementById('email-form').style.display = 'none';
+                    document.getElementById('otp-form').style.display = 'block';
+                    document.getElementById('otp-code').focus();
+                } catch (error) {
+                    showToast(error.message || 'Erreur lors de l\'envoi du code', 'error');
+                }
+            }
+
+            async verifyOTP() {
+                const email = document.getElementById('admin-email').value;
+                const code = document.getElementById('otp-code').value;
+                
+                try {
+                    const response = await adminAPI.verifyOTP(email, code);
+                    localStorage.setItem('admin_token', response.admin_token);
+                    adminAPI.setToken(response.admin_token);
+                    
+                    this.isAuthenticated = true;
+                    showToast('Connexion réussie', 'success');
+                    
+                    await this.loadDashboard();
+                } catch (error) {
+                    showToast(error.message || 'Code invalide', 'error');
+                }
+            }
+
+            async loadDashboard() {
+                try {
+                    // Load initial data
+                    const [productsResponse, ordersResponse] = await Promise.all([
+                        adminAPI.getProducts(),
+                        adminAPI.getOrders({ pageSize: 10 })
+                    ]);
+                    
+                    this.products = productsResponse.products || [];
+                    this.orders = ordersResponse.orders || [];
+                    
+                    this.renderDashboard();
+                } catch (error) {
+                    console.error('Failed to load dashboard:', error);
+                    if (error.message.includes('token')) {
+                        this.logout();
+                    } else {
+                        showToast('Erreur lors du chargement', 'error');
+                    }
+                }
+            }
+
+            renderDashboard() {
+                const adminContent = document.getElementById('admin-content');
+                adminContent.innerHTML = `
+                    <div class="admin-container">
+                        <div class="admin-sidebar">
+                            <nav>
+                                <ul class="admin-nav">
+                                    <li class="admin-nav-item">
+                                        <a href="#" class="admin-nav-link active" data-section="dashboard">Tableau de bord</a>
+                                    </li>
+                                    <li class="admin-nav-item">
+                                        <a href="#" class="admin-nav-link" data-section="products">Produits</a>
+                                    </li>
+                                    <li class="admin-nav-item">
+                                        <a href="#" class="admin-nav-link" data-section="orders">Commandes</a>
+                                    </li>
+                                    <li class="admin-nav-item">
+                                        <a href="#" class="admin-nav-link" data-section="logs">Logs</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                            
+                            <button class="logout-btn" id="admin-logout">Se déconnecter</button>
+                        </div>
+
+                        <div class="admin-content">
+                            <!-- Dashboard Section -->
+                            <div class="admin-section active" id="dashboard-section">
+                                <div class="section-header">
+                                    <h2 class="section-title">Tableau de bord</h2>
+                                </div>
+                                
+                                <div class="admin-stats">
+                                    <div class="stat-card">
+                                        <div class="stat-number">${this.products.length}</div>
+                                        <div class="stat-label">Produits</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-number">${this.orders.length}</div>
+                                        <div class="stat-label">Commandes récentes</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-number">${this.orders.filter(o => o.status === 'pending').length}</div>
+                                        <div class="stat-label">En attente</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-number">${utils.formatPrice(this.orders.reduce((sum, o) => sum + o.total_fcfa, 0))}</div>
+                                        <div class="stat-label">Chiffre d'affaires</div>
+                                    </div>
+                                </div>
+                                
+                                <h3>Commandes récentes</h3>
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Client</th>
+                                            <th>Total</th>
+                                            <th>Statut</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${this.orders.slice(0, 5).map(order => `
+                                            <tr>
+                                                <td>#${order.id.substring(0, 8)}</td>
+                                                <td>${order.guest_name || 'N/A'}</td>
+                                                <td>${utils.formatPrice(order.total_fcfa)}</td>
+                                                <td><span class="badge badge-${order.status}">${order.status}</span></td>
+                                                <td>${utils.formatDate(order.created_at)}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Products Section -->
+                            <div class="admin-section" id="products-section">
+                                <div class="section-header">
+                                    <h2 class="section-title">Gestion des produits</h2>
+                                    <button class="btn btn-primary" id="add-product-btn">Ajouter un produit</button>
+                                </div>
+                                
+                                <div id="products-list">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Titre</th>
+                                                <th>Catégorie</th>
+                                                <th>Prix</th>
+                                                <th>Stock</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${this.products.map(product => `
+                                                <tr>
+                                                    <td>${product.title}</td>
+                                                    <td>${product.category_name || 'N/A'}</td>
+                                                    <td>${utils.formatPrice(product.price_fcfa)}</td>
+                                                    <td>${product.available_count}</td>
+                                                    <td>
+                                                        <button class="action-btn edit" data-id="${product.id}">Modifier</button>
+                                                        <button class="action-btn delete" data-id="${product.id}">Supprimer</button>
+                                                    </td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <div id="product-form" style="display: none;">
+                                    <h3>Ajouter/Modifier un produit</h3>
+                                    <form class="product-form" id="product-form-element">
+                                        <div class="form-section">
+                                            <div class="form-group">
+                                                <label class="form-label">Titre</label>
+                                                <input type="text" class="form-input" name="title" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Prix (FCFA)</label>
+                                                <input type="number" class="form-input" name="price_fcfa" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Catégorie</label>
+                                                <select class="form-select" name="category_id" required>
+                                                    <option value="">Sélectionner...</option>
+                                                    <option value="1">Bijoux</option>
+                                                    <option value="2">Vêtements</option>
+                                                    <option value="3">Accessoires</option>
+                                                    <option value="4">Chaussures</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Stock disponible</label>
+                                                <input type="number" class="form-input" name="available_count" required>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-section">
+                                            <div class="form-group">
+                                                <label class="form-label">Sous-catégorie</label>
+                                                <input type="text" class="form-input" name="subcategory">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">SKU</label>
+                                                <input type="text" class="form-input" name="sku">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Tags (séparés par des virgules)</label>
+                                                <input type="text" class="form-input" name="tags">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Images (max 3)</label>
+                                                <div class="file-upload">
+                                                    <input type="file" name="images" multiple accept="image/*" max="3">
+                                                    <p>Cliquez pour sélectionner des images</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-section full-width">
+                                            <div class="form-group">
+                                                <label class="form-label">Description</label>
+                                                <textarea class="form-textarea" name="description" rows="4"></textarea>
+                                            </div>
+                                            
+                                            <div style="display: flex; gap: var(--spacing-md);">
+                                                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                                <button type="button" class="btn btn-outline" id="cancel-product-form">Annuler</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- Orders Section -->
+                            <div class="admin-section" id="orders-section">
+                                <div class="section-header">
+                                    <h2 class="section-title">Gestion des commandes</h2>
+                                </div>
+                                
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Client</th>
+                                            <th>Téléphone</th>
+                                            <th>Total</th>
+                                            <th>Statut</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${this.orders.map(order => `
+                                            <tr>
+                                                <td>#${order.id.substring(0, 8)}</td>
+                                                <td>${order.guest_name || 'N/A'}</td>
+                                                <td>${order.guest_phone || 'N/A'}</td>
+                                                <td>${utils.formatPrice(order.total_fcfa)}</td>
+                                                <td><span class="badge badge-${order.status}">${order.status}</span></td>
+                                                <td>${utils.formatDate(order.created_at)}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Logs Section -->
+                            <div class="admin-section" id="logs-section">
+                                <div class="section-header">
+                                    <h2 class="section-title">Logs système</h2>
+                                </div>
+                                
+                                <div id="logs-content">
+                                    <p>Chargement des logs...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                this.attachDashboardListeners();
+            }
+
+            attachDashboardListeners() {
+                // Navigation
+                const navLinks = document.querySelectorAll('.admin-nav-link');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const section = e.target.dataset.section;
+                        this.switchSection(section);
+                    });
+                });
+
+                // Logout
+                const logoutBtn = document.getElementById('admin-logout');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', () => {
+                        this.logout();
+                    });
+                }
+
+
+                // Product management
+                const addProductBtn = document.getElementById('add-product-btn');
+                if (addProductBtn) {
+                    addProductBtn.addEventListener('click', () => {
+                        this.showProductForm();
+                    });
+                }
+
+                const cancelFormBtn = document.getElementById('cancel-product-form');
+                if (cancelFormBtn) {
+                    cancelFormBtn.addEventListener('click', () => {
+                        this.hideProductForm();
+                    });
+                }
+
+                // Gestion avancée de la sélection d'images (aperçu, drag & drop, limite)
+                const productForm = document.getElementById('product-form-element');
+                
+
+                const fileUpload = productForm?.querySelector('.file-upload');
+                const fileInput = fileUpload?.querySelector('input[type="file"]');
+                let selectedFiles = [];
+
+                // Crée le conteneur d'aperçu si besoin
+                let previewContainer = fileUpload?.querySelector('.image-preview');
+                if (!previewContainer && fileUpload) {
+                    previewContainer = document.createElement('div');
+                    previewContainer.className = 'image-preview';
+                    previewContainer.style.display = 'flex';
+                    previewContainer.style.gap = '10px';
+                    previewContainer.style.marginTop = '10px';
+                    fileUpload.appendChild(previewContainer);
+                }
+
+                function updatePreview() {
+                    if (!previewContainer) return;
+                    previewContainer.innerHTML = '';
+                    selectedFiles.forEach((file, idx) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.style.width = '60px';
+                            img.style.height = '60px';
+                            img.style.objectFit = 'cover';
+                            img.style.borderRadius = '8px';
+                            img.title = file.name;
+                            // Bouton de suppression
+                            const removeBtn = document.createElement('button');
+                            removeBtn.textContent = '✕';
+                            removeBtn.type = 'button';
+                            removeBtn.style.marginLeft = '-20px';
+                            removeBtn.style.background = 'rgba(0,0,0,0.6)';
+                            removeBtn.style.color = 'white';
+                            removeBtn.style.border = 'none';
+                            removeBtn.style.borderRadius = '50%';
+                            removeBtn.style.cursor = 'pointer';
+                            removeBtn.style.position = 'relative';
+                            removeBtn.style.left = '-15px';
+                            removeBtn.onclick = () => {
+                                selectedFiles.splice(idx, 1);
+                                updatePreview();
+                            };
+                            const wrapper = document.createElement('div');
+                            wrapper.style.position = 'relative';
+                            wrapper.appendChild(img);
+                            wrapper.appendChild(removeBtn);
+                            previewContainer.appendChild(wrapper);
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                }
+
+                function handleFiles(files) {
+                    let arr = Array.from(files);
+                    // Ajoute sans dépasser 3 images
+                    arr = arr.slice(0, 3 - selectedFiles.length);
+                    selectedFiles = selectedFiles.concat(arr);
+                    if (selectedFiles.length > 3) selectedFiles = selectedFiles.slice(0, 3);
+                    updatePreview();
+                }
+
+                if (fileInput) {
+                    // Clic sur la zone déclenche le file input
+                    fileUpload.addEventListener('click', (e) => {
+                        if (e.target === fileUpload || e.target.tagName === 'P') fileInput.click();
+                    });
+                    // Sélection via le file input
+                    fileInput.addEventListener('change', (e) => {
+                        handleFiles(e.target.files);
+                        fileInput.value = '';
+                    });
+                    // Drag & drop
+                    fileUpload.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        fileUpload.style.borderColor = '#007bff';
+                        fileUpload.style.background = '#f0f8ff';
+                    });
+                    fileUpload.addEventListener('dragleave', (e) => {
+                        e.preventDefault();
+                        fileUpload.style.borderColor = '';
+                        fileUpload.style.background = '';
+                    });
+                    fileUpload.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        fileUpload.style.borderColor = '';
+                        fileUpload.style.background = '';
+                        handleFiles(e.dataTransfer.files);
+                    });
+                }
+
+               if (productForm) {
+    productForm.addEventListener('submit', (e) => {
+        console.log("before preventDefault");
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("clicked submit button");
+        const formData = new FormData(productForm);
+        selectedFiles.forEach((file) => {
+            formData.append('images', file);
+        });
+
+        // Appel via window.adminPage pour s'assurer que le "this" est correct
+        window.adminPage.handleProductSubmit(formData);
+
+        return false;
+    });
+}
+
+
+
+
+                // Product actions
+                document.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('action-btn')) {
+                        const productId = e.target.dataset.id;
+                        if (e.target.classList.contains('delete')) {
+                            this.deleteProduct(productId);
+                        } else if (e.target.classList.contains('edit')) {
+                            this.editProduct(productId);
+                        }
+                    }
+                });
+            }
+
+            switchSection(sectionName) {
+                // Update navigation
+                const navLinks = document.querySelectorAll('.admin-nav-link');
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.dataset.section === sectionName);
+                });
+
+                // Update sections
+                const sections = document.querySelectorAll('.admin-section');
+                sections.forEach(section => {
+                    section.classList.toggle('active', section.id === `${sectionName}-section`);
+                });
+
+                this.currentSection = sectionName;
+
+                // Load section-specific data
+                if (sectionName === 'logs' && this.logs.length === 0) {
+                    this.loadLogs();
+                }
+            }
+
+            async loadLogs() {
+                try {
+                    const response = await adminAPI.getLogs();
+                    this.logs = response.logs || [];
+                    
+                    const logsContent = document.getElementById('logs-content');
+                    if (this.logs.length === 0) {
+                        logsContent.innerHTML = '<p>Aucun log trouvé.</p>';
+                        return;
+                    }
+
+                    logsContent.innerHTML = `
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Niveau</th>
+                                    <th>Message</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${this.logs.map(log => `
+                                    <tr>
+                                        <td><span class="badge badge-${log.level}">${log.level}</span></td>
+                                        <td>${log.message}</td>
+                                        <td>${utils.formatDateTime(log.created_at)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                } catch (error) {
+                    console.error('Failed to load logs:', error);
+                    showToast('Erreur lors du chargement des logs', 'error');
+                }
+            }
+
+            showProductForm() {
+                document.getElementById('products-list').style.display = 'none';
+                document.getElementById('product-form').style.display = 'block';
+                document.getElementById('add-product-btn').style.display = 'none';
+            }
+
+            hideProductForm() {
+                document.getElementById('products-list').style.display = 'block';
+                document.getElementById('product-form').style.display = 'none';
+                document.getElementById('add-product-btn').style.display = 'block';
+                
+                // Reset form
+                document.getElementById('product-form-element').reset();
+            }
+async handleProductSubmit(passedFormData) {
+    console.log('[ADMIN PAGE] handleProductSubmit called', !!passedFormData);
+try {
+    if (passedFormData) {
+        for (const entry of passedFormData.entries()) {
+            console.log('[ADMIN PAGE] formData entry:', entry[0], entry[1]);
+        }
+    } else {
+        console.log('[ADMIN PAGE] No passedFormData; building from DOM');
+    }
+} catch (err) {
+    console.error('[ADMIN PAGE] Error listing FormData:', err);
+}
+
+    // Utilise le FormData passé par l'event listener si disponible,
+    // sinon on recrée depuis le DOM.
+    const form = document.getElementById('product-form-element');
+    const formData = passedFormData || new FormData(form);
+
+    try {
+        await adminAPI.createProduct(formData);
+        showToast('Produit créé avec succès', 'success');
+        this.hideProductForm();
+        await this.loadDashboard();
+    } catch (error) {
+        console.error('Failed to create product:', error);
+        showToast(error.message || 'Erreur lors de la création', 'error');
+    }
+}
+
+
+            async deleteProduct(productId) {
+                if (!confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) {
+                    return;
+                }
+
+                try {
+                    await adminAPI.deleteProduct(productId);
+                    showToast('Produit supprimé', 'success');
+                    await this.loadDashboard(); // Reload data
+                } catch (error) {
+                    console.error('Failed to delete product:', error);
+                    showToast(error.message || 'Erreur lors de la suppression', 'error');
+                }
+            }
+
+            editProduct(productId) {
+                showToast('Fonctionnalité de modification à venir', 'info');
+            }
+
+            logout() {
+                localStorage.removeItem('admin_token');
+                adminAPI.setToken(null);
+                this.isAuthenticated = false;
+                showToast('Déconnexion réussie', 'success');
+                this.renderAuthForm();
+            }
+
+            hideLoading() {
+                const loadingState = document.getElementById('loading-state');
+                if (loadingState) {
+                    loadingState.style.display = 'none';
+                }
+            }
+        }
+
+        // Initialize admin page
+        document.addEventListener('DOMContentLoaded', () => {
+    window.adminPage = new AdminPage();
+});
+    </script>
+</body>
+</html>

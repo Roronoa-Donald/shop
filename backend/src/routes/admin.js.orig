@@ -1,0 +1,354 @@
+const { v4: uuidv4 } = require('uuid');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const fs = require('fs').promises;
+const path = require('path');
+
+async function adminRoutes(fastify, opts) {
+  console.log('Dans admin.js, fastify.db =', typeof(fastify.db));
+  // Admin authentication middleware
+  const verifyAdminToken = async (request, reply) => {
+    console.log('[ADMIN AUTH] Début middleware');
+    // Log all headers for debug
+    console.log('--- [ADMIN AUTH] Headers reçus:', request.headers);
+    // Log la valeur de la variable d'environnement ADMIN_EMAIL pour debug
+    console.log('[ADMIN AUTH] process.env.ADMIN_EMAIL =', process.env.ADMIN_EMAIL);
+    // (Rappel: lance node depuis le dossier backend pour charger le .env)
+    const authHeader = request.headers.authorization;
+    if (!authHeader) {
+      console.warn('[ADMIN AUTH] Rejet: header Authorization absent');
+      return reply.code(401).send({ error: 'Admin token required' });
+    }
+    if (!authHeader.startsWith('Bearer ')) {
+      console.warn('[ADMIN AUTH] Rejet: header Authorization ne commence pas par Bearer');
+      return reply.code(401).send({ error: 'Admin token required' });
+    }
+
+    const token = authHeader.substring(7);
+    try {
+      console.log('[ADMIN AUTH] Décodage du token...');
+      const decoded = jwt.verify(token, process.env.APP_SECRET);
+      console.log('[ADMIN AUTH] Token décodé:', decoded);
+      if (decoded.type !== 'admin') {
+        console.warn('[ADMIN AUTH] Rejet: type de token != admin:', decoded.type);
+        return reply.code(401).send({ error: 'Invalid admin token' });
+      }
+      if (decoded.email !== process.env.ADMIN_EMAIL) {
+        console.warn('[ADMIN AUTH] Rejet: email du token != ADMIN_EMAIL:', decoded.email, process.env.ADMIN_EMAIL);
+        return reply.code(401).send({ error: 'Invalid admin token' });
+      }
+      request.admin = decoded;
+      console.log('[ADMIN AUTH] Token accepté, passage au handler suivant');
+    } catch (error) {
+      console.warn('[ADMIN AUTH] Erreur de vérification du token:', error.message);
+      return reply.code(401).send({ error: 'Invalid admin token' });
+    }
+  };
+
+  // Request OTP
+  fastify.post('/request-otp', {
+    schema: {
+      body: {
+        type: 'object',
+        required: ['email'],
+        properties: {
+          email: { type: 'string', format: 'email' }
+        }
+      }
+    }
+  }, async (request, reply) => {
+    const { email } = request.body;
+
+    if (email !== process.env.ADMIN_EMAIL) {
+      return reply.code(403).send({ error: 'Unauthorized email' });
+    }
+
+    // Generate 6-digit code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const codeHash = await bcrypt.hash(code, 10);
+
+    // Clean expired OTPs and store new one
+    await fastify.db('otps').where('expires_at', '<', new Date()).del();
+    
+    await fastify.db('otps').insert({
+      email,
+      code_hash: codeHash,
+      attempts: 0,
+      expires_at: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
+      created_at: new Date()
+    });
+
+    // Send email
+    const sent = await fastify.sendEmail('admin_login_code', email, 'Code de connexion admin', { code });
+    
+    if (!sent) {
+      return reply.code(500).send({ error: 'Failed to send email' });
+    }
+
+    return { success: true, message: 'OTP sent to admin email' };
+  });
+
+  // Verify OTP
+  fastify.post('/verify-otp', {
+    schema: {
+      body: {
+        type: 'object',
+        required: ['email', 'code'],
+        properties: {
+          email: { type: 'string', format: 'email' },
+          code: { type: 'string', minLength: 6, maxLength: 6 }
+        }
+      }
+    }
+  }, async (request, reply) => {
+    const { email, code } = request.body;
+
+    if (email !== process.env.ADMIN_EMAIL) {
+      return reply.code(403).send({ error: 'Unauthorized email' });
+    }
+
+    console.log('Dans admin.js, fastify.db =', typeof(fastify.db));
+    const otp = await fastify.db('otps')
+      .where('email', email)
+      .where('expires_at', '>', new Date())
+      .orderBy('created_at', 'desc')
+      .first();
+    console.log('Dans admin.js, fastify.db =', typeof(fastify.db));
+    if (!otp) {
+      return reply.code(400).send({ error: 'Invalid or expired OTP' });
+    }
+
+    if (otp.attempts >= 3) {
+      await fastify.db('otps').where('id', otp.id).del();
+      return reply.code(429).send({ error: 'Too many attempts' });
+    }
+
+    const isValid = await bcrypt.compare(code, otp.code_hash);
+    if (!isValid) {
+      await fastify.db('otps').where('id', otp.id).increment('attempts', 1);
+      return reply.code(400).send({ error: 'Invalid OTP' });
+    }
+
+    // Generate admin token (10 minutes)
+    const adminToken = jwt.sign({
+      type: 'admin',
+      email,
+      exp: Math.floor(Date.now() / 1000) + (10 * 60) // 10 minutes
+    }, process.env.APP_SECRET);
+
+    // Clean up used OTP
+    await fastify.db('otps').where('id', otp.id).del();
+
+    // Log admin login
+    await fastify.db('logs').insert({
+      level: 'info',
+      message: 'Admin login successful',
+      meta: { email, ip: request.ip },
+      created_at: new Date()
+    });
+
+    return { admin_token: adminToken };
+  });
+
+  // Protected admin routes
+  fastify.register(async function(adminRoutes) {
+  adminRoutes.addHook('preValidation', verifyAdminToken);
+
+    // List orders
+    adminRoutes.get('/orders', async (request) => {
+      const page = parseInt(request.query.page) || 1;
+      const pageSize = parseInt(request.query.pageSize) || 20;
+
+      const total = await fastify.db('orders').count('* as count').first();
+      const orders = await fastify.db('orders')
+        .orderBy('created_at', 'desc')
+        .offset((page - 1) * pageSize)
+        .limit(pageSize);
+
+      return {
+        orders,
+        pagination: {
+          page,
+          pageSize,
+          total: parseInt(total.count),
+          pages: Math.ceil(total.count / pageSize)
+        }
+      };
+    });
+
+    // List products
+    adminRoutes.get('/products', async () => {
+      const products = await fastify.db('products')
+        .leftJoin('categories', 'products.category_id', 'categories.id')
+        .select('products.*', 'categories.name as category_name')
+        .orderBy('products.created_at', 'desc');
+
+      return { products };
+    });
+
+    // Create product
+    adminRoutes.post('/products', async (request, reply) => {
+      console.log('[ADMIN PRODUCTS] Handler POST /products appelé. Authorization header:', request.headers.authorization);
+
+      const fields = {};
+      const files = [];
+      // Parse multipart data (fields + files)
+      for await (const part of request.parts()) {
+        if (part.file) {
+          // C'est un fichier
+          files.push(part);
+        } else {
+          // C'est un champ texte
+          fields[part.fieldname] = part.value;
+        }
+      }
+
+      const { title, description, category_id, subcategory, price_fcfa, sku, tags, available_count } = fields;
+      
+      // Validate required fields
+      if (!title || !price_fcfa || !category_id) {
+        return reply.code(400).send({ error: 'Missing required fields' });
+      }
+
+      const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const productId = uuidv4();
+
+      // Handle image uploads
+      const images = [];
+      if (files.length > 0) {
+        const category = await fastify.db('categories').where('id', category_id).first();
+        const uploadDir = path.join(process.env.UPLOAD_DIR || './frontend/uploads', category.slug, slug);
+        
+        await fs.mkdir(uploadDir, { recursive: true });
+
+        for (let i = 0; i < Math.min(files.length, 3); i++) {
+          const file = files[i];
+          const filename = `${i + 1}.${file.mimetype.split('/')[1]}`;
+          const filePath = path.join(uploadDir, filename);
+          
+          await fs.writeFile(filePath, await file.toBuffer());
+          images.push(`/uploads/${category.slug}/${slug}/${filename}`);
+        }
+      }
+
+      // Create product
+      await fastify.db('products').insert({
+        id: productId,
+        title,
+        slug,
+        description,
+        category_id,
+        subcategory: subcategory || null,
+        price_fcfa: parseInt(price_fcfa),
+        sku: sku || null,
+        images: JSON.stringify(images),
+        tags: tags ? JSON.stringify(tags.split(',').map(t => t.trim())) : null,
+        available_count: parseInt(available_count) || 0,
+        created_at: new Date(),
+        updated_at: new Date()
+      });
+
+      // Update JSON file for frontend
+      await updateProductJSON(fastify, category_id);
+
+      // Log action
+      await fastify.db('logs').insert({
+        level: 'info',
+        message: 'Product created',
+        meta: { productId, title, admin: request.admin.email },
+        created_at: new Date()
+      });
+
+      return { success: true, productId };
+    });
+
+    // Update product
+    adminRoutes.put('/products/:id', async (request, reply) => {
+      const { id } = request.params;
+      const updates = request.body;
+
+      const product = await fastify.db('products').where('id', id).first();
+      if (!product) {
+        return reply.code(404).send({ error: 'Product not found' });
+      }
+
+      await fastify.db('products')
+        .where('id', id)
+        .update({
+          ...updates,
+          updated_at: new Date()
+        });
+
+      // Update JSON file
+      await updateProductJSON(fastify, product.category_id);
+
+      // Log action
+      await fastify.db('logs').insert({
+        level: 'info',
+        message: 'Product updated',
+        meta: { productId: id, admin: request.admin.email },
+        created_at: new Date()
+      });
+
+      return { success: true };
+    });
+
+    // Delete product
+    adminRoutes.delete('/products/:id', async (request, reply) => {
+      const { id } = request.params;
+
+      const product = await fastify.db('products').where('id', id).first();
+      if (!product) {
+        return reply.code(404).send({ error: 'Product not found' });
+      }
+
+      await fastify.db('products').where('id', id).del();
+
+      // Update JSON file
+      await updateProductJSON(fastify, product.category_id);
+
+      // Log action
+      await fastify.db('logs').insert({
+        level: 'info',
+        message: 'Product deleted',
+        meta: { productId: id, title: product.title, admin: request.admin.email },
+        created_at: new Date()
+      });
+
+      return { success: true };
+    });
+
+    // Get logs
+    adminRoutes.get('/logs', async (request) => {
+      const page = parseInt(request.query.page) || 1;
+      const pageSize = parseInt(request.query.pageSize) || 50;
+
+      const logs = await fastify.db('logs')
+        .orderBy('created_at', 'desc')
+        .offset((page - 1) * pageSize)
+        .limit(pageSize);
+
+      return { logs };
+    });
+  });
+
+  // Helper function to update JSON files
+  async function updateProductJSON(fastify, categoryId) {
+    try {
+      const category = await fastify.db('categories').where('id', categoryId).first();
+      if (!category) return;
+
+      const products = await fastify.db('products')
+        .where('category_id', categoryId)
+        .select('*');
+
+      const jsonPath = path.join(__dirname, '../../..', 'frontend', 'assets', 'data', `${category.slug}.json`);
+      await fs.mkdir(path.dirname(jsonPath), { recursive: true });
+      await fs.writeFile(jsonPath, JSON.stringify({ products }, null, 2));
+    } catch (error) {
+      fastify.log.error('Failed to update product JSON:', error);
+    }
+  }
+}
+
+module.exports = adminRoutes;
