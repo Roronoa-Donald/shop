@@ -142,6 +142,181 @@ fastify.get('/products', {
     return { ...product, variants };
   });
 
+// REGISTER : create user and emit verification code (motif = 'verification')
+fastify.post('/auth/register', {
+  schema: {
+    body: {
+      type: 'object',
+      required: ['name','email','password'],
+      properties: {
+        name: { type: 'string', minLength: 2 },
+        email: { type: 'string', format: 'email' },
+        phone: { type: 'string' },
+        password: { type: 'string', minLength: 6 }
+      }
+    }
+  }
+}, async (request, reply) => {
+  const { name, email, phone, password } = request.body;
+  const existing = await fastify.db('users').where('email', email).first();
+  if (existing) return reply.code(400).send({ error: 'Email already exists' });
+
+  const passwordHash = await bcrypt.hash(password, 12);
+  const userId = uuidv4();
+
+  // create user row (is_verified default false)
+  await fastify.db('users').insert({
+    id: userId,
+    email,
+    name,
+    phone,
+    password_hash: passwordHash,
+    is_verified: false,
+    created_at: new Date()
+  });
+
+  // create 6-digit code and insert into codes table
+  const numCode = Math.floor(100000 + Math.random() * 900000);
+  await fastify.db('codes').insert({
+    num_code: numCode,
+    motif: 'verification',
+    mail: email,
+    timestamp: Date.now(),
+    consumed: false
+  });
+
+  // send email (assumes fastify.sendEmail exists)
+  try {
+    await fastify.sendEmail('verify_register', email, 'Code de vérification Angele Shop', {
+      name, code: numCode
+    });
+  } catch (err) {
+    request.log.error('Mail send error (register):', err);
+    // NOTE: you may decide to rollback user and code on email failure
+  }
+
+  return { success: true, message: 'Verification code sent' };
+});
+// VERIFY registration code
+fastify.post('/auth/register/verify', {
+  schema: {
+    body: {
+      type: 'object',
+      required: ['email','code'],
+      properties: {
+        email: { type: 'string', format: 'email' },
+        code: { type: 'string' }
+      }
+    }
+  }
+}, async (request, reply) => {
+  const { email, code } = request.body;
+  const codeInt = parseInt(code, 10);
+  if (isNaN(codeInt)) return reply.code(400).send({ error: 'Code invalide' });
+
+  // Find most recent non-consumed verification code for this email
+  const row = await fastify.db('codes')
+    .where({ mail: email, motif: 'verification', consumed: false })
+    .orderBy('id', 'desc')
+    .first();
+
+  if (!row) return reply.code(400).send({ error: 'Code introuvable' });
+
+  const now = Date.now();
+  const age = now - parseInt(row.timestamp, 10);
+  const fifteenMin = 15 * 60 * 1000;
+
+  if (row.num_code !== codeInt) return reply.code(400).send({ error: 'Code invalide' });
+  if (age > fifteenMin) return reply.code(400).send({ error: 'Code expiré' });
+
+  // mark code consumed
+  await fastify.db('codes').where({ id: row.id }).update({ consumed: true });
+
+  // set user as verified
+  await fastify.db('users').where('email', email).update({ is_verified: true, updated_at: new Date() });
+
+  // OPTIONAL: auto-login? By default we DO NOT auto-login. If you want auto-login, uncomment next lines:
+  // const user = await fastify.db('users').where('email', email).first();
+  // request.session.userId = user.id;
+
+  return { success: true, message: 'Compte vérifié' };
+});
+// REQUEST password reset (send 6-digit code, motif = 'reset')
+fastify.post('/auth/reset/request', {
+  schema: {
+    body: { type: 'object', required: ['email'], properties: { email: { type: 'string', format: 'email' } } }
+  }
+}, async (request, reply) => {
+  const { email } = request.body;
+  const user = await fastify.db('users').where('email', email).first();
+  // Always return success to avoid user enumeration
+  if (!user) return reply.code(200).send({ success: true });
+
+  const numCode = Math.floor(100000 + Math.random() * 900000);
+  await fastify.db('codes').insert({
+    num_code: numCode,
+    motif: 'reset',
+    mail: email,
+    timestamp: Date.now(),
+    consumed: false
+  });
+
+  try {
+    await fastify.sendEmail('reset_request', email, 'Code de réinitialisation Angele Shop', {
+      name: user.name, code: numCode
+    });
+  } catch (err) {
+    request.log.error('Mail send error (reset request):', err);
+    // still return success to caller
+  }
+
+  return { success: true, message: 'Si le mail existe, un code a été envoyé.' };
+});
+// VERIFY reset code and set new password
+fastify.post('/auth/reset/verify', {
+  schema: {
+    body: {
+      type: 'object',
+      required: ['email','code','password'],
+      properties: {
+        email: { type: 'string', format: 'email' },
+        code: { type: 'string' },
+        password: { type: 'string', minLength: 6 }
+      }
+    }
+  }
+}, async (request, reply) => {
+  const { email, code, password } = request.body;
+  const codeInt = parseInt(code, 10);
+  if (isNaN(codeInt)) return reply.code(400).send({ error: 'Code invalide' });
+
+  const row = await fastify.db('codes')
+    .where({ mail: email, motif: 'reset', consumed: false })
+    .orderBy('id', 'desc')
+    .first();
+
+  if (!row) return reply.code(400).send({ error: 'Code introuvable' });
+
+  const now = Date.now();
+  const age = now - parseInt(row.timestamp, 10);
+  const fifteenMin = 15 * 60 * 1000;
+
+  if (row.num_code !== codeInt) return reply.code(400).send({ error: 'Code invalide' });
+  if (age > fifteenMin) return reply.code(400).send({ error: 'Code expiré' });
+
+  // update password
+  const passwordHash = await bcrypt.hash(password, 12);
+  await fastify.db('users').where('email', email).update({
+    password_hash: passwordHash,
+    updated_at: new Date()
+  });
+
+  // mark code consumed
+  await fastify.db('codes').where({ id: row.id }).update({ consumed: true });
+
+  return { success: true, message: 'Mot de passe modifié' };
+});
+
   // Cart management
   fastify.post('/cart', {
     schema: {
@@ -340,14 +515,19 @@ fastify.get('/products', {
     request.session.cart = [];
 
     // Send order confirmation email if applicable
-    if (email) {
-      await fastify.sendEmail('order_received', email, 'Commande reçue', {
+    if (true) {
+      await fastify.sendEmail('order_received', "roronoadonald3@gmail.com", 'Commande reçue', {
         orderId,
         customerName: customer.name,
         amount: `${total.toLocaleString()} FCFA`
       });
+      
     }
-
+    console.log(orderId,customer.name,total)
+await fastify.sendEmail('order_received','angeleshop228@gmail.com',"nouvelle commande",{
+        orderId,customerName:customer.name,
+        anmount:`${total.toLocaleString()} FCFA `
+      })
     return {
       orderId,
       total,

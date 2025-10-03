@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Réinitialisation du mot de passe</title>
+  <style>
+    /* Reset */
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+    }
+
+    /* Conteneur principal */
+    .email-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #1a1a1a;
+      border: 1px solid #D4AF37;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    /* En-tête */
+    .email-header {
+      background: linear-gradient(135deg, #D4AF37, #B8941F);
+      text-align: center;
+      padding: 20px;
+    }
+
+    .email-header h1 {
+      color: #121212;
+      font-size: 24px;
+      margin: 0;
+    }
+
+    /* Corps */
+    .email-body {
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .email-body p {
+      font-size: 16px;
+      line-height: 1.6;
+      margin: 10px 0;
+      color: #f5f5f5;
+    }
+
+    .reset-code {
+      display: inline-block;
+      background: #D4AF37;
+      color: #121212;
+      font-weight: bold;
+      font-size: 22px;
+      letter-spacing: 2px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      box-shadow: 0 0 12px rgba(212, 175, 55, 0.5);
+    }
+
+    /* Bouton optionnel pour la réinitialisation */
+    .reset-btn {
+      display: inline-block;
+      background: #D4AF37;
+      color: #121212 !important;
+      text-decoration: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 16px;
+      margin-top: 15px;
+      transition: background 0.3s ease;
+    }
+
+    .reset-btn:hover {
+      background: #B8941F;
+    }
+
+    /* Pied de page */
+    .email-footer {
+      text-align: center;
+      font-size: 12px;
+      color: #aaa;
+      padding: 15px;
+      background: #0f0f0f;
+      border-top: 1px solid #333;
+    }
+
+    .email-footer a {
+      color: #D4AF37;
+      text-decoration: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .email-body p {
+        font-size: 14px;
+      }
+
+      .reset-code {
+        font-size: 18px;
+      }
+
+      .reset-btn {
+        font-size: 14px;
+        padding: 10px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <!-- Header -->
+    <div class="email-header">
+      <h1>Réinitialisation du mot de passe</h1>
+    </div>
+
+    <!-- Body -->
+    <div class="email-body">
+      <p>Bonjour <strong>{{name}}</strong>,</p>
+      <p>Utilisez ce code pour réinitialiser votre mot de passe :</p>
+
+      <div class="reset-code">{{code}}</div>
+
+      <p>Ce code expirera dans <strong>15 minutes</strong>.</p>
+
+      <!-- Bouton optionnel -->
+      <p>
+        <a href="{{reset_link}}" class="reset-btn">Réinitialiser mon mot de passe</a>
+      </p>
+
+      <p style="margin-top: 20px; font-size: 14px; color: #bbb;">
+        Si vous n'avez pas demandé de réinitialisation, ignorez simplement ce message.
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <div class="email-footer">
+      <p>© 2025 Votre Entreprise. Tous droits réservés.</p>
+      <p><a href="https://votre-site.com">Visitez notre site</a></p>
+    </div>
+  </div>
+</body>
+</html>

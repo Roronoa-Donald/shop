@@ -11,7 +11,11 @@ async function pagesRoutes(fastify) {
     '/compte': 'compte.html',
     '/admin': 'admin.html',
     '/contact': 'contact.html',
-    '/cgvs': 'cgvs.html'
+    '/cgvs': 'cgvs.html',
+    '/login' : 'login.html',
+    '/register':'register.html',
+    '/reset_request':'reset_request.html',
+    '/registercode':'registercode.html'
   };
 
   Object.entries(pages).forEach(([route, file]) => {

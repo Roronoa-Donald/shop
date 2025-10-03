@@ -409,7 +409,7 @@
             </div>
             
             <div class="footer-bottom">
-                <p class="copyright">© 2025 Angele Shop. Tous droits réservés.</p>
+                <p class="copyright">© 2024 Angele Shop. Tous droits réservés.</p>
             </div>
         </div>
     </footer>
@@ -558,7 +558,10 @@
                                 <button class="quantity-btn" id="quantity-increase" type="button">+</button>
                             </div>
                         </div>
-
+                        <button class="btn btn-primary add-to-cart-btn" id="add-to-cart" ${isOutOfStock ? 'disabled' : ''}>
+                                ${isOutOfStock ? 'Indisponible' : 'Ajouter au panier'}
+                            </button>
+                        
                         <div class="product-actions">
                             <button class="btn btn-primary add-to-cart-btn" id="add-to-cart" ${isOutOfStock ? 'disabled' : ''}>
                                 ${isOutOfStock ? 'Indisponible' : 'Ajouter au panier'}
@@ -573,7 +576,8 @@
                         </div>
                     </div>
                 `;
-
+                    console.log(isOutOfStock)
+                    console.log(this.product.id)
                 this.attachEventListeners();
             }
 
@@ -589,6 +593,7 @@
 
             getStockStatusHTML() {
                 const count = this.product.available_count;
+                let bool=false
                 
                 if (count === 0) {
                     return `
@@ -598,6 +603,7 @@
                         </div>
                     `;
                 } else if (count <= 5) {
+                    bool=true
                     return `
                         <div class="stock-status low-stock">
                             <span class="stock-indicator"></span>
@@ -605,6 +611,7 @@
                         </div>
                     `;
                 } else {
+                    bool=true
                     return `
                         <div class="stock-status in-stock">
                             <span class="stock-indicator"></span>
