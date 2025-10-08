@@ -210,7 +210,7 @@ async function verifyAdminToken(request, reply) {
       meta: { email, ip: request.ip },
       created_at: new Date()
     });
-
+    await fastify.db('tokens').insert({token:adminToken})
     return { admin_token: adminToken };
   });
 

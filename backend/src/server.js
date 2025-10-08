@@ -63,7 +63,7 @@ await server.register(require('fastify-multipart'));
   await server.register(require('@fastify/static'), {
     root: path.join(__dirname, '../../frontend'),
     prefix: '/',
-    index: false,
+    index: ['index.html'],
     setHeaders: (res, path, stat) => {
       res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
       res.setHeader('Pragma', 'no-cache');

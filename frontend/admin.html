@@ -341,8 +341,20 @@
 
             async init() {
                 // Check if admin token exists in localStorage
+                let vrai=false;
+                
                 const token = localStorage.getItem('admin_token');
-                if (token) {
+                await fetch('/api/verifytoken', {
+                    method:'PUT',
+                    headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify({token})
+                }).then(res=>{
+                    if(res.ok){
+                         vrai=true
+                       console.log("token valide") 
+                    }
+                })
+                if (token && vrai) {
                     adminAPI.setToken(token);
                     this.isAuthenticated = true;
                     await this.loadDashboard();
@@ -842,7 +854,8 @@
                         if (e.target.classList.contains('delete')) {
                             this.deleteProduct(productId);
                         } else if (e.target.classList.contains('edit')) {
-                            this.editProduct(productId);
+                            window.location.href='/editpage'
+                            //this.editProduct(productId);
                         }
                     }
                 });
@@ -967,7 +980,8 @@ try {
             }
 
             editProduct(productId) {
-                showToast('Fonctionnalité de modification à venir', 'info');
+                fetch("/editpage",{method:"post",headers:{"content-type":"application/json"},body:{productId}})
+                
             }
 
             logout() {

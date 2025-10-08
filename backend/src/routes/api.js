@@ -398,6 +398,45 @@ fastify.post('/auth/reset/verify', {
 
     return { cart: cartWithDetails, total };
   });
+  //verify token 
+  fastify.put('/verifytoken',async (req, res)=>{
+      const {token} = req.body
+      const last = await fastify.db('tokens')
+      .select('token')
+      .orderBy('id', 'desc')
+      .first();
+      const lastToken = last?.token;
+      if(token){
+        if(token===lastToken){
+          res.send({oklm:true})
+      }else{
+        res.code(401).send({error:"token invalide"})
+      }}else{
+        res.code(400).send({error:"données manquantes"})
+      }
+    })
+//edit page
+fastify.put("/editproduct/:id",async (req, res)=>{
+  const id = req.params.id
+  console.log(id)
+  const {  title, description, price_fcfa, category_id, subcategory,available_count,sku,tags } = req.body;
+  console.log(req.body)
+  try {
+  await fastify.db('products').where('id', id).update({
+    title,
+    description,
+    price_fcfa,
+    category_id,
+    subcategory,
+    available_count,
+    sku,
+    tags:tags?JSON.stringify(tags):null,
+    updated_at: new Date()
+  })
+  res.send("produit modifié avec succès")
+  }catch(err){console.log(err);res.code(500).send({error:"une erreur est survenue"})}
+  ;})
+  
 
   // Checkout
   fastify.post('/checkout', {
@@ -636,8 +675,8 @@ fastify.post("/api/send/mess",async (req, res)=>{
 
     return { ...order, items };
   });
-}
 
+}
 
 
 module.exports = apiRoutes;
