@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Édition Produit</title>
+    <!-- Liens inchangés -->
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="min-height: 100vh; margin: 0;">
+    <div class="central-container" style="max-width: 600px; margin: 0 auto; padding: 2rem 1rem; box-shadow: 0 0 32px #e3e3e3; border-radius: 16px; background: var(--background-primary);">
+        <h2 style="text-align: center;">Éditer un produit</h2>
+        <form class="product-form" id="product-form-element">
+            <!-- Section 1 : Identité du produit -->
+            <div class="form-section">
+                <div class="form-group">
+                    <label class="form-label" for="id">Id</label>
+                    <select name="id" id="id" class="id-select form-select"></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="title">Titre</label>
+                    <input type="text" class="form-input" name="title" id="title" required />
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="price_fcfa">Prix FCFA</label>
+                    <input type="number" class="form-input" name="price_fcfa" id="price_fcfa" required />
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="category_id">Catégorie</label>
+                    <select class="form-select" name="category_id" id="category_id" required>
+                        <option value="">Sélectionner...</option>
+                        <option value="1">Bijoux</option>
+                        <option value="2">Vêtements</option>
+                        <option value="3">Accessoires</option>
+                        <option value="4">Chaussures</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="available_count">Stock disponible</label>
+                    <input type="number" class="form-input" name="available_count" id="available_count" required />
+                </div>
+            </div>
+
+            <!-- Section 2 : détails produit -->
+            <div class="form-section">
+                <div class="form-group">
+                    <label class="form-label" for="subcategory">Sous-catégorie</label>
+                    <input type="text" class="form-input" name="subcategory" id="subcategory" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="sku">SKU</label>
+                    <input type="text" class="form-input" name="sku" id="sku" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="tags">Tags (séparés par des virgules)</label>
+                    <input type="text" class="form-input" name="tags" id="tags" />
+                </div>
+            </div>
+            <div class="form-section full-width">
+                <div class="form-group">
+                    <label class="form-label" for="description">Description</label>
+                    <textarea class="form-textarea" name="description" id="description" rows="4"></textarea>
+                </div>
+            </div>
+            <!-- Actions -->
+            <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                <button type="button" class="btn btn-outline" id="cancel-product-form">Annuler</button>
+            </div>
+        </form>
+    </div>
+
+ 
+
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/cart.js"></script>
+    <script src="/assets/js/main.js"></script>
+    <script src="/assets/js/components.js"></script>
+    <script type="module">
+        let vrai=false
+        const token = localStorage.getItem('admin_token');
+        if(!token){
+            localStorage.setItem('niveau1','');
+            window.location.href = '/admin';
+            
+        }
+        let errorMessage = '';
+        if(token){
+           await fetch('/api/verifytoken', {
+                    method:'POST',
+                    headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify({token})
+                }).then(res=>{
+                    if(res.ok){
+                         vrai=true
+                    }
+                })
+            if(!vrai){
+                window.location.href = '/admin';
+            }
+        }
+        let products = [];
+        const form = document.getElementById('product-form-element');
+        const idSelect = document.querySelector('.id-select');
+        const submitButton = form.querySelector('button[type="submit"]');
+        const titleInput = form.querySelector('input[name="title"]');
+        const priceInput = form.querySelector('input[name="price_fcfa"]');
+        const categorySelect = form.querySelector('select[name="category_id"]');
+        const availableCountInput = form.querySelector('input[name="available_count"]');
+        const subcategoryInput = form.querySelector('input[name="subcategory"]');
+        const skuInput = form.querySelector('input[name="sku"]');
+        const tagsInput = form.querySelector('input[name="tags"]');
+        const descriptionInput = form.querySelector('textarea[name="description"]');
+        const cancelButton = document.getElementById('cancel-product-form');
+        cancelButton.addEventListener('click', () => {
+            window.location.href = '/admin';
+        });
+        let reponse = await fetch("/api/products", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",}})
+        products = await reponse.json();
+        products=products.products
+        products.forEach(product => {
+            const option = document.createElement('option');
+            option.value = product.id;
+            option.textContent = `${product.id} - ${product.title}`;
+            idSelect.appendChild(option);
+        });
+        function filform(){
+            const selectedId = idSelect.value;
+            const selectedProduct = products.find(p => p.id == selectedId);
+            if (selectedProduct) {
+                titleInput.value = selectedProduct.title;
+                priceInput.value = selectedProduct.price_fcfa;
+                categorySelect.value = selectedProduct.category_id;
+                availableCountInput.value = selectedProduct.available_count;
+                subcategoryInput.value = selectedProduct.subcategory || '';
+                skuInput.value = selectedProduct.sku || '';
+                tagsInput.value = selectedProduct.tags ? selectedProduct.tags.join(', ') : '';
+                descriptionInput.value = selectedProduct.description || '';
+            } else {
+                titleInput.value = '';
+                priceInput.value = '';
+                categorySelect.value = '';
+                availableCountInput.value = '';
+                subcategoryInput.value = '';
+                skuInput.value = '';
+                tagsInput.value = '';
+                descriptionInput.value = '';
+            }
+        }
+        filform();
+        idSelect.addEventListener('change', () => {
+            filform();
+        });
+        submitButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const selectedId = idSelect.value;
+            const productData = {
+                title: titleInput.value,
+                price_fcfa: parseFloat(priceInput.value),
+                category_id: parseInt(categorySelect.value),
+                available_count: parseInt(availableCountInput.value),
+                subcategory: subcategoryInput.value,
+                sku: skuInput.value,
+                tags: tagsInput.value.split(',').map(tag => tag.trim()).filter(tag => tag),
+                description: descriptionInput.value
+            };
+            try {
+                const response = await fetch(`/api/editproduct/${selectedId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(productData)
+                });
+                if (response.ok) {
+                    alert('Produit mis à jour avec succès !');
+                    const index = products.findIndex(p => p.id == selectedId);
+                    if (index !== -1) {
+                        products[index] = { id: parseInt(selectedId), ...productData };
+                    }
+                } else {
+                    const errorData = await response.json();
+                    alert(`Erreur lors de la mise à jour du produit : ${errorData.message}`);
+                }
+            } catch (error) {
+                alert(`Erreur réseau : ${error.message}`);
+            }
+        });
+              
+
+    </script>
+</body>
+</html>

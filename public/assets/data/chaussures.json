@@ -1,0 +1,29 @@
+{
+  "products": [
+    {
+      "id": "70bb745a-9ca6-4a67-a8f4-d45bdcb9cb07",
+      "title": "jordan 4",
+      "slug": "jordan-4-1758827987164",
+      "description": "jordan 4 ",
+      "category_id": 4,
+      "subcategory": "jordan",
+      "price_fcfa": 20000,
+      "currency": "FCFA",
+      "sku": "jordan4-1",
+      "images": [
+        "/uploads/chaussures/jordan-4-1758827987164/2.jpeg"
+      ],
+      "tags": [
+        "bijoux",
+        "chaines",
+        "bagues",
+        "coliers",
+        "ontres",
+        "bracelets"
+      ],
+      "available_count": 15,
+      "created_at": "2025-09-25T19:19:47.368Z",
+      "updated_at": "2025-09-25T19:19:47.368Z"
+    }
+  ]
+}
