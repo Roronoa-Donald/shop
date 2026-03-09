@@ -9,6 +9,7 @@
     }
   },
   "rewrites": [
+    { "source": "/api/:path*", "destination": "/api" },
     { "source": "/boutique", "destination": "/boutique.html" },
     { "source": "/produit/:path*", "destination": "/produit.html" },
     { "source": "/panier", "destination": "/panier.html" },
