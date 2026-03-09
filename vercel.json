@@ -1,0 +1,41 @@
+{
+  "version": 2,
+  "functions": {
+    "api/**": {
+      "includeFiles": ["backend/**", "knexfile.js"],
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    { "source": "/boutique", "destination": "/boutique.html" },
+    { "source": "/produit/:path*", "destination": "/produit.html" },
+    { "source": "/panier", "destination": "/panier.html" },
+    { "source": "/checkout", "destination": "/checkout.html" },
+    { "source": "/compte", "destination": "/compte.html" },
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/contact", "destination": "/contact.html" },
+    { "source": "/cgvs", "destination": "/cgvs.html" },
+    { "source": "/editpage", "destination": "/editpage.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" }
+      ]
+    },
+    {
+      "source": "/(.*)\\.html",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=86400" }
+      ]
+    }
+  ]
+}

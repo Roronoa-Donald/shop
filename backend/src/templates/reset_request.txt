@@ -1,0 +1,9 @@
+Bonjour {{name}},
+
+Votre code de réinitialisation de mot de passe Angele Shop est : {{code}}
+
+Ce code expire dans 15 minutes.
+
+Si vous n'avez pas demandé ce code, ignorez cet email.
+
+Angele Shop
