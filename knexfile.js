@@ -1,12 +1,20 @@
 require('dotenv').config();
 
+// Serverless requires minimal pool to avoid connection exhaustion
+const isServerless = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME;
+
+const poolConfig = isServerless 
+  ? { min: 0, max: 1, idleTimeoutMillis: 1000, reapIntervalMillis: 500 }
+  : { min: 2, max: 10 };
+
 const config = {
   development: {
-   client: 'postgresql',
+    client: 'postgresql',
     connection: {
       connectionString: process.env.DATABASE_URL,
       ssl: { rejectUnauthorized: false }
     },
+    pool: { min: 2, max: 10 },
     migrations: {
       directory: './backend/migrations'
     },
@@ -20,6 +28,8 @@ const config = {
       connectionString: process.env.DATABASE_URL,
       ssl: { rejectUnauthorized: false }
     },
+    pool: poolConfig,
+    acquireConnectionTimeout: 10000,
     migrations: {
       directory: './backend/migrations'
     },
