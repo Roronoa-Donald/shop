@@ -3,12 +3,19 @@ require('dotenv').config();
 // Serverless requires minimal pool to avoid connection exhaustion
 const isServerless = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME;
 
-// Use Neon pooler endpoint if available (append ?pgbouncer=true or use pooler subdomain)
-let connectionString = process.env.DATABASE_URL;
-
-// Serverless: Use single connection that's released immediately
+// Aiven free tier has limited connections (~25)
+// Each serverless invocation should use only 1 connection
 const poolConfig = isServerless 
-  ? { min: 0, max: 1, acquireTimeoutMillis: 5000, idleTimeoutMillis: 500, reapIntervalMillis: 100, propagateCreateError: false }
+  ? { 
+      min: 0, 
+      max: 1, 
+      acquireTimeoutMillis: 10000,
+      createTimeoutMillis: 10000,
+      idleTimeoutMillis: 100,        // Release idle connections very quickly
+      reapIntervalMillis: 50,        // Check for idle connections frequently
+      createRetryIntervalMillis: 100,
+      propagateCreateError: false    // Don't throw on first failure
+    }
   : { min: 2, max: 10 };
 
 const config = {
