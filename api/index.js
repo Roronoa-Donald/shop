@@ -5,31 +5,18 @@ process.env.VERCEL = '1';
 
 const build = require('../backend/src/server');
 
-let app;
-let appPromise;
-
-async function getApp() {
-  if (app) return app;
-  
-  if (!appPromise) {
-    appPromise = (async () => {
-      console.log('[Vercel] Building Fastify app...');
-      app = await build();
-      await app.ready();
-      console.log('[Vercel] Fastify app ready');
-      return app;
-    })();
-  }
-  
-  return appPromise;
-}
-
+// Create fresh app for each request to ensure clean DB connections
 module.exports = async (req, res) => {
+  let app;
   try {
-    const fastify = await getApp();
+    console.log(`[Vercel] ${req.method} ${req.url}`);
+    
+    // Build fresh app for each request
+    app = await build();
+    await app.ready();
     
     // Properly inject the request into Fastify
-    const response = await fastify.inject({
+    const response = await app.inject({
       method: req.method,
       url: req.url,
       headers: req.headers,
@@ -45,8 +32,18 @@ module.exports = async (req, res) => {
     res.statusCode = response.statusCode;
     res.end(response.rawPayload);
   } catch (error) {
-    console.error('[Vercel] Error:', error);
+    console.error('[ERROR] Stack:', error.stack || error);
     res.statusCode = 500;
     res.end(JSON.stringify({ error: 'Internal Server Error', message: error.message }));
+  } finally {
+    // Always close the app to release DB connections
+    if (app) {
+      try {
+        await app.close();
+        console.log('[Vercel] App closed, connections released');
+      } catch (closeErr) {
+        console.error('[Vercel] Error closing app:', closeErr.message);
+      }
+    }
   }
 };
