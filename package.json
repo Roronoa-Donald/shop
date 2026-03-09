@@ -2,18 +2,17 @@
   "name": "angele-shop",
   "version": "1.0.0",
   "description": "Luxury e-commerce platform with admin OTP authentication",
-  "main": "./backend/src/index.js",
+  "main": "backend/src/index.js",
   "scripts": {
     "dev": "nodemon --env-file=.env ./backend/src/index.js",
     "start": "node ./backend/src/index.js",
-    "vercel-build": "node -e \"require('fs').cpSync('frontend','public',{recursive:true})\"",
+    "build": "echo 'Static files ready in public/'",
     "migrate": "knex migrate:latest",
     "migrate:rollback": "knex migrate:rollback",
     "seed": "knex seed:run",
     "test": "tap test/**/*.test.js",
     "lint": "eslint backend/src --fix",
     "format": "prettier --write .",
-    "build": "echo 'No build step required for this project'",
     "reset-db": "npm run migrate:rollback && npm run migrate && npm run seed"
   },
   "keywords": [

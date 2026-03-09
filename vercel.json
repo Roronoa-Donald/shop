@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "",
+  "framework": null,
   "outputDirectory": "public",
   "functions": {
     "api/**": {
