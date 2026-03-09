@@ -28,12 +28,12 @@ async function build() {
     console.error(`[ERROR] Stack: ${error.stack}`);
   });
 
-  // Multipart for file uploads — skip on Vercel (read-only filesystem)
-  if (!isVercel) {
-    await server.register(require('@fastify/multipart'), {
-      limits: { fileSize: 5 * 1024 * 1024 } // 5 MB max
-    });
-  }
+  // Multipart for file uploads
+  // On Vercel: use attachFieldsToBody to buffer files in memory (no filesystem)
+  await server.register(require('@fastify/multipart'), {
+    attachFieldsToBody: true,  // Parse multipart and attach to request.body
+    limits: { fileSize: 5 * 1024 * 1024 } // 5 MB max
+  });
 
 
   // --------------------------

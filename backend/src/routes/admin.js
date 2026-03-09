@@ -462,20 +462,38 @@ async function verifyAdminToken(request, reply) {
     adminRoutes.post('/products', async (request, reply) => {
       const fields = {};
       const files = [];
-      // Parse multipart data (fields + files)
-     for await (const part of request.parts()) {
-  if (part.file) {
-    // Lire tout le contenu du fichier
-    const buffer = await part.toBuffer();
-    files.push({
-      buffer,
-      mimetype: part.mimetype,
-      filename: part.filename
-    });
-  } else {
-    fields[part.fieldname] = part.value;
-  }
-}
+      
+      // With attachFieldsToBody: true, fields are in request.body as objects
+      const body = request.body || {};
+      
+      for (const [key, value] of Object.entries(body)) {
+        if (key === 'images') {
+          // Images can be a single file or array of files
+          const imageArray = Array.isArray(value) ? value : [value];
+          for (const img of imageArray) {
+            if (img && img.toBuffer && img.filename) {
+              try {
+                const buffer = await img.toBuffer();
+                if (buffer.length > 0) {
+                  files.push({
+                    buffer,
+                    mimetype: img.mimetype,
+                    filename: img.filename
+                  });
+                }
+              } catch (e) {
+                request.log.warn(`Skipping invalid image: ${e.message}`);
+              }
+            }
+          }
+        } else if (value && typeof value === 'object' && 'value' in value) {
+          // Regular field with attachFieldsToBody format
+          fields[key] = value.value;
+        } else {
+          // Direct value
+          fields[key] = value;
+        }
+      }
 
 
       const { title, description, category_id, subcategory, price_fcfa, sku, tags, available_count } = fields;
