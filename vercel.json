@@ -2,7 +2,7 @@
   "version": 2,
   "functions": {
     "api/**": {
-      "includeFiles": ["backend/**", "knexfile.js"],
+      "includeFiles": "backend/**",
       "maxDuration": 10
     }
   },
