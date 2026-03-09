@@ -1,5 +1,50 @@
 // Utility Functions
 
+// ========== SITE CONFIGURATION ==========
+// Config loaded from API, with fallbacks
+const siteConfig = {
+    whatsappNumber: '22896272034',
+    phoneNumber: '+22896272034',
+    siteName: 'Angele Shop',
+    currency: 'FCFA',
+    country: 'Togo',
+    loaded: false
+};
+
+// Load config from API (called on page load)
+async function loadSiteConfig() {
+    if (siteConfig.loaded) return siteConfig;
+    
+    try {
+        const response = await fetch('/api/config');
+        if (response.ok) {
+            const config = await response.json();
+            Object.assign(siteConfig, config);
+            siteConfig.loaded = true;
+        }
+    } catch (error) {
+        console.warn('Could not load site config, using defaults');
+    }
+    return siteConfig;
+}
+
+// Get WhatsApp number (sync version for immediate use)
+function getWhatsAppNumber() {
+    return siteConfig.whatsappNumber;
+}
+
+// Get phone number
+function getPhoneNumber() {
+    return siteConfig.phoneNumber;
+}
+
+// Initialize config on load
+if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', loadSiteConfig);
+}
+
+// ========== FORMATTING ==========
+
 // Format price in FCFA
 function formatPrice(price) {
     return new Intl.NumberFormat('fr-FR', {
@@ -407,5 +452,86 @@ window.utils = {
     slugify,
     capitalize,
     randomBetween,
-    copyToClipboard
+    copyToClipboard,
+    escapeHTML,
+    openWhatsAppOrder,
+    openWhatsAppBuyNow,
+    // Config functions
+    siteConfig,
+    loadSiteConfig,
+    getWhatsAppNumber,
+    getPhoneNumber
 };
+
+// Also export globally for easy access
+window.getWhatsAppNumber = getWhatsAppNumber;
+window.getPhoneNumber = getPhoneNumber;
+window.siteConfig = siteConfig;
+
+// WhatsApp number is now loaded from siteConfig (see top of file)
+
+// Open WhatsApp with order details (for checkout)
+function openWhatsAppOrder(orderData, cartItems, total, customer) {
+    const orderId = orderData.orderId.substring(0, 8).toUpperCase();
+    
+    let message = `🛒 *NOUVELLE COMMANDE #${orderId}*\n\n`;
+    message += `👤 *Client:* ${customer.name}\n`;
+    message += `📞 *Téléphone:* ${customer.phone}\n`;
+    message += `📍 *Adresse:* ${customer.address}\n\n`;
+    message += `━━━━━━━━━━━━━━━━━━\n`;
+    message += `📦 *ARTICLES COMMANDÉS:*\n\n`;
+    
+    cartItems.forEach((item, index) => {
+        const product = item.product;
+        const subtotal = product.price_fcfa * item.quantity;
+        message += `${index + 1}. *${product.title}*\n`;
+        message += `   Qté: ${item.quantity} × ${formatPrice(product.price_fcfa)}\n`;
+        message += `   Sous-total: ${formatPrice(subtotal)}\n`;
+        message += `   🔗 ${window.location.origin}/produit?id=${product.id}\n\n`;
+    });
+    
+    message += `━━━━━━━━━━━━━━━━━━\n`;
+    message += `💰 *TOTAL: ${formatPrice(total)}*\n`;
+    message += `💵 Paiement à la livraison\n\n`;
+    message += `Merci de confirmer la disponibilité et les frais de livraison.`;
+    
+    const whatsappUrl = `https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+}
+
+// Open WhatsApp for "Buy Now" button (single product) - Quick impulsive version
+function openWhatsAppBuyNow(product, quantity, customer = null) {
+    const subtotal = product.price_fcfa * quantity;
+    
+    let message = `🛍️ *ACHAT RAPIDE - Angele Shop*\n\n`;
+    
+    // If customer info provided
+    if (customer && customer.name) {
+        message += `👤 *Client:* ${customer.name}\n`;
+        message += `📞 *Téléphone:* ${customer.phone}\n`;
+        message += `📍 *Adresse:* ${customer.address}\n\n`;
+    }
+    
+    message += `📦 *PRODUIT:*\n`;
+    message += `━━━━━━━━━━━━━━━━━━\n`;
+    message += `*${product.title}*\n`;
+    message += `• Quantité: ${quantity}\n`;
+    message += `• Prix unitaire: ${formatPrice(product.price_fcfa)}\n`;
+    message += `💰 *Total: ${formatPrice(subtotal)}*\n\n`;
+    message += `🔗 ${window.location.origin}/produit/${product.slug}\n\n`;
+    message += `━━━━━━━━━━━━━━━━━━\n`;
+    message += `Bonjour! Je souhaite acheter ce produit. Merci de me confirmer la disponibilité et les frais de livraison. 🙏`;
+    
+    const whatsappUrl = `https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+}
+
+function escapeHTML(str) {
+    if (str == null) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}

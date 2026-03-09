@@ -28,11 +28,17 @@ async function mailerPlugin(fastify) {
       let html = htmlTemplate;
       let text = textTemplate;
 
-      // Simple template replacement
+      // Template replacement with HTML escaping
       Object.keys(data).forEach(key => {
         const regex = new RegExp(`{{${key}}}`, 'g');
-        html = html.replace(regex, data[key]);
-        text = text.replace(regex, data[key]);
+        const value = String(data[key] ?? '');
+        const escaped = value
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+        html = html.replace(regex, escaped);
+        text = text.replace(regex, value);
       });
 
       const mailOptions = {
@@ -43,11 +49,14 @@ async function mailerPlugin(fastify) {
         text
       };
 
-      await transporter.sendMail(mailOptions);
+      console.log('Sending email to:', to, 'subject:', subject);
+      const result = await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully:', result.messageId);
       return true;
     } catch (error) {
+      console.error('Email sending failed:', error.message);
       fastify.log.error('Email sending failed:', error);
-      return false;
+      throw error; // Remonter l'erreur pour la gérer
     }
   }
 

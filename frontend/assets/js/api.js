@@ -206,6 +206,22 @@ const authAPI = {
         return api.post('/api/auth/login', { email, password });
     },
 
+    async register(name, email, phone, password) {
+        return api.post('/api/auth/register', { name, email, phone, password });
+    },
+
+    async verifyEmail(email, code) {
+        return api.post('/api/auth/register/verify', { email, code });
+    },
+
+    async requestPasswordReset(email) {
+        return api.post('/api/auth/forgot-password', { email });
+    },
+
+    async resetPassword(email, code, newPassword) {
+        return api.post('/api/auth/reset-password', { email, code, newPassword });
+    },
+
     async logout() {
         return api.post('/api/auth/logout');
     },
@@ -224,6 +240,22 @@ const orderAPI = {
 
 // Admin API methods
 const adminAPI = {
+    // Generic methods for flexible API calls
+    async get(endpoint, params = {}) {
+        const fullEndpoint = endpoint.startsWith('/api/admin') ? endpoint : `/api/admin${endpoint}`;
+        return api.get(fullEndpoint, params);
+    },
+
+    async put(endpoint, data) {
+        const fullEndpoint = endpoint.startsWith('/api/admin') ? endpoint : `/api/admin${endpoint}`;
+        return api.put(fullEndpoint, data);
+    },
+
+    async delete(endpoint) {
+        const fullEndpoint = endpoint.startsWith('/api/admin') ? endpoint : `/api/admin${endpoint}`;
+        return api.delete(fullEndpoint);
+    },
+
     async requestOTP(email) {
         return api.post('/api/admin/request-otp', { email });
     },
@@ -284,6 +316,41 @@ const healthAPI = {
     }
 };
 
+// Favorites API
+const favoritesAPI = {
+    async getAll() {
+        return api.get('/api/favorites');
+    },
+    async add(productId) {
+        return api.post('/api/favorites', { productId });
+    },
+    async remove(productId) {
+        return api.delete(`/api/favorites/${productId}`);
+    },
+    async check(productIds) {
+        return api.post('/api/favorites/check', { productIds });
+    },
+    async toggle(productId) {
+        // Vérifie si dans les favoris, puis ajoute ou retire
+        const { favoriteIds } = await this.check([productId]);
+        if (favoriteIds.includes(productId)) {
+            await this.remove(productId);
+            return { isFavorite: false };
+        } else {
+            await this.add(productId);
+            return { isFavorite: true };
+        }
+    }
+};
+
+// Suggestions API
+const suggestionsAPI = {
+    async get(limit = 8, excludeIds = []) {
+        const exclude = excludeIds.join(',');
+        return api.get('/api/suggestions', { limit, exclude: exclude || undefined });
+    }
+};
+
 // Export API methods
 window.api = api;
 window.productAPI = productAPI;
@@ -294,4 +361,6 @@ window.authAPI = authAPI;
 window.orderAPI = orderAPI;
 window.adminAPI = adminAPI;
 window.healthAPI = healthAPI;
+window.favoritesAPI = favoritesAPI;
+window.suggestionsAPI = suggestionsAPI;
 window.withErrorHandling = withErrorHandling;

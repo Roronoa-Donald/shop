@@ -12,7 +12,7 @@ async function pagesRoutes(fastify) {
     '/admin': 'admin.html',
     '/contact': 'contact.html',
     '/cgvs': 'cgvs.html',
-    'editpage':'editpage.html'
+    '/editpage': 'editpage.html'
   };
 
   Object.entries(pages).forEach(([route, file]) => {

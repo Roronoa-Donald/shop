@@ -382,6 +382,12 @@
     font-family: inherit;
     transition: all var(--transition-fast);
     background: var(--background-primary);
+    color: var(--text-primary);
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+    color: var(--text-light);
 }
 
 .form-input:focus,

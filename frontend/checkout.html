@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/assets/css/main.css">
     <link rel="stylesheet" href="/assets/css/components.css">
     <link rel="stylesheet" href="/assets/css/responsive.css">
+    <link rel="stylesheet" href="/assets/css/premium.css">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,49 +19,137 @@
 
     <style>
         .checkout-page {
-            padding-top: 120px;
+            padding-top: 100px;
             padding-bottom: var(--spacing-xxxl);
             background: var(--background-secondary);
+            min-height: 100vh;
         }
 
+        /* Progress Steps */
+        .checkout-progress {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: var(--spacing-xl) 0;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            color: var(--text-secondary);
+            font-weight: 500;
+            position: relative;
+        }
+
+        .progress-step.active {
+            color: var(--gold);
+        }
+
+        .progress-step.completed {
+            color: var(--success-color);
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active .step-number {
+            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .progress-step.completed .step-number {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.9rem;
+        }
+
+        .progress-line {
+            width: 60px;
+            height: 3px;
+            background: var(--border-color);
+            margin: 0 var(--spacing-md);
+            border-radius: 2px;
+            transition: background 0.3s ease;
+        }
+
+        .progress-line.completed {
+            background: var(--success-color);
+        }
+
+        /* Checkout Container */
         .checkout-container {
             display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: var(--spacing-xxxl);
+            grid-template-columns: 1fr 380px;
+            gap: var(--spacing-xl);
             align-items: start;
         }
 
         .checkout-form-section {
             background: var(--background-primary);
-            border-radius: var(--radius-lg);
+            border-radius: var(--radius-xl);
             padding: var(--spacing-xl);
             box-shadow: 0 4px 20px var(--shadow-light);
         }
 
         .checkout-summary-section {
             background: var(--background-primary);
-            border-radius: var(--radius-lg);
+            border-radius: var(--radius-xl);
             padding: var(--spacing-xl);
             box-shadow: 0 4px 20px var(--shadow-light);
             position: sticky;
-            top: 120px;
+            top: 100px;
+        }
+
+        /* Step Content */
+        .step-content {
+            display: none;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        .step-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            margin-bottom: var(--spacing-lg);
+            color: var(--text-primary);
+        }
+
+        .step-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-xl);
         }
 
         .form-section {
             margin-bottom: var(--spacing-xl);
-            padding-bottom: var(--spacing-xl);
-            border-bottom: 1px solid var(--border-light);
         }
 
-        .form-section:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-        }
-
-        .section-title {
-            font-size: 1.5rem;
-            margin-bottom: var(--spacing-lg);
+        .form-section-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: var(--spacing-md);
             color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
         }
 
         .form-row {
@@ -69,8 +158,43 @@
             gap: var(--spacing-md);
         }
 
+        .form-group {
+            margin-bottom: var(--spacing-md);
+        }
+
         .form-group.full-width {
             grid-column: 1 / -1;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            background: var(--background-primary);
+            color: var(--text-primary);
+        }
+
+        .form-input::placeholder,
+        .form-textarea::placeholder {
+            color: var(--text-light);
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
         }
 
         .checkbox-group {
@@ -78,29 +202,97 @@
             align-items: flex-start;
             gap: var(--spacing-sm);
             margin-top: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--background-secondary);
+            border-radius: var(--radius-md);
         }
 
         .checkbox-group input[type="checkbox"] {
-            margin-top: 2px;
+            margin-top: 3px;
+            accent-color: var(--gold);
+            width: 18px;
+            height: 18px;
         }
 
         .checkbox-group label {
             font-size: 0.9rem;
-            line-height: 1.4;
+            line-height: 1.5;
             cursor: pointer;
         }
 
+        /* Navigation Buttons */
+        .step-navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-xl);
+            padding-top: var(--spacing-xl);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-back {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md) var(--spacing-lg);
+            color: var(--text-secondary);
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-back:hover {
+            border-color: var(--text-primary);
+            color: var(--text-primary);
+        }
+
+        .btn-next {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md) var(--spacing-xl);
+            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin-left: auto;
+        }
+
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-next:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Summary Section */
         .order-summary {
             display: flex;
             flex-direction: column;
-            gap: var(--spacing-lg);
         }
 
         .summary-title {
-            font-size: 1.5rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
             margin: 0 0 var(--spacing-lg) 0;
             padding-bottom: var(--spacing-md);
             border-bottom: 1px solid var(--border-color);
+        }
+
+        .summary-items {
+            max-height: 300px;
+            overflow-y: auto;
         }
 
         .summary-item {
@@ -118,31 +310,18 @@
             width: 60px;
             height: 60px;
             object-fit: cover;
-            border-radius: var(--radius-sm);
+            border-radius: var(--radius-md);
         }
 
         .summary-item-details {
             flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-xs);
         }
 
         .summary-item-title {
             font-size: 0.9rem;
-            font-weight: var(--font-weight-medium);
+            font-weight: 500;
             line-height: 1.3;
-        }
-
-        .summary-item-variant {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        .summary-item-price {
-            font-size: 0.9rem;
-            color: var(--primary-color);
-            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-xs);
         }
 
         .summary-item-quantity {
@@ -150,71 +329,149 @@
             color: var(--text-secondary);
         }
 
+        .summary-item-price {
+            font-size: 0.9rem;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
         .summary-totals {
-            border-top: 1px solid var(--border-color);
+            margin-top: var(--spacing-lg);
             padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--border-color);
         }
 
         .summary-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: var(--spacing-sm) 0;
+            margin-bottom: var(--spacing-sm);
+            font-size: 0.95rem;
+            color: var(--text-secondary);
         }
 
         .summary-row.total {
             font-size: 1.25rem;
-            font-weight: var(--font-weight-bold);
-            color: var(--primary-color);
-            border-top: 2px solid var(--border-color);
+            font-weight: 700;
+            color: var(--primary-dark);
             padding-top: var(--spacing-md);
             margin-top: var(--spacing-md);
+            border-top: 2px solid var(--gold);
         }
 
-        .payment-placeholder {
-            background: var(--background-secondary);
-            border: 2px dashed var(--border-color);
+        /* Security Badge */
+        .security-badge {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-lg);
+            padding: var(--spacing-md);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.05) 100%);
             border-radius: var(--radius-md);
-            padding: var(--spacing-lg);
-            text-align: center;
-            color: var(--text-secondary);
-            margin: var(--spacing-lg) 0;
-        }
-
-        .empty-cart-message {
-            text-align: center;
-            padding: var(--spacing-xxxl);
+            font-size: 0.85rem;
             color: var(--text-secondary);
         }
 
-        .empty-cart-message h2 {
-            margin-bottom: var(--spacing-md);
-            color: var(--text-primary);
+        .security-badge span {
+            font-size: 1.25rem;
         }
 
-        .success-message {
-            background: var(--background-primary);
+        /* Order Confirmation */
+        .confirmation-recap {
+            background: var(--background-secondary);
             border-radius: var(--radius-lg);
             padding: var(--spacing-xl);
-            box-shadow: 0 4px 20px var(--shadow-light);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .recap-row {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--spacing-sm) 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .recap-row:last-child {
+            border-bottom: none;
+        }
+
+        .recap-label {
+            color: var(--text-secondary);
+        }
+
+        .recap-value {
+            font-weight: 500;
+        }
+
+        /* Payment Info Box */
+        .payment-info {
+            background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%);
+            border: 1px solid #f59e0b;
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .payment-info h4 {
+            color: #92400e;
+            margin: 0 0 var(--spacing-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .payment-info p {
+            color: #78350f;
+            margin: 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Success Message */
+        .success-message {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--background-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xxl);
+            box-shadow: 0 4px 30px var(--shadow-medium);
             text-align: center;
         }
 
         .success-icon {
-            font-size: 4rem;
-            color: var(--success-color);
+            font-size: 5rem;
             margin-bottom: var(--spacing-lg);
+            animation: goldPulse 1.5s ease-in-out infinite;
         }
 
         .order-number {
-            font-size: 1.25rem;
-            font-weight: var(--font-weight-bold);
-            color: var(--primary-color);
+            display: inline-block;
+            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+            color: white;
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border-radius: var(--radius-full);
+            font-weight: 600;
             margin: var(--spacing-lg) 0;
         }
 
+        /* Empty Cart */
+        .empty-cart-message {
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: center;
+            padding: var(--spacing-xxl);
+            background: var(--background-primary);
+            border-radius: var(--radius-xl);
+            box-shadow: 0 4px 20px var(--shadow-light);
+        }
+
+        .empty-cart-icon {
+            font-size: 5rem;
+            margin-bottom: var(--spacing-lg);
+            opacity: 0.3;
+        }
+
         /* Mobile Responsive */
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
             .checkout-container {
                 grid-template-columns: 1fr;
                 gap: var(--spacing-xl);
@@ -229,9 +486,33 @@
                 grid-template-columns: 1fr;
             }
 
+            .step-label {
+                display: none;
+            }
+
+            .progress-line {
+                width: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .checkout-page {
+                padding-top: 80px;
+            }
+
             .checkout-form-section,
             .checkout-summary-section {
                 padding: var(--spacing-lg);
+            }
+
+            .step-navigation {
+                flex-direction: column;
+            }
+
+            .btn-back,
+            .btn-next {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
@@ -291,31 +572,32 @@
 
     <!-- Main Content -->
     <main class="main">
-        <!-- Breadcrumb -->
-        <section class="breadcrumb-section">
-            <div class="container">
-                <nav class="breadcrumb">
-                    <span class="breadcrumb-item">
-                        <a href="/" class="breadcrumb-link">Accueil</a>
-                    </span>
-                    <span class="breadcrumb-item">
-                        <a href="/panier" class="breadcrumb-link">Panier</a>
-                    </span>
-                    <span class="breadcrumb-item">Commande</span>
-                </nav>
-            </div>
-        </section>
-
         <!-- Checkout Page -->
         <section class="checkout-page">
             <div class="container">
-                <h1 class="section-title">Finaliser ma commande</h1>
+                <!-- Progress Steps -->
+                <div class="checkout-progress" id="checkout-progress">
+                    <div class="progress-step completed" data-step="0">
+                        <span class="step-number">✓</span>
+                        <span class="step-label">Panier</span>
+                    </div>
+                    <div class="progress-line completed"></div>
+                    <div class="progress-step active" data-step="1">
+                        <span class="step-number">1</span>
+                        <span class="step-label">Informations</span>
+                    </div>
+                    <div class="progress-line" id="progress-line-2"></div>
+                    <div class="progress-step" data-step="2">
+                        <span class="step-number">2</span>
+                        <span class="step-label">Confirmation</span>
+                    </div>
+                </div>
                 
                 <div id="checkout-content">
                     <!-- Loading State -->
-                    <div class="loading-state" id="loading-state" style="text-align: center; padding: var(--spacing-xxxl);">
+                    <div class="loading-state" id="loading-state" style="text-align: center; padding: 80px 20px;">
                         <div class="loading loading-large"></div>
-                        <p>Chargement...</p>
+                        <p style="margin-top: 20px; color: var(--text-secondary);">Chargement de votre panier...</p>
                     </div>
 
                     <!-- Checkout Content (loaded via JS) -->
@@ -402,12 +684,14 @@
     <script src="/assets/js/components.js"></script>
     
     <script>
-        // Checkout Page Logic
+        // Step-by-Step Checkout Page
         class CheckoutPage {
             constructor() {
                 this.cartItems = [];
                 this.total = 0;
+                this.currentStep = 1;
                 this.isProcessing = false;
+                this.formData = {};
                 
                 this.init();
             }
@@ -423,6 +707,7 @@
                     this.total = response.total || 0;
                     
                     if (this.cartItems.length === 0) {
+                        document.getElementById('checkout-progress').style.display = 'none';
                         this.renderEmptyCart();
                     } else {
                         this.renderCheckout();
@@ -440,9 +725,10 @@
                 const checkoutContent = document.getElementById('checkout-content');
                 checkoutContent.innerHTML = `
                     <div class="empty-cart-message">
+                        <div class="empty-cart-icon">🛒</div>
                         <h2>Votre panier est vide</h2>
-                        <p>Ajoutez des articles à votre panier avant de finaliser votre commande.</p>
-                        <a href="/boutique" class="btn btn-primary">Découvrir nos produits</a>
+                        <p style="color: var(--text-secondary); margin-bottom: var(--spacing-xl);">Ajoutez des articles à votre panier avant de finaliser votre commande.</p>
+                        <a href="/boutique" class="btn btn-gold">Découvrir nos produits</a>
                     </div>
                 `;
             }
@@ -452,78 +738,93 @@
                 checkoutContent.innerHTML = `
                     <div class="checkout-container">
                         <div class="checkout-form-section">
-                            <form id="checkout-form">
-                                <!-- Customer Information -->
-                                <div class="form-section">
-                                    <h2 class="section-title">Informations de livraison</h2>
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label class="form-label" for="customer-name">Nom complet *</label>
-                                            <input type="text" class="form-input" id="customer-name" name="name" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label" for="customer-phone">Téléphone *</label>
-                                            <input type="tel" class="form-input" id="customer-phone" name="phone" required>
-                                        </div>
-                                    </div>
-                                    <div class="form-group full-width">
-                                        <label class="form-label" for="customer-address">Adresse de livraison *</label>
-                                        <textarea class="form-textarea" id="customer-address" name="address" rows="3" required placeholder="Adresse complète avec ville et code postal"></textarea>
-                                    </div>
-                                </div>
-
-                                <!-- Account Creation -->
-                                <div class="form-section">
-                                    <h2 class="section-title">Créer un compte (optionnel)</h2>
-                                    <div class="checkbox-group">
-                                        <input type="checkbox" id="create-account" name="createAccount">
-                                        <label for="create-account">
-                                            Je souhaite créer un compte pour suivre mes commandes et bénéficier d'avantages exclusifs
-                                        </label>
-                                    </div>
-                                    
-                                    <div id="account-fields" style="display: none; margin-top: var(--spacing-lg);">
+                            <!-- Step 1: Information -->
+                            <div class="step-content active" id="step-1">
+                                <h2 class="step-title">Informations de livraison</h2>
+                                <p class="step-subtitle">Renseignez vos coordonnées pour la livraison</p>
+                                
+                                <form id="info-form">
+                                    <div class="form-section">
+                                        <div class="form-section-title">📦 Coordonnées</div>
                                         <div class="form-row">
                                             <div class="form-group">
-                                                <label class="form-label" for="customer-email">Email *</label>
-                                                <input type="email" class="form-input" id="customer-email" name="email">
+                                                <label class="form-label" for="customer-name">Nom complet *</label>
+                                                <input type="text" class="form-input" id="customer-name" name="name" required placeholder="Votre nom">
                                             </div>
                                             <div class="form-group">
-                                                <label class="form-label" for="customer-password">Mot de passe *</label>
-                                                <input type="password" class="form-input" id="customer-password" name="password" minlength="6">
+                                                <label class="form-label" for="customer-phone">Téléphone *</label>
+                                                <input type="tel" class="form-input" id="customer-phone" name="phone" required placeholder="+228 ...">
+                                            </div>
+                                        </div>
+                                        <div class="form-group full-width">
+                                            <label class="form-label" for="customer-address">Adresse de livraison *</label>
+                                            <textarea class="form-textarea" id="customer-address" name="address" rows="3" required placeholder="Adresse complète avec quartier et ville"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-section">
+                                        <div class="form-section-title">👤 Créer un compte (optionnel)</div>
+                                        <div class="checkbox-group">
+                                            <input type="checkbox" id="create-account" name="createAccount">
+                                            <label for="create-account">
+                                                Créer un compte pour suivre mes commandes et sauvegarder mes favoris
+                                            </label>
+                                        </div>
+                                        
+                                        <div id="account-fields" style="display: none; margin-top: var(--spacing-md);">
+                                            <div class="form-row">
+                                                <div class="form-group">
+                                                    <label class="form-label" for="customer-email">Email *</label>
+                                                    <input type="email" class="form-input" id="customer-email" name="email" placeholder="votre@email.com">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="form-label" for="customer-password">Mot de passe *</label>
+                                                    <input type="password" class="form-input" id="customer-password" name="password" minlength="6" placeholder="Min. 6 caractères">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <!-- Payment Information -->
-                                <div class="form-section">
-                                    <h2 class="section-title">Paiement</h2>
-                                    <div class="payment-placeholder">
-                                        <p>le paiement se fera à la livraison pour s'assurer de la satisfaction du client <br> NB: S'il advenait que vous n'etes pas satisfait alors vous pouvez retourner le produit mais vous les frais de transport sont à vos charge pour l'apport ainsi que pour le retour</p>
+                                    <div class="step-navigation">
+                                        <a href="/panier" class="btn-back">← Retour au panier</a>
+                                        <button type="submit" class="btn-next">Continuer →</button>
                                     </div>
+                                </form>
+                            </div>
+
+                            <!-- Step 2: Confirmation -->
+                            <div class="step-content" id="step-2">
+                                <h2 class="step-title">Confirmation de commande</h2>
+                                <p class="step-subtitle">Vérifiez vos informations avant de confirmer</p>
+
+                                <div class="confirmation-recap" id="confirmation-recap">
+                                    <!-- Filled dynamically -->
                                 </div>
 
-                                <!-- Terms and Conditions -->
-                                <div class="form-section">
-                                    <div class="checkbox-group">
-                                        <input type="checkbox" id="accept-terms" name="acceptTerms" required>
-                                        <label for="accept-terms">
-                                            J'accepte les <a href="/cgvs" target="_blank">conditions générales de vente</a> *
-                                        </label>
-                                    </div>
+                                <div class="payment-info">
+                                    <h4>💵 Paiement à la livraison</h4>
+                                    <p>Vous paierez <strong>${utils.formatPrice(this.total)}</strong> à la réception de votre colis. Si vous n'êtes pas satisfait, vous pouvez retourner le produit (frais de transport à votre charge).</p>
                                 </div>
 
-                                <!-- Submit Button -->
-                                <button type="submit" class="btn btn-primary" id="submit-order" style="width: 100%; font-size: 1.125rem; padding: var(--spacing-lg);">
-                                    Finaliser ma commande
-                                </button>
-                            </form>
+                                <div class="checkbox-group" style="background: var(--background-primary); border: 1px solid var(--border-color);">
+                                    <input type="checkbox" id="accept-terms" name="acceptTerms" required>
+                                    <label for="accept-terms">
+                                        J'accepte les <a href="/cgvs" target="_blank" style="color: var(--gold);">conditions générales de vente</a> *
+                                    </label>
+                                </div>
+
+                                <div class="step-navigation">
+                                    <button type="button" class="btn-back" id="back-to-info">← Modifier mes infos</button>
+                                    <button type="button" class="btn-next" id="confirm-order">
+                                        Confirmer ma commande ✓
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="checkout-summary-section">
                             <div class="order-summary">
-                                <h3 class="summary-title">Récapitulatif de commande</h3>
+                                <h3 class="summary-title">Votre commande</h3>
                                 
                                 <div class="summary-items">
                                     ${this.cartItems.map(item => this.createSummaryItemHTML(item)).join('')}
@@ -531,17 +832,22 @@
                                 
                                 <div class="summary-totals">
                                     <div class="summary-row">
-                                        <span>Sous-total (${this.getTotalItems()} article${this.getTotalItems() > 1 ? 's' : ''})</span>
+                                        <span>${this.getTotalItems()} article${this.getTotalItems() > 1 ? 's' : ''}</span>
                                         <span>${utils.formatPrice(this.total)}</span>
                                     </div>
                                     <div class="summary-row">
                                         <span>Livraison</span>
-                                        <span>À calculer</span>
+                                        <span style="font-size: 0.85rem; color: var(--text-secondary);">Selon zone de livraison</span>
                                     </div>
                                     <div class="summary-row total">
                                         <span>Total</span>
                                         <span>${utils.formatPrice(this.total)}</span>
                                     </div>
+                                </div>
+
+                                <div class="security-badge">
+                                    <span>🔒</span>
+                                    <div>Paiement sécurisé à la livraison</div>
                                 </div>
                             </div>
                         </div>
@@ -555,14 +861,14 @@
                 const product = item.product;
                 const imageUrl = product.images && product.images.length > 0 
                     ? (typeof product.images === 'string' ? JSON.parse(product.images)[0] : product.images[0])
-                    : 'https://images.pexels.com/photos/1191531/pexels-photo-1191531.jpeg';
+                    : '/assets/images/placeholder.jpg';
 
                 return `
                     <div class="summary-item">
                         <img src="${imageUrl}" alt="${product.title}" class="summary-item-image" loading="lazy">
                         <div class="summary-item-details">
                             <div class="summary-item-title">${product.title}</div>
-                            <div class="summary-item-quantity">Quantité: ${item.quantity}</div>
+                            <div class="summary-item-quantity">Qté: ${item.quantity}</div>
                             <div class="summary-item-price">${utils.formatPrice(product.price_fcfa * item.quantity)}</div>
                         </div>
                     </div>
@@ -590,61 +896,161 @@
                             accountFields.style.display = 'none';
                             emailField.required = false;
                             passwordField.required = false;
-                            emailField.value = '';
-                            passwordField.value = '';
                         }
                     });
                 }
 
-                // Form submission
-                const checkoutForm = document.getElementById('checkout-form');
-                if (checkoutForm) {
-                    checkoutForm.addEventListener('submit', (e) => {
+                // Step 1 form submission
+                const infoForm = document.getElementById('info-form');
+                if (infoForm) {
+                    infoForm.addEventListener('submit', (e) => {
                         e.preventDefault();
-                        this.processOrder();
+                        this.goToStep2();
                     });
+                }
+
+                // Back button from step 2
+                const backBtn = document.getElementById('back-to-info');
+                if (backBtn) {
+                    backBtn.addEventListener('click', () => this.goToStep1());
+                }
+
+                // Confirm order button
+                const confirmBtn = document.getElementById('confirm-order');
+                if (confirmBtn) {
+                    confirmBtn.addEventListener('click', () => this.processOrder());
+                }
+            }
+
+            goToStep2() {
+                // Collect form data
+                const form = document.getElementById('info-form');
+                const formData = new FormData(form);
+                
+                this.formData = {
+                    name: formData.get('name'),
+                    phone: formData.get('phone'),
+                    address: formData.get('address'),
+                    createAccount: document.getElementById('create-account').checked,
+                    email: formData.get('email') || '',
+                    password: formData.get('password') || ''
+                };
+
+                // Update confirmation recap
+                const recap = document.getElementById('confirmation-recap');
+                recap.innerHTML = `
+                    <div class="recap-row">
+                        <span class="recap-label">Nom</span>
+                        <span class="recap-value">${this.formData.name}</span>
+                    </div>
+                    <div class="recap-row">
+                        <span class="recap-label">Téléphone</span>
+                        <span class="recap-value">${this.formData.phone}</span>
+                    </div>
+                    <div class="recap-row">
+                        <span class="recap-label">Adresse</span>
+                        <span class="recap-value">${this.formData.address}</span>
+                    </div>
+                    ${this.formData.createAccount ? `
+                        <div class="recap-row">
+                            <span class="recap-label">Email</span>
+                            <span class="recap-value">${this.formData.email}</span>
+                        </div>
+                    ` : ''}
+                    <div class="recap-row">
+                        <span class="recap-label">Total à payer</span>
+                        <span class="recap-value" style="color: var(--gold); font-weight: 700;">${utils.formatPrice(this.total)}</span>
+                    </div>
+                `;
+
+                // Switch steps
+                this.currentStep = 2;
+                document.getElementById('step-1').classList.remove('active');
+                document.getElementById('step-2').classList.add('active');
+                
+                // Update progress
+                this.updateProgress();
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            goToStep1() {
+                this.currentStep = 1;
+                document.getElementById('step-2').classList.remove('active');
+                document.getElementById('step-1').classList.add('active');
+                
+                this.updateProgress();
+            }
+
+            updateProgress() {
+                const steps = document.querySelectorAll('.progress-step');
+                const line2 = document.getElementById('progress-line-2');
+
+                steps.forEach((step, index) => {
+                    const stepNum = parseInt(step.dataset.step);
+                    step.classList.remove('active', 'completed');
+                    
+                    if (stepNum < this.currentStep) {
+                        step.classList.add('completed');
+                        step.querySelector('.step-number').textContent = '✓';
+                    } else if (stepNum === this.currentStep) {
+                        step.classList.add('active');
+                        step.querySelector('.step-number').textContent = stepNum;
+                    } else {
+                        step.querySelector('.step-number').textContent = stepNum;
+                    }
+                });
+
+                if (this.currentStep >= 2) {
+                    line2.classList.add('completed');
+                } else {
+                    line2.classList.remove('completed');
                 }
             }
 
             async processOrder() {
                 if (this.isProcessing) return;
 
-                const form = document.getElementById('checkout-form');
-                const formData = new FormData(form);
-                
-                // Validate form
-                const errors = validateForm(form);
-                if (errors.length > 0) {
-                    showToast(errors[0], 'error');
+                // Check terms accepted
+                const termsCheckbox = document.getElementById('accept-terms');
+                if (!termsCheckbox.checked) {
+                    showToast('Veuillez accepter les conditions générales de vente', 'error');
                     return;
                 }
 
                 this.isProcessing = true;
-                const submitButton = document.getElementById('submit-order');
-                const originalText = submitButton.textContent;
+                const confirmBtn = document.getElementById('confirm-order');
+                const originalText = confirmBtn.textContent;
                 
                 try {
-                    submitButton.disabled = true;
-                    submitButton.innerHTML = '<div class="loading"></div> Traitement en cours...';
+                    confirmBtn.disabled = true;
+                    confirmBtn.innerHTML = '<div class="loading" style="width:20px;height:20px;border-width:2px;"></div> Traitement...';
 
                     // Prepare order data
                     const orderData = {
                         customer: {
-                            name: formData.get('name'),
-                            phone: formData.get('phone'),
-                            address: formData.get('address')
+                            name: this.formData.name,
+                            phone: this.formData.phone,
+                            address: this.formData.address
                         }
                     };
 
-                    // Add account creation data if requested
-                    if (formData.get('createAccount')) {
+                    if (this.formData.createAccount) {
                         orderData.createAccount = true;
-                        orderData.email = formData.get('email');
-                        orderData.password = formData.get('password');
+                        orderData.email = this.formData.email;
+                        orderData.password = this.formData.password;
                     }
 
-                    // Submit order
+                    // Submit order (saves to DB + sends email to admin)
                     const response = await checkoutAPI.create(orderData);
+                    
+                    if (response.accountCreated && response.email) {
+                        localStorage.setItem('pendingVerificationEmail', response.email);
+                    }
+                    
+                    // Open WhatsApp with order details
+                    utils.openWhatsAppOrder(response, this.cartItems, this.total, this.formData);
                     
                     // Show success message
                     this.renderSuccess(response);
@@ -652,37 +1058,62 @@
                 } catch (error) {
                     console.error('Order processing failed:', error);
                     showToast(error.message || 'Erreur lors du traitement de la commande', 'error');
-                    
-                    submitButton.disabled = false;
-                    submitButton.textContent = originalText;
+                    confirmBtn.disabled = false;
+                    confirmBtn.textContent = originalText;
                 } finally {
                     this.isProcessing = false;
                 }
             }
 
             renderSuccess(orderData) {
+                // Update progress to completed
+                document.querySelectorAll('.progress-step').forEach(step => {
+                    step.classList.add('completed');
+                    step.querySelector('.step-number').textContent = '✓';
+                });
+                document.getElementById('progress-line-2').classList.add('completed');
+
                 const checkoutContent = document.getElementById('checkout-content');
+                
+                const verificationMessage = orderData.accountCreated ? `
+                    <div style="background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%); border: 1px solid #f59e0b; border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; text-align: left;">
+                        <h4 style="color: #92400e; margin: 0 0 0.5rem; display: flex; align-items: center; gap: 8px;">📧 Vérifiez votre compte</h4>
+                        <p style="color: #78350f; margin: 0;">Un code de vérification a été envoyé à <strong>${orderData.email}</strong>. Redirection automatique...</p>
+                    </div>
+                ` : '';
+                
                 checkoutContent.innerHTML = `
                     <div class="success-message">
-                        <div class="success-icon">✅</div>
-                        <h2>Commande confirmée !</h2>
-                        <div class="order-number">Commande N° ${orderData.orderId}</div>
-                        <p>Merci pour votre commande. Vous recevrez bientôt un email de confirmation avec les détails de votre commande.</p>
+                        <div class="success-icon">✨</div>
+                        <h2 style="font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: var(--spacing-md);">Commande confirmée !</h2>
+                        <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg);">Merci pour votre confiance</p>
                         
-                        <div class="payment-placeholder" style="margin: var(--spacing-xl) 0;">
-                            <h3>Instructions de paiement</h3>
-                            <p>${orderData.payment_instructions || 'Les instructions de paiement vous seront communiquées par email.'}</p>
+                        <div class="order-number">N° ${orderData.orderId.substring(0, 8).toUpperCase()}</div>
+                        
+                        ${verificationMessage}
+                        
+                        <div style="background: var(--background-secondary); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0;">
+                            <h4 style="margin: 0 0 0.5rem;">💵 Paiement à la livraison</h4>
+                            <p style="margin: 0; color: var(--text-secondary);">Montant: <strong style="color: var(--gold);">${utils.formatPrice(orderData.total)}</strong></p>
                         </div>
                         
-                        <div style="display: flex; gap: var(--spacing-md); justify-content: center; margin-top: var(--spacing-xl);">
-                            <a href="/compte" class="btn btn-primary">Suivre ma commande</a>
+                        <div style="display: flex; gap: var(--spacing-md); justify-content: center; flex-wrap: wrap; margin-top: var(--spacing-xl);">
+                            ${orderData.accountCreated ? 
+                                `<a href="/compte?section=verify" class="btn btn-gold">Vérifier mon compte</a>` : 
+                                `<a href="/compte" class="btn btn-gold">Suivre ma commande</a>`
+                            }
                             <a href="/boutique" class="btn btn-outline">Continuer les achats</a>
                         </div>
                     </div>
                 `;
 
-                // Scroll to top
                 window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                if (orderData.accountCreated) {
+                    setTimeout(() => {
+                        window.location.href = '/compte?section=verify';
+                    }, 4000);
+                }
             }
 
             hideLoading() {

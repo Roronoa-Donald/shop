@@ -26,6 +26,11 @@
     --warning-color: #ffc107;
     --error-color: #dc3545;
     
+    /* Gold Aliases (for premium pages) */
+    --gold: #D4AF37;
+    --gold-light: #E6C55F;
+    --gold-dark: #B8941F;
+    
     /* Typography */
     --font-heading: 'Playfair Display', serif;
     --font-body: 'Source Sans Pro', sans-serif;
@@ -60,6 +65,7 @@
     --radius-md: 8px;
     --radius-lg: 12px;
     --radius-xl: 16px;
+    --radius-full: 9999px;
 }
 
 html {
@@ -146,10 +152,9 @@ a:hover {
 }
 
 .header.scrolled {
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--background-secondary);
     backdrop-filter: blur(10px);
-    color: black;
-    font-weight: bolder;
+    box-shadow: 0 4px 20px var(--shadow-medium);
 }
 
 .nav {
@@ -653,12 +658,12 @@ a:hover {
     margin: 0 auto;
 }
 
-.form-group {
+.newsletter-form .form-group {
     display: flex;
     gap: var(--spacing-sm);
 }
 
-.form-input {
+.newsletter-form .form-input {
     flex: 1;
     padding: var(--spacing-md);
     border: 2px solid transparent;
@@ -669,11 +674,11 @@ a:hover {
     transition: all var(--transition-fast);
 }
 
-.form-input::placeholder {
+.newsletter-form .form-input::placeholder {
     color: rgba(255, 255, 255, 0.7);
 }
 
-.form-input:focus {
+.newsletter-form .form-input:focus {
     outline: none;
     border-color: var(--primary-color);
     background: rgba(255, 255, 255, 0.2);
@@ -980,12 +985,20 @@ a:hover {
   font-weight: bolder  ;
 }
 .btn-outline:hover {
-    background: white;
-    color: var(--gold-4);
+    background: var(--background-primary);
+    color: var(--gold);
     font-weight: bolder;
-    border: 2px solid var(--gold-4);
+    border: 2px solid var(--gold);
 }
-input,input::placeholder ,*::placeholder,select,textarea {
-    font-weight: bolder;
-    color: wheat;
+
+/* Form Styles - ensure good contrast */
+input, select, textarea {
+    font-weight: 500;
+    color: var(--text-primary);
+    background: var(--background-primary);
+}
+
+input::placeholder, textarea::placeholder {
+    color: var(--text-light);
+    font-weight: 400;
 }

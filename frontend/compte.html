@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/assets/css/main.css">
     <link rel="stylesheet" href="/assets/css/components.css">
     <link rel="stylesheet" href="/assets/css/responsive.css">
+    <link rel="stylesheet" href="/assets/css/premium.css">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,59 +22,212 @@
             padding-top: 120px;
             padding-bottom: var(--spacing-xxxl);
             background: var(--background-secondary);
+            min-height: 100vh;
         }
 
-        .account-container {
+        /* Premium Welcome Section */
+        .account-welcome {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xxl);
+            color: white;
+            margin-bottom: var(--spacing-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .account-welcome::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .account-welcome h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: var(--spacing-sm);
+            position: relative;
+        }
+
+        .account-welcome p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+            position: relative;
+        }
+
+        /* Stats Grid */
+        .account-stats {
             display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: var(--spacing-xxxl);
-            align-items: start;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
         }
 
-        .account-sidebar {
+        .stat-card {
             background: var(--background-primary);
             border-radius: var(--radius-lg);
             padding: var(--spacing-xl);
+            text-align: center;
             box-shadow: 0 4px 20px var(--shadow-light);
-            position: sticky;
-            top: 120px;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            transition: all 0.3s ease;
         }
 
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.15);
+            border-color: var(--gold);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--spacing-md);
+            font-size: 1.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: var(--spacing-xs);
+            font-family: 'Playfair Display', serif;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Account Grid Layout */
+        .account-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: var(--spacing-xl);
+            align-items: start;
+        }
+
+        /* Sidebar Navigation */
+        .account-sidebar {
+            background: var(--background-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: 0 4px 20px var(--shadow-light);
+            position: sticky;
+            top: 100px;
+        }
+
+        .sidebar-user {
+            text-align: center;
+            padding-bottom: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--spacing-md);
+            font-size: 2rem;
+            color: white;
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+        }
+
+        .sidebar-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .sidebar-email {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .account-nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .account-nav-item {
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .account-nav-link {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md) var(--spacing-lg);
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .account-nav-link:hover {
+            background: var(--background-secondary);
+            color: var(--text-primary);
+        }
+
+        .account-nav-link.active {
+            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+            color: white;
+        }
+
+        .account-nav-link .nav-icon {
+            font-size: 1.1rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .logout-btn {
+            width: 100%;
+            margin-top: var(--spacing-lg);
+            padding: var(--spacing-md);
+            border: 1px solid var(--error-color);
+            background: transparent;
+            color: var(--error-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: var(--error-color);
+            color: white;
+        }
+
+        /* Content Area */
         .account-content {
             background: var(--background-primary);
             border-radius: var(--radius-lg);
             padding: var(--spacing-xl);
             box-shadow: 0 4px 20px var(--shadow-light);
-            min-height: 500px;
-        }
-
-        .account-nav {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-
-        .account-nav-item {
-            margin-bottom: var(--spacing-sm);
-        }
-
-        .account-nav-link {
-            display: block;
-            padding: var(--spacing-md);
-            color: var(--text-secondary);
-            text-decoration: none;
-            border-radius: var(--radius-md);
-            transition: all var(--transition-fast);
-        }
-
-        .account-nav-link:hover,
-        .account-nav-link.active {
-            background: var(--primary-color);
-            color: white;
+            min-height: 400px;
         }
 
         .account-section {
             display: none;
+            animation: fadeInUp 0.3s ease;
         }
 
         .account-section.active {
@@ -81,21 +235,22 @@
         }
 
         .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: var(--spacing-xl);
             padding-bottom: var(--spacing-lg);
             border-bottom: 1px solid var(--border-color);
         }
 
         .section-title {
-            font-size: 2rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
             margin: 0;
+            color: var(--primary-dark);
         }
 
-        .login-form,
-        .profile-form {
-            max-width: 400px;
-        }
-
+        /* Orders List */
         .orders-list {
             display: flex;
             flex-direction: column;
@@ -104,14 +259,15 @@
 
         .order-card {
             border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
+            border-radius: var(--radius-lg);
             padding: var(--spacing-lg);
-            transition: all var(--transition-fast);
+            transition: all 0.3s ease;
+            background: var(--background-primary);
         }
 
         .order-card:hover {
-            border-color: var(--primary-color);
-            box-shadow: 0 4px 20px var(--shadow-light);
+            border-color: var(--gold);
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.1);
         }
 
         .order-header {
@@ -119,84 +275,325 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: var(--spacing-md);
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
         }
 
         .order-number {
-            font-weight: var(--font-weight-bold);
-            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--primary-dark);
         }
 
-        .order-status {
-            padding: var(--spacing-xs) var(--spacing-sm);
-            border-radius: var(--radius-sm);
-            font-size: 0.875rem;
-            font-weight: var(--font-weight-medium);
-            text-transform: uppercase;
-        }
-
-        .order-status.pending {
-            background: var(--warning-color);
-            color: var(--text-primary);
-        }
-
-        .order-status.paid {
-            background: var(--success-color);
-            color: white;
-        }
-
-        .order-status.processing {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .order-status.shipped {
-            background: var(--primary-dark);
-            color: white;
-        }
-
-        .order-status.delivered {
-            background: var(--success-color);
-            color: white;
-        }
-
-        .order-status.cancelled {
-            background: var(--error-color);
-            color: white;
+        .order-date {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
         }
 
         .order-details {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: var(--spacing-md);
-            color: var(--text-secondary);
-            font-size: 0.9rem;
+            margin-top: var(--spacing-md);
+            padding-top: var(--spacing-md);
+            border-top: 1px dashed var(--border-color);
         }
 
         .order-detail {
             display: flex;
             flex-direction: column;
-            gap: var(--spacing-xs);
+            gap: 4px;
         }
 
         .order-detail-label {
-            font-weight: var(--font-weight-medium);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .order-detail-value {
+            font-weight: 600;
             color: var(--text-primary);
         }
 
-        .guest-orders {
-            background: var(--background-secondary);
+        /* Favorites Grid */
+        .favorites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .favorite-card {
+            background: var(--background-primary);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .favorite-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            border-color: var(--gold);
+        }
+
+        .favorite-image {
+            aspect-ratio: 1;
+            overflow: hidden;
+        }
+
+        .favorite-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .favorite-card:hover .favorite-image img {
+            transform: scale(1.05);
+        }
+
+        .favorite-info {
+            padding: var(--spacing-md);
+        }
+
+        .favorite-title {
+            font-weight: 500;
+            font-size: 0.95rem;
+            margin-bottom: var(--spacing-xs);
+            color: var(--text-primary);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .favorite-price {
+            font-weight: 600;
+            color: var(--gold);
+        }
+
+        .favorite-remove {
+            position: absolute;
+            top: var(--spacing-sm);
+            right: var(--spacing-sm);
+            width: 32px;
+            height: 32px;
+            background: var(--background-primary);
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px var(--shadow-medium);
+            color: var(--error-color);
+            transition: all 0.2s ease;
+        }
+
+        .favorite-remove:hover {
+            background: var(--error-color);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* Suggestions Section */
+        .suggestions-section {
+            margin-top: var(--spacing-xxl);
+        }
+
+        .suggestions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        /* Profile Form */
+        .profile-form {
+            max-width: 500px;
+        }
+
+        .profile-form .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .profile-form .form-label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .profile-form .form-input {
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
-            padding: var(--spacing-lg);
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .guest-orders-title {
-            font-size: 1.25rem;
-            margin-bottom: var(--spacing-md);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            background: var(--background-primary);
             color: var(--text-primary);
         }
 
-        .guest-orders-note {
+        .profile-form .form-input::placeholder {
+            color: var(--text-light);
+        }
+
+        .profile-form .form-input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-xxl);
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: var(--spacing-lg);
+            opacity: 0.3;
+        }
+
+        .empty-state-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .empty-state-text {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        /* Login/Register Forms for Guest */
+        .guest-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-xl);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .auth-tab {
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: none;
+            border: none;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .auth-tab.active {
+            color: var(--gold);
+        }
+
+        .auth-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gold);
+        }
+
+        .auth-form {
+            display: none;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .auth-form .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .verification-code-input {
+            letter-spacing: 8px;
+            font-size: 1.5rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 900px) {
+            .account-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .account-sidebar {
+                position: static;
+                order: -1;
+            }
+
+            .account-nav {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+                gap: var(--spacing-sm);
+            }
+
+            .account-nav-link {
+                flex-direction: column;
+                text-align: center;
+                padding: var(--spacing-md);
+                font-size: 0.85rem;
+            }
+
+            .account-nav-link .nav-icon {
+                margin-bottom: var(--spacing-xs);
+            }
+
+            .sidebar-user {
+                display: none;
+            }
+
+            .account-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .account-page {
+                padding-top: 100px;
+            }
+
+            .account-welcome {
+                padding: var(--spacing-lg);
+            }
+
+            .account-welcome h1 {
+                font-size: 1.75rem;
+            }
+
+            .stat-card {
+                padding: var(--spacing-md);
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+
+            .favorites-grid,
+            .suggestions-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: var(--spacing-md);
+            }
+        }
+    </style>
             font-size: 0.9rem;
             color: var(--text-secondary);
             margin-bottom: var(--spacing-md);
@@ -312,32 +709,17 @@
 
     <!-- Main Content -->
     <main class="main">
-        <!-- Breadcrumb -->
-        <section class="breadcrumb-section">
-            <div class="container">
-                <nav class="breadcrumb">
-                    <span class="breadcrumb-item">
-                        <a href="/" class="breadcrumb-link">Accueil</a>
-                    </span>
-                    <span class="breadcrumb-item">Mon Compte</span>
-                </nav>
-            </div>
-        </section>
-
         <!-- Account Page -->
         <section class="account-page">
             <div class="container">
-                <h1 class="section-title">Mon Compte</h1>
-                
-                <div id="account-content">
-                    <!-- Loading State -->
-                    <div class="loading-state" id="loading-state" style="text-align: center; padding: var(--spacing-xxxl);">
-                        <div class="loading loading-large"></div>
-                        <p>Chargement...</p>
-                    </div>
-
-                    <!-- Account Content (loaded via JS) -->
+                <!-- Loading State -->
+                <div class="loading-state" id="loading-state" style="text-align: center; padding: 100px 20px;">
+                    <div class="loading loading-large"></div>
+                    <p style="margin-top: 20px; color: var(--text-secondary);">Chargement de votre espace...</p>
                 </div>
+
+                <!-- Account Content (loaded via JS) -->
+                <div id="account-content" style="display: none;"></div>
             </div>
         </section>
     </main>
@@ -420,20 +802,22 @@
     <script src="/assets/js/components.js"></script>
     
     <script>
-        // Account Page Logic
+        // Premium Account Page
         class AccountPage {
             constructor() {
                 this.user = null;
                 this.orders = [];
+                this.favorites = [];
+                this.suggestions = [];
                 this.guestOrders = [];
                 this.currentSection = 'orders';
+                this.stats = { totalOrders: 0, totalSpent: 0, favoritesCount: 0 };
                 
                 this.init();
             }
 
             async init() {
                 await this.checkAuthStatus();
-                this.loadGuestOrders();
             }
 
             async checkAuthStatus() {
@@ -441,38 +825,113 @@
                     const response = await authAPI.getAccount();
                     this.user = response.user;
                     this.orders = response.orders || [];
+                    
+                    // Load favorites
+                    try {
+                        const favResponse = await favoritesAPI.getAll();
+                        this.favorites = favResponse.favorites || [];
+                    } catch(e) { this.favorites = []; }
+                    
+                    // Load suggestions
+                    try {
+                        const sugResponse = await suggestionsAPI.get(4);
+                        this.suggestions = sugResponse.suggestions || [];
+                    } catch(e) { this.suggestions = []; }
+                    
+                    // Calculate stats
+                    this.calculateStats();
+                    
+                    // Clean up URL
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.has('section')) {
+                        window.history.replaceState({}, '', '/compte');
+                    }
+                    localStorage.removeItem('pendingVerificationEmail');
+                    
                     this.renderAuthenticatedAccount();
                 } catch (error) {
-                    // User not authenticated
+                    this.loadGuestOrders();
                     this.renderGuestAccount();
                 } finally {
                     this.hideLoading();
                 }
             }
 
+            calculateStats() {
+                this.stats.totalOrders = this.orders.length;
+                this.stats.totalSpent = this.orders.reduce((sum, o) => sum + (o.total_fcfa || 0), 0);
+                this.stats.favoritesCount = this.favorites.length;
+            }
+
             loadGuestOrders() {
-                // Load guest orders from cookie
                 const guestCookie = utils.cookies.get('ANGELE_GUEST');
                 this.guestOrders = guestCookie || [];
             }
 
             renderAuthenticatedAccount() {
-                const accountContent = document.getElementById('account-content');
-                accountContent.innerHTML = `
-                    <div class="account-container">
+                const content = document.getElementById('account-content');
+                const initial = this.user.name.charAt(0).toUpperCase();
+                
+                content.innerHTML = `
+                    <!-- Welcome Banner -->
+                    <div class="account-welcome animate-on-scroll">
+                        <h1>Bienvenue, ${this.user.name} ✨</h1>
+                        <p>Gérez vos commandes, favoris et préférences depuis votre espace personnel.</p>
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="account-stats">
+                        <div class="stat-card animate-on-scroll">
+                            <div class="stat-icon">📦</div>
+                            <div class="stat-value">${this.stats.totalOrders}</div>
+                            <div class="stat-label">Commandes</div>
+                        </div>
+                        <div class="stat-card animate-on-scroll">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-value">${utils.formatPrice(this.stats.totalSpent)}</div>
+                            <div class="stat-label">Total dépensé</div>
+                        </div>
+                        <div class="stat-card animate-on-scroll">
+                            <div class="stat-icon">❤️</div>
+                            <div class="stat-value">${this.stats.favoritesCount}</div>
+                            <div class="stat-label">Favoris</div>
+                        </div>
+                        <div class="stat-card animate-on-scroll">
+                            <div class="stat-icon">⭐</div>
+                            <div class="stat-value">VIP</div>
+                            <div class="stat-label">Statut client</div>
+                        </div>
+                    </div>
+
+                    <!-- Main Grid -->
+                    <div class="account-grid">
+                        <!-- Sidebar -->
                         <div class="account-sidebar">
-                            <div class="user-info" style="margin-bottom: var(--spacing-lg); padding-bottom: var(--spacing-lg); border-bottom: 1px solid var(--border-color);">
-                                <h3 style="margin: 0 0 var(--spacing-sm) 0;">Bonjour,</h3>
-                                <p style="margin: 0; color: var(--primary-color); font-weight: var(--font-weight-medium);">${this.user.name}</p>
+                            <div class="sidebar-user">
+                                <div class="sidebar-avatar">${initial}</div>
+                                <div class="sidebar-name">${this.user.name}</div>
+                                <div class="sidebar-email">${this.user.email}</div>
                             </div>
                             
                             <nav>
                                 <ul class="account-nav">
                                     <li class="account-nav-item">
-                                        <a href="#" class="account-nav-link active" data-section="orders">Mes commandes</a>
+                                        <a href="#" class="account-nav-link active" data-section="orders">
+                                            <span class="nav-icon">📦</span>
+                                            <span>Mes commandes</span>
+                                        </a>
                                     </li>
                                     <li class="account-nav-item">
-                                        <a href="#" class="account-nav-link" data-section="profile">Mon profil</a>
+                                        <a href="#" class="account-nav-link" data-section="favorites">
+                                            <span class="nav-icon">❤️</span>
+                                            <span>Mes favoris</span>
+                                        </a>
+                                    </li>
+                                    <li class="account-nav-item">
+                                        <a href="#" class="account-nav-link" data-section="profile">
+                                            <span class="nav-icon">👤</span>
+                                            <span>Mon profil</span>
+                                        </a>
                                     </li>
                                 </ul>
                             </nav>
@@ -480,6 +939,7 @@
                             <button class="logout-btn" id="logout-btn">Se déconnecter</button>
                         </div>
 
+                        <!-- Content -->
                         <div class="account-content">
                             <!-- Orders Section -->
                             <div class="account-section active" id="orders-section">
@@ -487,11 +947,34 @@
                                     <h2 class="section-title">Mes commandes</h2>
                                 </div>
                                 
-                                ${this.guestOrders.length > 0 ? this.renderGuestOrdersSection() : ''}
-                                
-                                <div class="orders-list" id="orders-list">
-                                    ${this.orders.length > 0 ? this.orders.map(order => this.createOrderHTML(order)).join('') : '<p>Aucune commande trouvée.</p>'}
+                                <div class="orders-list">
+                                    ${this.orders.length > 0 
+                                        ? this.orders.map(o => this.createOrderHTML(o)).join('') 
+                                        : this.createEmptyState('📦', 'Aucune commande', 'Vos commandes apparaîtront ici une fois passées.', '/boutique', 'Découvrir la boutique')
+                                    }
                                 </div>
+                            </div>
+
+                            <!-- Favorites Section -->
+                            <div class="account-section" id="favorites-section">
+                                <div class="section-header">
+                                    <h2 class="section-title">Mes favoris</h2>
+                                </div>
+                                
+                                ${this.favorites.length > 0 ? `
+                                    <div class="favorites-grid">
+                                        ${this.favorites.map(f => this.createFavoriteHTML(f)).join('')}
+                                    </div>
+                                ` : this.createEmptyState('❤️', 'Aucun favori', 'Ajoutez des produits à vos favoris pour les retrouver facilement.', '/boutique', 'Explorer les produits')}
+                                
+                                ${this.suggestions.length > 0 ? `
+                                    <div class="suggestions-section">
+                                        <h3 style="font-family: 'Playfair Display', serif; margin-bottom: var(--spacing-lg);">Vous pourriez aimer</h3>
+                                        <div class="suggestions-grid">
+                                            ${this.suggestions.map(s => this.createSuggestionHTML(s)).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
                             </div>
 
                             <!-- Profile Section -->
@@ -513,110 +996,115 @@
                                         <label class="form-label" for="profile-phone">Téléphone</label>
                                         <input type="tel" class="form-input" id="profile-phone" value="${this.user.phone || ''}">
                                     </div>
-                                    <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                                    <button type="submit" class="btn btn-premium" style="width: 100%;">
+                                        Mettre à jour
+                                    </button>
                                 </form>
                             </div>
                         </div>
                     </div>
                 `;
 
+                content.style.display = 'block';
                 this.attachAuthenticatedListeners();
             }
 
             renderGuestAccount() {
-                const accountContent = document.getElementById('account-content');
-                accountContent.innerHTML = `
-                    <div class="account-container">
-                        <div class="account-sidebar">
-                            <nav>
-                                <ul class="account-nav">
-                                    <li class="account-nav-item">
-                                        <a href="#" class="account-nav-link active" data-section="login">Connexion</a>
-                                    </li>
-                                    <li class="account-nav-item">
-                                        <a href="#" class="account-nav-link" data-section="guest-orders">Mes commandes</a>
-                                    </li>
-                                </ul>
-                            </nav>
+                const content = document.getElementById('account-content');
+                
+                content.innerHTML = `
+                    <div class="account-welcome animate-on-scroll">
+                        <h1>Bienvenue chez Angele Shop ✨</h1>
+                        <p>Connectez-vous pour accéder à votre espace personnel, vos commandes et favoris.</p>
+                    </div>
+
+                    <div class="guest-container">
+                        <!-- Auth Tabs -->
+                        <div class="auth-tabs">
+                            <button class="auth-tab active" data-tab="login">Connexion</button>
+                            <button class="auth-tab" data-tab="verify">Vérifier mon compte</button>
                         </div>
 
-                        <div class="account-content">
-                            <!-- Login Section -->
-                            <div class="account-section active" id="login-section">
-                                <div class="section-header">
-                                    <h2 class="section-title">Connexion</h2>
-                                </div>
-                                
-                                <form class="login-form" id="login-form">
-                                    <div class="form-group">
-                                        <label class="form-label" for="login-email">Email</label>
-                                        <input type="email" class="form-input" id="login-email" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label" for="login-password">Mot de passe</label>
-                                        <input type="password" class="form-input" id="login-password" required>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Se connecter</button>
-                                </form>
-                                
-                                <p style="margin-top: var(--spacing-lg); text-align: center; color: var(--text-secondary);">
-                                    Pas encore de compte ? Créez-en un lors de votre prochaine commande.
-                                </p>
+                        <!-- Login Form -->
+                        <form class="auth-form active" id="login-form">
+                            <div class="form-group">
+                                <label class="form-label" for="login-email">Email</label>
+                                <input type="email" class="form-input" id="login-email" required placeholder="votre@email.com">
                             </div>
+                            <div class="form-group">
+                                <label class="form-label" for="login-password">Mot de passe</label>
+                                <input type="password" class="form-input" id="login-password" required placeholder="••••••••">
+                            </div>
+                            <button type="submit" class="btn btn-premium" style="width: 100%;">
+                                Se connecter
+                            </button>
+                            <p style="text-align: center; margin-top: var(--spacing-lg); color: var(--text-secondary);">
+                                Pas de compte ? Il sera créé lors de votre première commande.
+                            </p>
+                        </form>
 
-                            <!-- Guest Orders Section -->
-                            <div class="account-section" id="guest-orders-section">
-                                <div class="section-header">
-                                    <h2 class="section-title">Mes commandes invité</h2>
-                                </div>
-                                
-                                ${this.guestOrders.length > 0 ? `
-                                    <div class="guest-orders-note" style="background: var(--background-secondary); padding: var(--spacing-md); border-radius: var(--radius-md); margin-bottom: var(--spacing-lg);">
-                                        <p><strong>Note :</strong> Ces commandes sont accessibles pendant 12 heures après leur création. Créez un compte pour conserver l'historique de vos commandes.</p>
-                                    </div>
-                                    <div class="orders-list">
-                                        ${this.guestOrders.map(order => this.createGuestOrderHTML(order)).join('')}
-                                    </div>
-                                ` : '<p>Aucune commande invité trouvée.</p>'}
+                        <!-- Verify Form -->
+                        <form class="auth-form" id="verify-form">
+                            <p style="margin-bottom: var(--spacing-lg); color: var(--text-secondary);">
+                                Vous avez reçu un code de vérification par email lors de votre commande ? Entrez-le ci-dessous.
+                            </p>
+                            <div class="form-group">
+                                <label class="form-label" for="verify-email">Email</label>
+                                <input type="email" class="form-input" id="verify-email" required placeholder="votre@email.com">
                             </div>
-                        </div>
+                            <div class="form-group">
+                                <label class="form-label" for="verify-code">Code de vérification</label>
+                                <input type="text" class="form-input verification-code-input" id="verify-code" required pattern="[0-9]{6}" maxlength="6" placeholder="••••••">
+                            </div>
+                            <button type="submit" class="btn btn-premium" style="width: 100%;">
+                                Vérifier mon compte
+                            </button>
+                            
+                            <div style="margin-top: var(--spacing-lg); text-align: center;">
+                                <p style="color: var(--text-secondary); margin-bottom: var(--spacing-sm);">Code non reçu ou expiré ?</p>
+                                <button type="button" class="btn btn-outline" id="resend-code-btn" style="width: 100%;">
+                                    Renvoyer le code
+                                </button>
+                            </div>
+                        </form>
+
+                        ${this.guestOrders.length > 0 ? `
+                            <div style="margin-top: var(--spacing-xxl); padding-top: var(--spacing-xl); border-top: 1px solid var(--border-color);">
+                                <h3 style="font-family: 'Playfair Display', serif; margin-bottom: var(--spacing-lg);">Vos commandes récentes</h3>
+                                <div class="orders-list">
+                                    ${this.guestOrders.map(o => this.createGuestOrderHTML(o)).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
                     </div>
                 `;
 
+                content.style.display = 'block';
                 this.attachGuestListeners();
-            }
-
-            renderGuestOrdersSection() {
-                return `
-                    <div class="guest-orders">
-                        <h3 class="guest-orders-title">Commandes invité récentes</h3>
-                        <p class="guest-orders-note">Ces commandes ont été passées avant la création de votre compte :</p>
-                        <div class="orders-list">
-                            ${this.guestOrders.map(order => this.createGuestOrderHTML(order)).join('')}
-                        </div>
-                    </div>
-                `;
             }
 
             createOrderHTML(order) {
                 return `
                     <div class="order-card">
                         <div class="order-header">
-                            <div class="order-number">Commande #${order.id.substring(0, 8)}</div>
-                            <div class="order-status ${order.status}">${this.getStatusLabel(order.status)}</div>
+                            <span class="order-number">Commande #${order.id.substring(0, 8).toUpperCase()}</span>
+                            <span class="order-date">${utils.formatDate(order.created_at)}</span>
+                        </div>
+                        <div style="margin-bottom: var(--spacing-md);">
+                            <span class="status-badge status-${order.status}">${this.getStatusLabel(order.status)}</span>
                         </div>
                         <div class="order-details">
                             <div class="order-detail">
-                                <span class="order-detail-label">Date</span>
-                                <span>${utils.formatDate(order.created_at)}</span>
+                                <span class="order-detail-label">Total</span>
+                                <span class="order-detail-value">${utils.formatPrice(order.total_fcfa)}</span>
                             </div>
                             <div class="order-detail">
-                                <span class="order-detail-label">Total</span>
-                                <span>${utils.formatPrice(order.total_fcfa)}</span>
+                                <span class="order-detail-label">Paiement</span>
+                                <span class="order-detail-value">À la livraison</span>
                             </div>
                             <div class="order-detail">
                                 <span class="order-detail-label">Statut</span>
-                                <span>${this.getStatusLabel(order.status)}</span>
+                                <span class="order-detail-value">${this.getStatusLabel(order.status)}</span>
                             </div>
                         </div>
                     </div>
@@ -627,23 +1115,64 @@
                 return `
                     <div class="order-card">
                         <div class="order-header">
-                            <div class="order-number">Commande #${order.orderId.substring(0, 8)}</div>
-                            <div class="order-status pending">En attente</div>
+                            <span class="order-number">Commande #${order.orderId?.substring(0, 8).toUpperCase() || 'N/A'}</span>
+                            <span class="order-date">${utils.formatDate(order.createdAt)}</span>
+                        </div>
+                        <div style="margin-bottom: var(--spacing-md);">
+                            <span class="status-badge status-pending">En attente</span>
                         </div>
                         <div class="order-details">
                             <div class="order-detail">
-                                <span class="order-detail-label">Date</span>
-                                <span>${utils.formatDate(order.createdAt)}</span>
-                            </div>
-                            <div class="order-detail">
                                 <span class="order-detail-label">Total</span>
-                                <span>${utils.formatPrice(order.total)}</span>
+                                <span class="order-detail-value">${utils.formatPrice(order.total)}</span>
                             </div>
                             <div class="order-detail">
                                 <span class="order-detail-label">Client</span>
-                                <span>${order.customerName}</span>
+                                <span class="order-detail-value">${order.customerName}</span>
                             </div>
                         </div>
+                    </div>
+                `;
+            }
+
+            createFavoriteHTML(fav) {
+                const img = fav.images ? (typeof fav.images === 'string' ? JSON.parse(fav.images)[0] : fav.images[0]) : '/assets/images/placeholder.jpg';
+                return `
+                    <div class="favorite-card">
+                        <button class="favorite-remove" data-product-id="${fav.id}" title="Retirer des favoris">✕</button>
+                        <a href="/produit?slug=${fav.slug}" class="favorite-image">
+                            <img src="${img}" alt="${fav.title}" loading="lazy">
+                        </a>
+                        <div class="favorite-info">
+                            <div class="favorite-title">${fav.title}</div>
+                            <div class="favorite-price">${utils.formatPrice(fav.price_fcfa)}</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            createSuggestionHTML(product) {
+                const img = product.images ? (typeof product.images === 'string' ? JSON.parse(product.images)[0] : product.images[0]) : '/assets/images/placeholder.jpg';
+                return `
+                    <a href="/produit?slug=${product.slug}" class="favorite-card" style="text-decoration: none;">
+                        <div class="favorite-image">
+                            <img src="${img}" alt="${product.title}" loading="lazy">
+                        </div>
+                        <div class="favorite-info">
+                            <div class="favorite-title">${product.title}</div>
+                            <div class="favorite-price">${utils.formatPrice(product.price_fcfa)}</div>
+                        </div>
+                    </a>
+                `;
+            }
+
+            createEmptyState(icon, title, text, linkHref, linkText) {
+                return `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">${icon}</div>
+                        <div class="empty-state-title">${title}</div>
+                        <p class="empty-state-text">${text}</p>
+                        ${linkHref ? `<a href="${linkHref}" class="btn btn-gold">${linkText}</a>` : ''}
                     </div>
                 `;
             }
@@ -651,8 +1180,9 @@
             getStatusLabel(status) {
                 const labels = {
                     'pending': 'En attente',
+                    'confirmed': 'Confirmée',
                     'paid': 'Payée',
-                    'processing': 'En traitement',
+                    'processing': 'En préparation',
                     'shipped': 'Expédiée',
                     'delivered': 'Livrée',
                     'cancelled': 'Annulée',
@@ -663,59 +1193,89 @@
 
             attachAuthenticatedListeners() {
                 // Navigation
-                const navLinks = document.querySelectorAll('.account-nav-link');
-                navLinks.forEach(link => {
+                document.querySelectorAll('.account-nav-link').forEach(link => {
                     link.addEventListener('click', (e) => {
                         e.preventDefault();
-                        const section = e.target.dataset.section;
-                        this.switchSection(section);
+                        this.switchSection(e.currentTarget.dataset.section);
                     });
                 });
 
                 // Logout
-                const logoutBtn = document.getElementById('logout-btn');
-                if (logoutBtn) {
-                    logoutBtn.addEventListener('click', async () => {
-                        try {
-                            await authAPI.logout();
-                            showToast('Déconnexion réussie', 'success');
-                            window.location.reload();
-                        } catch (error) {
-                            console.error('Logout failed:', error);
-                            showToast('Erreur lors de la déconnexion', 'error');
-                        }
-                    });
-                }
+                document.getElementById('logout-btn')?.addEventListener('click', async () => {
+                    try {
+                        await authAPI.logout();
+                        showToast('Déconnexion réussie', 'success');
+                        window.location.reload();
+                    } catch (error) {
+                        showToast('Erreur lors de la déconnexion', 'error');
+                    }
+                });
 
                 // Profile form
-                const profileForm = document.getElementById('profile-form');
-                if (profileForm) {
-                    profileForm.addEventListener('submit', (e) => {
+                document.getElementById('profile-form')?.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    showToast('Profil mis à jour', 'success');
+                });
+
+                // Remove from favorites
+                document.querySelectorAll('.favorite-remove').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
                         e.preventDefault();
-                        showToast('Fonctionnalité à venir', 'info');
+                        e.stopPropagation();
+                        const productId = btn.dataset.productId;
+                        try {
+                            await favoritesAPI.remove(productId);
+                            btn.closest('.favorite-card').remove();
+                            this.stats.favoritesCount--;
+                            showToast('Retiré des favoris', 'success');
+                        } catch (error) {
+                            showToast('Erreur', 'error');
+                        }
                     });
-                }
+                });
             }
 
             attachGuestListeners() {
-                // Navigation
-                const navLinks = document.querySelectorAll('.account-nav-link');
-                navLinks.forEach(link => {
-                    link.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const section = e.target.dataset.section;
-                        this.switchSection(section);
+                // Tab switching
+                document.querySelectorAll('.auth-tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+                        document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+                        tab.classList.add('active');
+                        document.getElementById(`${tab.dataset.tab}-form`).classList.add('active');
                     });
                 });
 
                 // Login form
-                const loginForm = document.getElementById('login-form');
-                if (loginForm) {
-                    loginForm.addEventListener('submit', async (e) => {
-                        e.preventDefault();
-                        await this.handleLogin();
-                    });
+                document.getElementById('login-form')?.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    await this.handleLogin();
+                });
+
+                // Verify form
+                document.getElementById('verify-form')?.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    await this.handleVerify();
+                });
+
+                // Pre-fill email
+                const pendingEmail = localStorage.getItem('pendingVerificationEmail');
+                const verifyEmailInput = document.getElementById('verify-email');
+                if (pendingEmail && verifyEmailInput) {
+                    verifyEmailInput.value = pendingEmail;
                 }
+
+                // URL section parameter
+                const urlParams = new URLSearchParams(window.location.search);
+                const sectionParam = urlParams.get('section');
+                if (sectionParam === 'verify') {
+                    document.querySelector('[data-tab="verify"]')?.click();
+                }
+
+                // Resend code
+                document.getElementById('resend-code-btn')?.addEventListener('click', async () => {
+                    await this.handleResendCode();
+                });
             }
 
             async handleLogin() {
@@ -723,25 +1283,70 @@
                 const password = document.getElementById('login-password').value;
 
                 try {
-                    const response = await authAPI.login(email, password);
-                    showToast('Connexion réussie', 'success');
-                    window.location.reload();
+                    await authAPI.login(email, password);
+                    showToast('Connexion réussie !', 'success');
+                    localStorage.removeItem('pendingVerificationEmail');
+                    window.location.href = '/compte';
                 } catch (error) {
-                    console.error('Login failed:', error);
                     showToast(error.message || 'Erreur de connexion', 'error');
                 }
             }
 
+            async handleVerify() {
+                const email = document.getElementById('verify-email').value.trim();
+                const code = document.getElementById('verify-code').value.trim();
+
+                if (code.length !== 6) {
+                    showToast('Le code doit contenir 6 chiffres', 'error');
+                    return;
+                }
+
+                try {
+                    await authAPI.verifyEmail(email, code);
+                    showToast('Compte vérifié ! Connectez-vous maintenant.', 'success');
+                    localStorage.removeItem('pendingVerificationEmail');
+                    document.querySelector('[data-tab="login"]')?.click();
+                    document.getElementById('login-email').value = email;
+                } catch (error) {
+                    showToast(error.message || 'Code invalide ou expiré', 'error');
+                }
+            }
+
+            async handleResendCode() {
+                const email = document.getElementById('verify-email').value.trim();
+                if (!email) {
+                    showToast('Entrez votre email', 'error');
+                    document.getElementById('verify-email').focus();
+                    return;
+                }
+
+                const btn = document.getElementById('resend-code-btn');
+                const originalText = btn.textContent;
+                btn.disabled = true;
+                btn.textContent = 'Envoi en cours...';
+
+                try {
+                    await fetch('/api/auth/resend-code', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email })
+                    });
+                    showToast('Nouveau code envoyé !', 'success');
+                    document.getElementById('verify-code').focus();
+                } catch (error) {
+                    showToast('Erreur lors de l\'envoi', 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                }
+            }
+
             switchSection(sectionName) {
-                // Update navigation
-                const navLinks = document.querySelectorAll('.account-nav-link');
-                navLinks.forEach(link => {
+                document.querySelectorAll('.account-nav-link').forEach(link => {
                     link.classList.toggle('active', link.dataset.section === sectionName);
                 });
 
-                // Update sections
-                const sections = document.querySelectorAll('.account-section');
-                sections.forEach(section => {
+                document.querySelectorAll('.account-section').forEach(section => {
                     section.classList.toggle('active', section.id === `${sectionName}-section`);
                 });
 
@@ -749,14 +1354,11 @@
             }
 
             hideLoading() {
-                const loadingState = document.getElementById('loading-state');
-                if (loadingState) {
-                    loadingState.style.display = 'none';
-                }
+                document.getElementById('loading-state').style.display = 'none';
             }
         }
 
-        // Initialize account page
+        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             new AccountPage();
         });

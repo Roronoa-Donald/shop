@@ -7,10 +7,9 @@ Nous avons bien reçu votre commande et nous vous en remercions.
 DÉTAILS DE LA COMMANDE
 Commande N° {{orderId}}
 Montant : {{amount}}
-Statut : En attente de paiement
+Statut : Confirmée - Paiement à la livraison
 
-Les instructions de paiement vous seront communiquées prochainement. 
-Votre commande sera traitée dès réception du paiement.
+Votre commande est en cours de préparation. Vous réglerez le montant directement au livreur lors de la réception de votre colis.
 
 Vous pouvez suivre l'évolution de votre commande dans la section "Mon Compte" de notre site.
 

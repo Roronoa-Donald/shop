@@ -207,19 +207,33 @@ class AngeleShopApp {
     initCartEvents() {
         // Add to cart buttons
         document.addEventListener('click', async (e) => {
-            if (e.target.matches('.add-to-cart-btn, .add-to-cart-main')) {
-                e.preventDefault();
-                
-                const productId = e.target.dataset.productId || 
-                                 e.target.closest('[data-product-id]')?.dataset.productId;
-                
-                if (productId && !e.target.disabled) {
+            // Utiliser closest() pour détecter les clics sur les boutons ou leurs enfants (icônes)
+            const addToCartBtn = e.target.closest('.add-to-cart-btn, .add-to-cart-main');
+            
+            // Ignorer si pas de bouton trouvé ou si c'est le bouton de la page produit (géré séparément)
+            if (!addToCartBtn || addToCartBtn.id === 'add-to-cart') return;
+            
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const productId = addToCartBtn.dataset.productId || 
+                             addToCartBtn.closest('[data-product-id]')?.dataset.productId;
+            
+            console.log('Add to cart clicked, productId:', productId);
+            
+            if (productId && !addToCartBtn.disabled) {
+                addToCartBtn.disabled = true;
+                try {
                     const success = await cart.add(productId);
                     if (success && this.modals['cart-modal']) {
                         // Optionally open cart modal after adding
                         setTimeout(() => this.modals['cart-modal'].open(), 500);
                     }
+                } finally {
+                    addToCartBtn.disabled = false;
                 }
+            } else {
+                console.log('No productId found or button disabled');
             }
         });
 

@@ -1,13 +1,29 @@
 const { v4: uuidv4 } = require('uuid');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const fs = require('fs').promises;
 const path = require('path');
-const { default: fastify } = require('fastify');
 
 async function apiRoutes(fastify) {
+  // Escape LIKE/ILIKE wildcards in user input
+  function escapeLike(str) {
+    return str.replace(/[%_\\]/g, '\\$&');
+  }
+
   // Health check
   fastify.get('/health', async () => {
     return { status: 'ok', timestamp: new Date().toISOString() };
+  });
+
+  // Public site configuration (WhatsApp, phone, etc.)
+  fastify.get('/config', async () => {
+    return {
+      whatsappNumber: process.env.WHATSAPP_NUMBER || '22896272034',
+      phoneNumber: process.env.PHONE_NUMBER || '+22896272034',
+      siteName: 'Angele Shop',
+      currency: 'FCFA',
+      country: 'Togo'
+    };
   });
 
   // Get categories
@@ -55,9 +71,10 @@ fastify.get('/products', {
 
   // Filtres (produits)
   if (q) {
+    const escaped = escapeLike(q);
     query = query.whereRaw(
       "products.title ILIKE ? OR products.description ILIKE ?",
-      [`%${q}%`, `%${q}%`]
+      [`%${escaped}%`, `%${escaped}%`]
     );
   }
   if (category) {
@@ -77,9 +94,10 @@ fastify.get('/products', {
   let countQuery = fastify.db('products');
 
   if (q) {
+    const escaped = escapeLike(q);
     countQuery = countQuery.whereRaw(
       "title ILIKE ? OR description ILIKE ?",
-      [`%${q}%`, `%${q}%`]
+      [`%${escaped}%`, `%${escaped}%`]
     );
   }
   if (category) {
@@ -142,7 +160,7 @@ fastify.get('/products', {
     return { ...product, variants };
   });
 
-// REGISTER : create user and emit verification code (motif = 'verification')
+// REGISTER : create user and emit verification code
 fastify.post('/auth/register', {
   schema: {
     body: {
@@ -159,10 +177,35 @@ fastify.post('/auth/register', {
 }, async (request, reply) => {
   const { name, email, phone, password } = request.body;
   const existing = await fastify.db('users').where('email', email).first();
-  if (existing) return reply.code(400).send({ error: 'Email already exists' });
+  if (existing) {
+    // Si l'utilisateur existe mais n'est pas vérifié, renvoyer un nouveau code
+    if (!existing.is_verified) {
+      const numCode = Math.floor(100000 + Math.random() * 900000);
+      await fastify.db('codes').where({ mail: email, motif: 'verification' }).delete();
+      await fastify.db('codes').insert({
+        num_code: numCode,
+        motif: 'verification',
+        mail: email,
+        timestamp: Date.now(),
+        consumed: false
+      });
+      
+      try {
+        await fastify.sendEmail('verify_register', email, 'Code de vérification Angele Shop', {
+          name: existing.name, code: numCode
+        });
+        return { success: true, message: 'Un nouveau code de vérification a été envoyé à votre email.' };
+      } catch (err) {
+        console.error('Mail send error:', err.message);
+        return reply.code(500).send({ error: "Erreur lors de l'envoi de l'email." });
+      }
+    }
+    return reply.code(400).send({ error: 'Cet email est déjà utilisé. Connectez-vous.' });
+  }
 
   const passwordHash = await bcrypt.hash(password, 12);
   const userId = uuidv4();
+  const numCode = Math.floor(100000 + Math.random() * 900000);
 
   // create user row (is_verified default false)
   await fastify.db('users').insert({
@@ -175,8 +218,7 @@ fastify.post('/auth/register', {
     created_at: new Date()
   });
 
-  // create 6-digit code and insert into codes table
-  const numCode = Math.floor(100000 + Math.random() * 900000);
+  // create verification code
   await fastify.db('codes').insert({
     num_code: numCode,
     motif: 'verification',
@@ -185,17 +227,19 @@ fastify.post('/auth/register', {
     consumed: false
   });
 
-  // send email (assumes fastify.sendEmail exists)
+  // send email with code
   try {
     await fastify.sendEmail('verify_register', email, 'Code de vérification Angele Shop', {
       name, code: numCode
     });
+    return { success: true, message: 'Un code de vérification a été envoyé à votre email.' };
   } catch (err) {
+    console.error('Mail send error (register):', err.message);
     request.log.error('Mail send error (register):', err);
-    // NOTE: you may decide to rollback user and code on email failure
+    return reply.code(500).send({ 
+      error: "Erreur lors de l'envoi de l'email de vérification. Veuillez réessayer."
+    });
   }
-
-  return { success: true, message: 'Verification code sent' };
 });
 // VERIFY registration code
 fastify.post('/auth/register/verify', {
@@ -241,6 +285,62 @@ fastify.post('/auth/register/verify', {
 
   return { success: true, message: 'Compte vérifié' };
 });
+
+// RESEND verification code
+fastify.post('/auth/resend-code', {
+  schema: {
+    body: {
+      type: 'object',
+      required: ['email'],
+      properties: {
+        email: { type: 'string', format: 'email' }
+      }
+    }
+  }
+}, async (request, reply) => {
+  const { email } = request.body;
+
+  const user = await fastify.db('users').where('email', email).first();
+  
+  // Return success even if user not found to avoid user enumeration
+  if (!user) {
+    return { success: true, message: 'Si un compte existe avec cet email, un nouveau code a été envoyé.' };
+  }
+  
+  // If already verified, no need to send code
+  if (user.is_verified) {
+    return reply.code(400).send({ error: 'Ce compte est déjà vérifié. Connectez-vous.' });
+  }
+
+  // Generate new verification code
+  const numCode = Math.floor(100000 + Math.random() * 900000);
+  
+  // Delete old verification codes for this email
+  await fastify.db('codes').where({ mail: email, motif: 'verification' }).delete();
+  
+  // Insert new code
+  await fastify.db('codes').insert({
+    num_code: numCode,
+    motif: 'verification',
+    mail: email,
+    timestamp: Date.now(),
+    consumed: false
+  });
+
+  // Send email
+  try {
+    await fastify.sendEmail('verify_register', email, 'Code de vérification Angele Shop', {
+      name: user.name,
+      code: numCode
+    });
+    return { success: true, message: 'Un nouveau code de vérification a été envoyé.' };
+  } catch (err) {
+    console.error('Mail send error (resend-code):', err.message);
+    request.log.error('Mail send error (resend-code):', err);
+    return reply.code(500).send({ error: "Erreur lors de l'envoi de l'email. Veuillez réessayer." });
+  }
+});
+
 // REQUEST password reset (send 6-digit code, motif = 'reset')
 fastify.post('/auth/reset/request', {
   schema: {
@@ -333,6 +433,8 @@ fastify.post('/auth/reset/verify', {
     }
   }, async (request, reply) => {
     const { action, productId, variantId, quantity = 1 } = request.body;
+    console.log('Cart POST - session ID:', request.session.sessionId, 'action:', action, 'productId:', productId);
+    console.log('session.cart before:', request.session.cart);
     const cart = request.session.cart || [];
 
     switch (action) {
@@ -372,10 +474,14 @@ fastify.post('/auth/reset/verify', {
     }
 
     request.session.cart = cart;
+    // Sauvegarder la session explicitement
+    await request.session.save();
+    console.log('Cart after update:', cart.length, 'items, session saved');
     return { success: true, cart };
   });
 
   fastify.get('/cart', async (request) => {
+    console.log('GET /cart - session ID:', request.session.sessionId, 'session.cart:', request.session.cart);
     const cart = request.session.cart || [];
     
     if (cart.length === 0) {
@@ -398,44 +504,59 @@ fastify.post('/auth/reset/verify', {
 
     return { cart: cartWithDetails, total };
   });
-  //verify token 
-  fastify.put('/verifytoken',async (req, res)=>{
-      const {token} = req.body
-      const last = await fastify.db('tokens')
-      .select('token')
-      .orderBy('id', 'desc')
-      .first();
-      const lastToken = last?.token;
-      if(token){
-        if(token===lastToken){
-          res.send({oklm:true})
-      }else{
-        res.code(401).send({error:"token invalide"})
-      }}else{
-        res.code(400).send({error:"données manquantes"})
+
+  // Verify admin token via JWT signature (no DB lookup)
+  fastify.post('/verifytoken', async (req, res) => {
+    const { token } = req.body;
+    if (!token) {
+      return res.code(400).send({ error: 'Token requis' });
+    }
+    try {
+      const decoded = jwt.verify(token, process.env.APP_SECRET);
+      if (!decoded || decoded.type !== 'admin' || decoded.email !== process.env.ADMIN_EMAIL) {
+        return res.code(401).send({ error: 'Token admin invalide' });
       }
-    })
-//edit page
-fastify.put("/editproduct/:id",async (req, res)=>{
-  const id = req.params.id
-  console.log(id)
-  const {  title, description, price_fcfa, category_id, subcategory,available_count,sku,tags } = req.body;
-  console.log(req.body)
-  try {
-  await fastify.db('products').where('id', id).update({
-    title,
-    description,
-    price_fcfa,
-    category_id,
-    subcategory,
-    available_count,
-    sku,
-    tags:tags?JSON.stringify(tags):null,
-    updated_at: new Date()
-  })
-  res.send("produit modifié avec succès")
-  }catch(err){console.log(err);res.code(500).send({error:"une erreur est survenue"})}
-  ;})
+      return res.send({ valid: true });
+    } catch (err) {
+      return res.code(401).send({ error: 'Token invalide ou expiré' });
+    }
+  });
+
+  // Edit product (admin-protected)
+  fastify.put('/editproduct/:id', async (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.code(401).send({ error: 'Token requis' });
+    const tokenMatch = authHeader.match(/^Bearer\s+(.+)$/i);
+    const rawToken = tokenMatch ? tokenMatch[1] : authHeader;
+    try {
+      const decoded = jwt.verify(rawToken, process.env.APP_SECRET);
+      if (!decoded || decoded.type !== 'admin' || decoded.email !== process.env.ADMIN_EMAIL) {
+        return res.code(401).send({ error: 'Token admin invalide' });
+      }
+    } catch (err) {
+      return res.code(401).send({ error: 'Token invalide ou expiré' });
+    }
+
+    const { id } = req.params;
+    const { title, description, price_fcfa, category_id, subcategory, available_count, sku, tags } = req.body;
+    try {
+      await fastify.db('products').where('id', id).update({
+        title,
+        description,
+        price_fcfa,
+        category_id,
+        subcategory,
+        available_count,
+        sku,
+        tags: tags ? JSON.stringify(tags) : null,
+        updated_at: new Date()
+      });
+      return res.send({ success: true, message: 'Produit modifié avec succès' });
+    } catch (err) {
+      req.log.error('Edit product error:', err);
+      return res.code(500).send({ error: 'Une erreur est survenue' });
+    }
+  });
   
 
   // Checkout
@@ -468,74 +589,120 @@ fastify.put("/editproduct/:id",async (req, res)=>{
       return reply.code(400).send({ error: 'Cart is empty' });
     }
 
-    // Calculate total
+    // Get product details
     const productIds = cart.map(item => item.productId);
     const products = await fastify.db('products').whereIn('id', productIds);
-    
-    const total = cart.reduce((sum, item) => {
+
+    // Calculate total and verify stock
+    let total = 0;
+    for (const item of cart) {
       const product = products.find(p => p.id === item.productId);
-      return sum + (product ? product.price_fcfa * item.quantity : 0);
-    }, 0);
-
-    let userId = null;
-
-    // Create account if requested
-    if (createAccount && email && password) {
-      const existingUser = await fastify.db('users').where('email', email).first();
-      if (existingUser) {
-        return reply.code(400).send({ error: 'Email already exists' });
+      if (!product) {
+        return reply.code(400).send({ error: 'Produit introuvable' });
       }
-
-      const passwordHash = await bcrypt.hash(password, 12);
-      const [user] = await fastify.db('users')
-        .insert({
-          id: uuidv4(),
-          email,
-          name: customer.name,
-          phone: customer.phone,
-          password_hash: passwordHash,
-          created_at: new Date()
-        })
-        .returning('*');
-      
-      userId = user.id;
-      request.session.userId = userId;
+      if (product.available_count < item.quantity) {
+        return reply.code(400).send({ error: `Stock insuffisant pour "${product.title}"` });
+      }
+      total += product.price_fcfa * item.quantity;
     }
 
-    // Create order
+    let userId = null;
     const orderId = uuidv4();
-    await fastify.db('orders').insert({
-      id: orderId,
-      user_id: userId,
-      guest_name: customer.name,
-      guest_phone: customer.phone,
-      guest_address: customer.address,
-      status: 'pending',
-      total_fcfa: total,
-      payment_meta: { payment_method: 'pending' },
-      created_at: new Date(),
-      updated_at: new Date()
-    });
 
-    // Create order items
-    const orderItems = cart.map(item => {
-      const product = products.find(p => p.id === item.productId);
-      return {
-        order_id: orderId,
-        product_id: item.productId,
-        variant_id: item.variantId || null,
-        quantity: item.quantity,
-        unit_price_fcfa: product ? product.price_fcfa : 0
-      };
-    });
+    // Use a DB transaction for all write operations
+    const trx = await fastify.db.transaction();
+    try {
+      // Create account if requested
+      if (createAccount && email && password) {
+        const existingUser = await trx('users').where('email', email).first();
+        if (existingUser) {
+          await trx.rollback();
+          return reply.code(400).send({ error: 'Email already exists' });
+        }
 
-    await fastify.db('order_items').insert(orderItems);
+        const passwordHash = await bcrypt.hash(password, 12);
+        const newUserId = uuidv4();
+        const [user] = await trx('users')
+          .insert({
+            id: newUserId,
+            email,
+            name: customer.name,
+            phone: customer.phone,
+            password_hash: passwordHash,
+            is_verified: false,
+            created_at: new Date()
+          })
+          .returning('*');
 
-    // Set guest cookie for order tracking
+        userId = user.id;
+        request.session.userId = userId;
+        
+        // Generate verification code for the new account
+        const numCode = Math.floor(100000 + Math.random() * 900000);
+        await trx('codes').insert({
+          num_code: numCode,
+          motif: 'verification',
+          mail: email,
+          timestamp: Date.now(),
+          consumed: false
+        });
+        
+        // Store verification code to send email after transaction commits
+        request.verificationData = { email, name: customer.name, code: numCode };
+      }
+
+      // Create order
+      await trx('orders').insert({
+        id: orderId,
+        user_id: userId,
+        guest_name: customer.name,
+        guest_phone: customer.phone,
+        guest_address: customer.address,
+        status: 'pending',
+        total_fcfa: total,
+        payment_meta: { payment_method: 'pending' },
+        created_at: new Date(),
+        updated_at: new Date()
+      });
+
+      // Create order items
+      const orderItems = cart.map(item => {
+        const product = products.find(p => p.id === item.productId);
+        return {
+          order_id: orderId,
+          product_id: item.productId,
+          variant_id: item.variantId || null,
+          quantity: item.quantity,
+          unit_price_fcfa: product ? product.price_fcfa : 0
+        };
+      });
+      await trx('order_items').insert(orderItems);
+
+      // Decrement stock
+      for (const item of cart) {
+        await trx('products')
+          .where('id', item.productId)
+          .decrement('available_count', item.quantity);
+      }
+
+      await trx.commit();
+    } catch (err) {
+      await trx.rollback();
+      request.log.error('Checkout transaction failed:', err);
+      return reply.code(500).send({ error: 'Erreur lors de la commande' });
+    }
+
+    // Set guest cookie for order tracking (httpOnly for security)
     if (!userId) {
-      const guestOrders = request.cookies[`ANGELE_GUEST`] ? 
-        JSON.parse(request.cookies[`ANGELE_GUEST`]) : [];
-      
+      let guestOrders = [];
+      try {
+        const raw = request.cookies['ANGELE_GUEST'];
+        guestOrders = raw ? JSON.parse(raw) : [];
+        if (!Array.isArray(guestOrders)) guestOrders = [];
+      } catch (e) {
+        guestOrders = [];
+      }
+
       guestOrders.push({
         orderId,
         total,
@@ -543,9 +710,9 @@ fastify.put("/editproduct/:id",async (req, res)=>{
         customerName: customer.name
       });
 
-      reply.setCookie(`ANGELE_GUEST`, JSON.stringify(guestOrders), {
+      reply.setCookie('ANGELE_GUEST', JSON.stringify(guestOrders), {
         maxAge: 12 * 60 * 60 * 1000, // 12 hours
-        httpOnly: false,
+        httpOnly: true,
         path: '/'
       });
     }
@@ -553,25 +720,30 @@ fastify.put("/editproduct/:id",async (req, res)=>{
     // Clear cart
     request.session.cart = [];
 
-    // Send order confirmation email if applicable
-    if (true) {
-      await fastify.sendEmail('order_received', "roronoadonald3@gmail.com", 'Commande reçue', {
-        orderId,
-        customerName: customer.name,
-        amount: `${total.toLocaleString()} FCFA`
-      });
-      
+    // Send verification email if account was created (fire-and-forget, non-blocking)
+    if (request.verificationData) {
+      const { email: verifyEmail, name: verifyName, code: verifyCode } = request.verificationData;
+      fastify.sendEmail('verify_register', verifyEmail, 'Code de vérification Angele Shop', {
+        name: verifyName,
+        code: verifyCode
+      }).catch(err => request.log.error('Verification email error:', err));
     }
-    console.log(orderId,customer.name,total)
-await fastify.sendEmail('order_received','angeleshop228@gmail.com',"nouvelle commande",{
-        orderId,customerName:customer.name,
-        anmount:`${total.toLocaleString()} FCFA `
-      })
+
+    // Send order confirmation email to admin (fire-and-forget)
+    const adminEmail = process.env.ADMIN_EMAIL;
+    fastify.sendEmail('order_received', adminEmail, 'Nouvelle commande', {
+      orderId,
+      customerName: customer.name,
+      amount: `${total.toLocaleString()} FCFA`
+    }).catch(err => request.log.error('Order email error:', err));
+
     return {
       orderId,
       total,
-      payment_instructions: 'Le paiement sera configuré prochainement. Votre commande est en attente.',
-      payment_placeholder_url: `/compte#order-${orderId}`
+      payment_method: 'cash_on_delivery',
+      accountCreated: !!request.verificationData,
+      email: request.verificationData?.email || null,
+      message: 'Votre commande a été enregistrée. Vous paierez à la livraison.'
     };
   });
 
@@ -600,7 +772,12 @@ await fastify.sendEmail('order_received','angeleshop228@gmail.com',"nouvelle com
       return reply.code(401).send({ error: 'Invalid credentials' });
     }
 
+    if (!user.is_verified) {
+      return reply.code(403).send({ error: 'Veuillez vérifier votre email avant de vous connecter' });
+    }
+
     request.session.userId = user.id;
+    await request.session.save();
     return { user: { id: user.id, email: user.email, name: user.name } };
   });
 
@@ -630,12 +807,31 @@ await fastify.sendEmail('order_received','angeleshop228@gmail.com',"nouvelle com
 
     return { user, orders };
   });
-fastify.post("/api/send/mess",async (req, res)=>{
-  const { name, email, phone, subject, message } = req.body;
-   
-  await fastify.sendEmail("contact","angeleshop228@gmail.com","contact client",{name,email,phone,subject,message})
-  res.send("done done")
-})
+  // Contact form
+  fastify.post('/send/mess', {
+    schema: {
+      body: {
+        type: 'object',
+        required: ['name', 'email', 'message'],
+        properties: {
+          name: { type: 'string', minLength: 2 },
+          email: { type: 'string', format: 'email' },
+          phone: { type: 'string' },
+          subject: { type: 'string' },
+          message: { type: 'string', minLength: 1 }
+        }
+      }
+    }
+  }, async (req, res) => {
+    const { name, email, phone, subject, message } = req.body;
+    try {
+      await fastify.sendEmail('contact', process.env.ADMIN_EMAIL, 'Contact client', { name, email, phone, subject, message });
+      return res.send({ success: true, message: 'Message envoyé' });
+    } catch (err) {
+      req.log.error('Contact email error:', err);
+      return res.code(500).send({ error: 'Impossible d\'envoyer le message' });
+    }
+  });
   // Get order details
   fastify.get('/orders/:orderId', async (request, reply) => {
     const { orderId } = request.params;
@@ -652,8 +848,14 @@ fastify.post("/api/send/mess",async (req, res)=>{
 
     // For guest orders, check cookie
     if (!order.user_id && !request.session.userId) {
-      const guestOrders = request.cookies[`ANGELE_GUEST`] ? 
-        JSON.parse(request.cookies[`ANGELE_GUEST`]) : [];
+      let guestOrders = [];
+      try {
+        const raw = request.cookies['ANGELE_GUEST'];
+        guestOrders = raw ? JSON.parse(raw) : [];
+        if (!Array.isArray(guestOrders)) guestOrders = [];
+      } catch (e) {
+        guestOrders = [];
+      }
       
       const hasAccess = guestOrders.some(guestOrder => guestOrder.orderId === orderId);
       if (!hasAccess) {
@@ -674,6 +876,160 @@ fastify.post("/api/send/mess",async (req, res)=>{
       );
 
     return { ...order, items };
+  });
+
+  // ==========================================
+  // FAVORITES SYSTEM
+  // ==========================================
+
+  // Get user's favorites
+  fastify.get('/favorites', async (request, reply) => {
+    if (!request.session.userId) {
+      return reply.code(401).send({ error: 'Non authentifié' });
+    }
+
+    const favorites = await fastify.db('favorites')
+      .where('user_id', request.session.userId)
+      .leftJoin('products', 'favorites.product_id', 'products.id')
+      .leftJoin('categories', 'products.category_id', 'categories.id')
+      .select(
+        'favorites.id as favorite_id',
+        'favorites.created_at as favorited_at',
+        'products.id',
+        'products.title',
+        'products.slug',
+        'products.price_fcfa',
+        'products.images',
+        'products.available_count',
+        'categories.name as category_name',
+        'categories.slug as category_slug'
+      )
+      .orderBy('favorites.created_at', 'desc');
+
+    return { favorites };
+  });
+
+  // Add to favorites
+  fastify.post('/favorites', {
+    schema: {
+      body: {
+        type: 'object',
+        required: ['productId'],
+        properties: {
+          productId: { type: 'string' }
+        }
+      }
+    }
+  }, async (request, reply) => {
+    if (!request.session.userId) {
+      return reply.code(401).send({ error: 'Connectez-vous pour ajouter aux favoris' });
+    }
+
+    const { productId } = request.body;
+
+    // Check if product exists
+    const product = await fastify.db('products').where('id', productId).first();
+    if (!product) {
+      return reply.code(404).send({ error: 'Produit non trouvé' });
+    }
+
+    // Check if already favorited
+    const existing = await fastify.db('favorites')
+      .where({ user_id: request.session.userId, product_id: productId })
+      .first();
+
+    if (existing) {
+      return { success: true, message: 'Déjà dans vos favoris', favoriteId: existing.id };
+    }
+
+    // Add to favorites
+    const [favorite] = await fastify.db('favorites')
+      .insert({
+        user_id: request.session.userId,
+        product_id: productId
+      })
+      .returning('*');
+
+    return { success: true, message: 'Ajouté aux favoris', favoriteId: favorite.id };
+  });
+
+  // Remove from favorites
+  fastify.delete('/favorites/:productId', async (request, reply) => {
+    if (!request.session.userId) {
+      return reply.code(401).send({ error: 'Non authentifié' });
+    }
+
+    const { productId } = request.params;
+
+    await fastify.db('favorites')
+      .where({ user_id: request.session.userId, product_id: productId })
+      .del();
+
+    return { success: true, message: 'Retiré des favoris' };
+  });
+
+  // Check if products are in favorites (batch check)
+  fastify.post('/favorites/check', {
+    schema: {
+      body: {
+        type: 'object',
+        required: ['productIds'],
+        properties: {
+          productIds: { type: 'array', items: { type: 'string' } }
+        }
+      }
+    }
+  }, async (request, reply) => {
+    if (!request.session.userId) {
+      return { favoriteIds: [] };
+    }
+
+    const { productIds } = request.body;
+
+    const favorites = await fastify.db('favorites')
+      .where('user_id', request.session.userId)
+      .whereIn('product_id', productIds)
+      .select('product_id');
+
+    return { favoriteIds: favorites.map(f => f.product_id) };
+  });
+
+  // Get suggested products based on popular favorites
+  fastify.get('/suggestions', async (request) => {
+    const limit = parseInt(request.query.limit) || 8;
+    const excludeIds = request.query.exclude ? request.query.exclude.split(',') : [];
+
+    // Get most favorited products
+    let query = fastify.db('favorites')
+      .select('product_id')
+      .count('* as favorite_count')
+      .groupBy('product_id')
+      .orderBy('favorite_count', 'desc')
+      .limit(limit * 2); // Get more to filter out excluded
+
+    const popularProducts = await query;
+    const popularIds = popularProducts
+      .map(p => p.product_id)
+      .filter(id => !excludeIds.includes(id))
+      .slice(0, limit);
+
+    if (popularIds.length === 0) {
+      // Fallback to random products if no favorites yet
+      const products = await fastify.db('products')
+        .whereNotIn('id', excludeIds)
+        .where('available_count', '>', 0)
+        .orderByRaw('RANDOM()')
+        .limit(limit)
+        .select('id', 'title', 'slug', 'price_fcfa', 'images');
+      
+      return { suggestions: products };
+    }
+
+    const products = await fastify.db('products')
+      .whereIn('id', popularIds)
+      .select('id', 'title', 'slug', 'price_fcfa', 'images');
+
+    return { suggestions: products };
   });
 
 }

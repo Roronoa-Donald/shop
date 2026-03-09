@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/assets/css/main.css">
     <link rel="stylesheet" href="/assets/css/components.css">
     <link rel="stylesheet" href="/assets/css/responsive.css">
+    <link rel="stylesheet" href="/assets/css/premium.css">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -177,22 +178,207 @@
             padding: var(--spacing-sm);
         }
 
-        .product-actions {
-            display: flex;
-            gap: var(--spacing-md);
-            margin-bottom: var(--spacing-xl);
+        .product-page-actions {
+            display: flex !important;
+            gap: 12px;
+            margin: 25px 0 30px 0;
+            flex-wrap: wrap;
         }
 
         .add-to-cart-btn {
-            flex: 2;
+            flex: 1;
+            min-width: 140px;
+            padding: 15px 30px !important;
+            font-size: 1rem !important;
+            background: var(--primary-color) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: var(--radius-md) !important;
+            cursor: pointer !important;
+        }
+
+        .buy-now-btn {
+            flex: 1;
+            min-width: 140px;
+            padding: 15px 30px !important;
+            font-size: 1rem !important;
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: var(--radius-md) !important;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            cursor: pointer !important;
+        }
+
+        .buy-now-btn:hover {
+            background: linear-gradient(135deg, #128C7E 0%, #075E54 100%) !important;
+            transform: translateY(-2px);
         }
 
         .wishlist-btn {
             flex: 0 0 auto;
             width: 60px;
+            padding: 15px !important;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem !important;
+            background: var(--background-secondary) !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: var(--radius-md) !important;
+            cursor: pointer !important;
+        }
+
+        /* Buy Now Modal */
+        .buy-now-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-lg);
+        }
+
+        .buy-now-modal.active {
+            display: flex;
+        }
+
+        .buy-now-modal-content {
+            background: var(--background-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: fadeInScale 0.3s ease;
+        }
+
+        .buy-now-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-xl);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .buy-now-modal-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .buy-now-modal-close {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: var(--background-secondary);
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.25rem;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .buy-now-modal-close:hover {
+            background: var(--error-color);
+            color: white;
+        }
+
+        .buy-now-product-preview {
+            display: flex;
+            gap: var(--spacing-md);
+            padding: var(--spacing-lg);
+            background: var(--background-secondary);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .buy-now-product-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: var(--radius-md);
+        }
+
+        .buy-now-product-info {
+            flex: 1;
+        }
+
+        .buy-now-product-title {
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .buy-now-product-price {
+            color: var(--gold);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .buy-now-form .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .buy-now-form .form-label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-weight: 500;
+        }
+
+        .buy-now-form .form-input,
+        .buy-now-form .form-textarea {
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            background: var(--background-primary);
+            color: var(--text-primary);
+        }
+
+        .buy-now-form .form-input:focus,
+        .buy-now-form .form-textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+
+        .buy-now-submit {
+            width: 100%;
+            padding: var(--spacing-lg);
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            transition: all 0.3s ease;
+        }
+
+        .buy-now-submit:hover {
+            background: linear-gradient(135deg, #128C7E 0%, #075E54 100%);
+            transform: translateY(-2px);
         }
 
         .product-details {
@@ -485,44 +671,72 @@
             }
 
             async init() {
+                console.log('ProductPage init - URL:', window.location.href);
                 const slug = this.getProductSlug();
+                console.log('ProductPage - slug trouvé:', slug);
                 if (slug) {
                     await this.loadProduct(slug);
                 } else {
-                    this.showError();
+                    console.error('ProductPage - Aucun slug trouvé dans l\'URL');
+                    this.showError('Aucun identifiant de produit trouvé dans l\'URL.');
                 }
             }
 
             getProductSlug() {
+                // Check path-based URL first: /produit/slug
                 const path = window.location.pathname;
+                console.log('getProductSlug - pathname:', path);
                 const matches = path.match(/\/produit\/([^\/]+)/);
-                return matches ? matches[1] : null;
+                if (matches) {
+                    console.log('getProductSlug - path match:', matches[1]);
+                    return decodeURIComponent(matches[1]);
+                }
+                
+                // Check query param: /produit?slug=xxx or /produit?id=xxx
+                const params = new URLSearchParams(window.location.search);
+                console.log('getProductSlug - search params:', window.location.search);
+                const slugParam = params.get('slug') || params.get('id');
+                if (slugParam) {
+                    console.log('getProductSlug - query param:', slugParam);
+                    return slugParam;
+                }
+                
+                return null;
             }
 
             async loadProduct(slug) {
+                console.log('loadProduct - Chargement du produit:', slug);
                 try {
                     const response = await productAPI.getBySlug(slug);
+                    console.log('loadProduct - Réponse API:', response);
                     this.product = response;
                     this.renderProduct();
                     this.updatePageMeta();
                     this.updateBreadcrumb();
                 } catch (error) {
-                    console.error('Failed to load product:', error);
-                    this.showError();
+                    console.error('loadProduct - Erreur:', error);
+                    this.showError(`Le produit "${slug}" n'a pas pu être chargé. ${error.message || ''}`);
                 }
             }
 
             renderProduct() {
-                if (!this.product) return;
+                console.log('renderProduct - Début du rendu');
+                if (!this.product) {
+                    console.error('renderProduct - Pas de produit!');
+                    return;
+                }
 
                 const container = document.getElementById('product-container');
                 const loadingState = document.getElementById('loading-state');
                 
+                console.log('renderProduct - container:', container);
                 if (loadingState) loadingState.style.display = 'none';
 
                 const images = this.getProductImages();
+                console.log('renderProduct - images:', images);
                 const variants = this.product.variants || [];
                 const isOutOfStock = this.product.available_count === 0;
+                console.log('renderProduct - isOutOfStock:', isOutOfStock, 'available_count:', this.product.available_count);
 
                 container.innerHTML = `
                     <div class="product-gallery">
@@ -558,15 +772,21 @@
                                 <button class="quantity-btn" id="quantity-increase" type="button">+</button>
                             </div>
                         </div>
-                        <button class="btn btn-primary add-to-cart-btn" id="add-to-cart" ${isOutOfStock ? 'disabled' : ''}>
-                                ${isOutOfStock ? 'Indisponible' : 'Ajouter au panier'}
-                            </button>
                         
-                        <div class="product-actions">
-                            <button class="btn btn-primary add-to-cart-btn" id="add-to-cart" ${isOutOfStock ? 'disabled' : ''}>
-                                ${isOutOfStock ? 'Indisponible' : 'Ajouter au panier'}
+                        <div class="product-page-actions" style="display: flex !important; gap: 12px; margin: 25px 0;">
+                            <button id="add-to-cart" style="flex: 1; min-width: 160px; padding: 16px 28px; background: linear-gradient(135deg, #D4AF37 0%, #C5A028 50%, #B8960B 100%); color: #fff; border: none; border-radius: 50px; cursor: pointer; font-size: 0.95rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4); transition: all 0.3s ease; opacity: 1 !important; visibility: visible !important;" ${isOutOfStock ? 'disabled' : ''}
+                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(212, 175, 55, 0.5)';"
+                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(212, 175, 55, 0.4)';">
+                                ${isOutOfStock ? '❌ Indisponible' : '🛒 Ajouter au panier'}
                             </button>
-                            <button class="btn btn-outline wishlist-btn" id="wishlist-btn" title="Ajouter aux favoris">
+                            <button id="buy-now-btn" style="flex: 1; min-width: 160px; padding: 16px 28px; background: linear-gradient(135deg, #25D366 0%, #20BD5A 50%, #128C7E 100%); color: #fff; border: none; border-radius: 50px; cursor: pointer; font-size: 0.95rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); transition: all 0.3s ease; opacity: 1 !important; visibility: visible !important;" ${isOutOfStock ? 'disabled' : ''}
+                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(37, 211, 102, 0.5)';"
+                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(37, 211, 102, 0.4)';">
+                                📲 Acheter via WhatsApp
+                            </button>
+                            <button id="wishlist-btn" style="width: 56px; height: 56px; padding: 0; background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%); color: #D4AF37; border: 2px solid #3a3a3a; border-radius: 50%; cursor: pointer; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); transition: all 0.3s ease; opacity: 1 !important; visibility: visible !important;" title="Ajouter aux favoris"
+                                onmouseover="this.style.transform='scale(1.1)'; this.style.borderColor='#D4AF37';"
+                                onmouseout="this.style.transform='scale(1)'; this.style.borderColor='#3a3a3a';">
                                 ♡
                             </button>
                         </div>
@@ -576,9 +796,13 @@
                         </div>
                     </div>
                 `;
-                    console.log(isOutOfStock)
-                    console.log(this.product.id)
+
+                console.log('renderProduct - HTML injecté, vérification boutons...');
+                console.log('add-to-cart btn:', document.getElementById('add-to-cart'));
+                console.log('buy-now-btn:', document.getElementById('buy-now-btn'));
+                
                 this.attachEventListeners();
+                console.log('renderProduct - Terminé');
             }
 
             getProductImages() {
@@ -593,7 +817,6 @@
 
             getStockStatusHTML() {
                 const count = this.product.available_count;
-                let bool=false
                 
                 if (count === 0) {
                     return `
@@ -603,7 +826,6 @@
                         </div>
                     `;
                 } else if (count <= 5) {
-                    bool=true
                     return `
                         <div class="stock-status low-stock">
                             <span class="stock-indicator"></span>
@@ -611,7 +833,6 @@
                         </div>
                     `;
                 } else {
-                    bool=true
                     return `
                         <div class="stock-status in-stock">
                             <span class="stock-indicator"></span>
@@ -737,18 +958,55 @@
                 // Add to cart
                 const addToCartBtn = document.getElementById('add-to-cart');
                 if (addToCartBtn && !addToCartBtn.disabled) {
-                    addToCartBtn.addEventListener('click', () => {
+                    addToCartBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         this.addToCart();
                     });
                 }
 
-                // Wishlist (placeholder)
+                // Wishlist / Favorites
                 const wishlistBtn = document.getElementById('wishlist-btn');
                 if (wishlistBtn) {
-                    wishlistBtn.addEventListener('click', () => {
-                        showToast('Fonctionnalité à venir', 'info');
+                    // Check initial state
+                    this.updateFavoriteButton();
+                    
+                    wishlistBtn.addEventListener('click', async () => {
+                        if (!this.product) return;
+                        
+                        try {
+                            const result = await favoritesAPI.toggle(this.product.id);
+                            this.updateFavoriteButton(result.isFavorite);
+                            showToast(result.isFavorite ? 'Ajouté aux favoris ♥' : 'Retiré des favoris', result.isFavorite ? 'success' : 'info');
+                        } catch (error) {
+                            if (error.message?.includes('401') || error.message?.includes('Connectez')) {
+                                showToast('Connectez-vous pour ajouter aux favoris', 'info');
+                            } else {
+                                showToast('Erreur lors de l\'ajout aux favoris', 'error');
+                            }
+                        }
                     });
                 }
+            }
+            
+            async updateFavoriteButton(isFavorite = null) {
+                const wishlistBtn = document.getElementById('wishlist-btn');
+                if (!wishlistBtn || !this.product) return;
+                
+                // If not provided, check current state
+                if (isFavorite === null) {
+                    try {
+                        const { favoriteIds } = await favoritesAPI.check([this.product.id]);
+                        isFavorite = favoriteIds.includes(this.product.id);
+                    } catch {
+                        isFavorite = false;
+                    }
+                }
+                
+                // Update button appearance
+                wishlistBtn.innerHTML = isFavorite ? '♥' : '♡';
+                wishlistBtn.style.color = isFavorite ? '#ff4757' : '#D4AF37';
+                wishlistBtn.title = isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris';
             }
 
             changeImage(index) {
@@ -830,19 +1088,49 @@
                 }
             }
 
-            showError() {
+            showError(message = '') {
                 const loadingState = document.getElementById('loading-state');
                 const errorState = document.getElementById('error-state');
                 
                 if (loadingState) loadingState.style.display = 'none';
-                if (errorState) errorState.style.display = 'block';
+                if (errorState) {
+                    errorState.style.display = 'block';
+                    if (message) {
+                        errorState.innerHTML = `
+                            <h2>Erreur de chargement</h2>
+                            <p>${message}</p>
+                            <p style="font-size: 0.9rem; color: #999;">URL: ${window.location.href}</p>
+                            <a href="/boutique" class="btn btn-primary">Retour à la boutique</a>
+                        `;
+                    }
+                }
             }
         }
 
         // Initialize product page
         document.addEventListener('DOMContentLoaded', () => {
-            new ProductPage();
+            window.productPageInstance = new ProductPage();
         });
+    </script>
+
+    <script>
+        // Buy Now - Direct WhatsApp (impulsive, no form)
+        (function() {
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('#buy-now-btn')) {
+                    const productPage = window.productPageInstance;
+                    if (productPage && productPage.product) {
+                        const product = productPage.product;
+                        const quantity = parseInt(document.getElementById('quantity-input')?.value || 1);
+                        
+                        // Direct WhatsApp - no form needed
+                        utils.openWhatsAppBuyNow(product, quantity);
+                        
+                        showToast('Ouverture de WhatsApp...', 'success');
+                    }
+                }
+            });
+        })();
     </script>
 </body>
 </html>
