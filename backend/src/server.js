@@ -74,22 +74,72 @@ async function build() {
   if (!process.env.APP_SECRET) {
     throw new Error('APP_SECRET environment variable is required');
   }
-  await server.register(require('@fastify/cookie'));
+  await server.register(require('@fastify/cookie'), {
+    secret: process.env.APP_SECRET, // for signing cookies
+    parseOptions: {}
+  });
   
-  // Use secure-session for serverless (stores session data IN the cookie)
-  // Generate key from APP_SECRET (must be 32 bytes for sodium)
+  // Simple session using signed cookies (serverless compatible)
+  // Session data stored in encrypted cookie - no server-side storage needed
   const crypto = require('crypto');
-  const sessionKey = crypto.createHash('sha256').update(process.env.APP_SECRET).digest();
   
-  await server.register(require('@fastify/secure-session'), {
-    key: sessionKey,
-    cookieName: 'angele_session',
-    cookie: {
-      maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/'
+  // Encrypt/decrypt session data
+  const ALGO = 'aes-256-gcm';
+  const SECRET_KEY = crypto.createHash('sha256').update(process.env.APP_SECRET).digest();
+  
+  function encryptSession(data) {
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv(ALGO, SECRET_KEY, iv);
+    const json = JSON.stringify(data);
+    let encrypted = cipher.update(json, 'utf8', 'base64');
+    encrypted += cipher.final('base64');
+    const authTag = cipher.getAuthTag().toString('base64');
+    return `${iv.toString('base64')}.${encrypted}.${authTag}`;
+  }
+  
+  function decryptSession(token) {
+    try {
+      const [ivB64, encryptedB64, authTagB64] = token.split('.');
+      if (!ivB64 || !encryptedB64 || !authTagB64) return {};
+      const iv = Buffer.from(ivB64, 'base64');
+      const encrypted = Buffer.from(encryptedB64, 'base64');
+      const authTag = Buffer.from(authTagB64, 'base64');
+      const decipher = crypto.createDecipheriv(ALGO, SECRET_KEY, iv);
+      decipher.setAuthTag(authTag);
+      let decrypted = decipher.update(encrypted, undefined, 'utf8');
+      decrypted += decipher.final('utf8');
+      return JSON.parse(decrypted);
+    } catch (e) {
+      return {};
+    }
+  }
+  
+  // Add session object to each request
+  server.decorateRequest('session', null);
+  server.addHook('onRequest', async (request, reply) => {
+    const sessionCookie = request.cookies['angele_session'];
+    const sessionData = sessionCookie ? decryptSession(sessionCookie) : {};
+    
+    // Create session object with get/set methods
+    request.session = {
+      _data: sessionData,
+      get(key) { return this._data[key]; },
+      set(key, value) { this._data[key] = value; },
+      delete() { this._data = {}; }
+    };
+  });
+  
+  // Save session on response
+  server.addHook('onSend', async (request, reply) => {
+    if (request.session && Object.keys(request.session._data).length > 0) {
+      const token = encryptSession(request.session._data);
+      reply.setCookie('angele_session', token, {
+        maxAge: 7 * 24 * 60 * 60, // 7 days
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/'
+      });
     }
   });
 
