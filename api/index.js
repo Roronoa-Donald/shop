@@ -5,11 +5,30 @@ process.env.VERCEL = '1';
 
 const build = require('../backend/src/server');
 
+// Helper to read request body
+function getBody(req) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    req.on('data', chunk => chunks.push(chunk));
+    req.on('end', () => {
+      const body = Buffer.concat(chunks);
+      resolve(body.length > 0 ? body : undefined);
+    });
+    req.on('error', reject);
+  });
+}
+
 // Create fresh app for each request to ensure clean DB connections
 module.exports = async (req, res) => {
   let app;
   try {
     console.log(`[Vercel] ${req.method} ${req.url}`);
+    
+    // Read body for non-GET requests
+    let payload;
+    if (req.method !== 'GET' && req.method !== 'HEAD') {
+      payload = await getBody(req);
+    }
     
     // Build fresh app for each request
     app = await build();
@@ -20,8 +39,14 @@ module.exports = async (req, res) => {
       method: req.method,
       url: req.url,
       headers: req.headers,
-      payload: req,
-      query: req.query
+      payload: payload,
+      cookies: req.headers.cookie ? 
+        Object.fromEntries(
+          req.headers.cookie.split(';').map(c => {
+            const [key, ...val] = c.trim().split('=');
+            return [key, val.join('=')];
+          })
+        ) : {}
     });
     
     // Copy response headers

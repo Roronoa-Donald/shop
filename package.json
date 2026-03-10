@@ -29,6 +29,7 @@
     "@fastify/helmet": "^11.0.0",
     "@fastify/multipart": "^7.6.0",
     "@fastify/rate-limit": "^8.0.3",
+    "@fastify/secure-session": "^8.3.0",
     "@fastify/session": "^10.3.0",
     "@fastify/static": "^6.10.2",
     "@fastify/view": "^8.0.0",
@@ -43,6 +44,7 @@
     "nodemailer": "^6.9.4",
     "pg": "^8.11.3",
     "pino": "^8.15.0",
+    "sodium-native": "^5.1.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

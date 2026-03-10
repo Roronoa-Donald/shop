@@ -433,9 +433,10 @@ fastify.post('/auth/reset/verify', {
     }
   }, async (request, reply) => {
     const { action, productId, variantId, quantity = 1 } = request.body;
-    console.log('Cart POST - session ID:', request.session.sessionId, 'action:', action, 'productId:', productId);
-    console.log('session.cart before:', request.session.cart);
-    const cart = request.session.cart || [];
+    
+    // secure-session uses .get() and .set() methods
+    let cart = request.session.get('cart') || [];
+    console.log('Cart POST - action:', action, 'productId:', productId, 'cart length:', cart.length);
 
     switch (action) {
       case 'add':
@@ -446,7 +447,7 @@ fastify.post('/auth/reset/verify', {
         if (existingIndex >= 0) {
           cart[existingIndex].quantity += quantity;
         } else {
-          cart.push({ productId, variantId, quantity, addedAt: new Date() });
+          cart.push({ productId, variantId, quantity, addedAt: new Date().toISOString() });
         }
         break;
 
@@ -469,20 +470,19 @@ fastify.post('/auth/reset/verify', {
         break;
 
       case 'clear':
-        cart.length = 0;
+        cart = [];
         break;
     }
 
-    request.session.cart = cart;
-    // Sauvegarder la session explicitement
-    await request.session.save();
-    console.log('Cart after update:', cart.length, 'items, session saved');
+    // secure-session: use .set() - data is stored in encrypted cookie
+    request.session.set('cart', cart);
+    console.log('Cart after update:', cart.length, 'items');
     return { success: true, cart };
   });
 
   fastify.get('/cart', async (request) => {
-    console.log('GET /cart - session ID:', request.session.sessionId, 'session.cart:', request.session.cart);
-    const cart = request.session.cart || [];
+    const cart = request.session.get('cart') || [];
+    console.log('GET /cart - cart length:', cart.length);
     
     if (cart.length === 0) {
       return { cart: [], total: 0 };
@@ -583,7 +583,7 @@ fastify.post('/auth/reset/verify', {
     }
   }, async (request, reply) => {
     const { customer, createAccount, email, password } = request.body;
-    const cart = request.session.cart || [];
+    const cart = request.session.get('cart') || [];
 
     if (cart.length === 0) {
       return reply.code(400).send({ error: 'Cart is empty' });
@@ -635,7 +635,7 @@ fastify.post('/auth/reset/verify', {
           .returning('*');
 
         userId = user.id;
-        request.session.userId = userId;
+        request.session.set('userId', userId);
         
         // Generate verification code for the new account
         const numCode = Math.floor(100000 + Math.random() * 900000);
@@ -718,7 +718,7 @@ fastify.post('/auth/reset/verify', {
     }
 
     // Clear cart
-    request.session.cart = [];
+    request.session.set('cart', []);
 
     // Send verification email if account was created (fire-and-forget, non-blocking)
     if (request.verificationData) {
@@ -776,24 +776,24 @@ fastify.post('/auth/reset/verify', {
       return reply.code(403).send({ error: 'Veuillez vérifier votre email avant de vous connecter' });
     }
 
-    request.session.userId = user.id;
-    await request.session.save();
+    request.session.set('userId', user.id);
     return { user: { id: user.id, email: user.email, name: user.name } };
   });
 
   fastify.post('/auth/logout', async (request) => {
-    request.session.destroy();
+    request.session.delete();
     return { success: true };
   });
 
   // User account
   fastify.get('/account', async (request, reply) => {
-    if (!request.session.userId) {
+    const userId = request.session.get('userId');
+    if (!userId) {
       return reply.code(401).send({ error: 'Not authenticated' });
     }
 
     const user = await fastify.db('users')
-      .where('id', request.session.userId)
+      .where('id', userId)
       .select('id', 'email', 'name', 'phone', 'created_at')
       .first();
 
@@ -842,12 +842,13 @@ fastify.post('/auth/reset/verify', {
     }
 
     // Check ownership
-    if (order.user_id && request.session.userId !== order.user_id) {
+    const sessionUserId = request.session.get('userId');
+    if (order.user_id && sessionUserId !== order.user_id) {
       return reply.code(403).send({ error: 'Access denied' });
     }
 
     // For guest orders, check cookie
-    if (!order.user_id && !request.session.userId) {
+    if (!order.user_id && !sessionUserId) {
       let guestOrders = [];
       try {
         const raw = request.cookies['ANGELE_GUEST'];
@@ -884,12 +885,13 @@ fastify.post('/auth/reset/verify', {
 
   // Get user's favorites
   fastify.get('/favorites', async (request, reply) => {
-    if (!request.session.userId) {
+    const userId = request.session.get('userId');
+    if (!userId) {
       return reply.code(401).send({ error: 'Non authentifié' });
     }
 
     const favorites = await fastify.db('favorites')
-      .where('user_id', request.session.userId)
+      .where('user_id', userId)
       .leftJoin('products', 'favorites.product_id', 'products.id')
       .leftJoin('categories', 'products.category_id', 'categories.id')
       .select(
@@ -921,7 +923,8 @@ fastify.post('/auth/reset/verify', {
       }
     }
   }, async (request, reply) => {
-    if (!request.session.userId) {
+    const userId = request.session.get('userId');
+    if (!userId) {
       return reply.code(401).send({ error: 'Connectez-vous pour ajouter aux favoris' });
     }
 
@@ -935,7 +938,7 @@ fastify.post('/auth/reset/verify', {
 
     // Check if already favorited
     const existing = await fastify.db('favorites')
-      .where({ user_id: request.session.userId, product_id: productId })
+      .where({ user_id: userId, product_id: productId })
       .first();
 
     if (existing) {
@@ -945,7 +948,7 @@ fastify.post('/auth/reset/verify', {
     // Add to favorites
     const [favorite] = await fastify.db('favorites')
       .insert({
-        user_id: request.session.userId,
+        user_id: userId,
         product_id: productId
       })
       .returning('*');
@@ -955,14 +958,15 @@ fastify.post('/auth/reset/verify', {
 
   // Remove from favorites
   fastify.delete('/favorites/:productId', async (request, reply) => {
-    if (!request.session.userId) {
+    const userId = request.session.get('userId');
+    if (!userId) {
       return reply.code(401).send({ error: 'Non authentifié' });
     }
 
     const { productId } = request.params;
 
     await fastify.db('favorites')
-      .where({ user_id: request.session.userId, product_id: productId })
+      .where({ user_id: userId, product_id: productId })
       .del();
 
     return { success: true, message: 'Retiré des favoris' };
@@ -980,14 +984,15 @@ fastify.post('/auth/reset/verify', {
       }
     }
   }, async (request, reply) => {
-    if (!request.session.userId) {
+    const userId = request.session.get('userId');
+    if (!userId) {
       return { favoriteIds: [] };
     }
 
     const { productIds } = request.body;
 
     const favorites = await fastify.db('favorites')
-      .where('user_id', request.session.userId)
+      .where('user_id', userId)
       .whereIn('product_id', productIds)
       .select('product_id');
 

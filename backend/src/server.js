@@ -75,13 +75,21 @@ async function build() {
     throw new Error('APP_SECRET environment variable is required');
   }
   await server.register(require('@fastify/cookie'));
-  await server.register(require('@fastify/session'), {
-    secret: process.env.APP_SECRET,
+  
+  // Use secure-session for serverless (stores session data IN the cookie)
+  // Generate key from APP_SECRET (must be 32 bytes for sodium)
+  const crypto = require('crypto');
+  const sessionKey = crypto.createHash('sha256').update(process.env.APP_SECRET).digest();
+  
+  await server.register(require('@fastify/secure-session'), {
+    key: sessionKey,
+    cookieName: 'angele_session',
     cookie: {
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours (168h)
+      maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax'
+      sameSite: 'lax',
+      path: '/'
     }
   });
 
